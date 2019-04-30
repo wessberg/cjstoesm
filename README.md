@@ -249,8 +249,8 @@ program.emit(undefined, undefined, undefined, undefined, cjsToEsm());
 
 There are two popular TypeScript plugins for Rollup that support Custom Transformers:
 
-[rollup-plugin-ts](https://github.com/wessberg/rollup-plugin-ts)
-[rollup-plugin-typescript2](https://github.com/ezolenko/rollup-plugin-typescript2)
+- [rollup-plugin-ts](https://github.com/wessberg/rollup-plugin-ts)
+- [rollup-plugin-typescript2](https://github.com/ezolenko/rollup-plugin-typescript2)
 
 #### Usage with rollup-plugin-ts
 
@@ -294,8 +294,8 @@ export default {
 
 There are two popular TypeScript loaders for Webpack that support Custom Transformers:
 
-[awesome-typescript-loader](https://github.com/s-panferov/awesome-typescript-loader)
-[ts-loader](https://github.com/TypeStrong/ts-loader)
+- [awesome-typescript-loader](https://github.com/s-panferov/awesome-typescript-loader)
+- [ts-loader](https://github.com/TypeStrong/ts-loader)
 
 #### Usage with awesome-typescript-loader
 
