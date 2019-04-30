@@ -13,7 +13,9 @@ export function walkThroughFillerNodes(expression: Expression): Expression {
 		isNonNullExpression(expression) ||
 		isTypeAssertion(expression) ||
 		isExpressionWithTypeArguments(expression)
-	)
+	) {
 		return expression.expression;
-	else return expression;
+	}
+
+	return expression;
 }

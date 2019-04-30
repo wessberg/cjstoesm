@@ -1,4 +1,4 @@
-import module from "module";
+import Module from "module";
 import {join} from "path";
 import {existsSync, mkdirSync, writeFileSync} from "fs";
 import {format} from "prettier";
@@ -37,7 +37,7 @@ const IGNORED_MODULE_NAMES = new Set([
 
 function generateBuiltInModuleInnerContents(): string {
 	let str = "";
-	for (const moduleName of module.builtinModules) {
+	for (const moduleName of Module.builtinModules) {
 		if (IGNORED_MODULE_NAMES.has(moduleName)) continue;
 		str += `"${moduleName}",\n`;
 	}
@@ -74,7 +74,7 @@ export const BUILT_IN_MODULE_MAP: BuiltInModuleMap = {
 
 function generateBuiltInModuleMapInnerContents(): string {
 	let str = "";
-	for (const moduleName of module.builtinModules) {
+	for (const moduleName of Module.builtinModules) {
 		if (IGNORED_MODULE_NAMES.has(moduleName)) continue;
 		str += `${generateBuiltInModuleMapContents(moduleName)},\n`;
 	}

@@ -2,8 +2,8 @@ import test from "ava";
 import {generateTransformerResult} from "./setup/setup-transformer";
 import {formatCode} from "./util/format-code";
 
-test("Converts 'exports = ...' syntax into an ExportAssignment. #1", async t => {
-	const bundle = await generateTransformerResult(`
+test("Converts 'exports = ...' syntax into an ExportAssignment. #1", t => {
+	const bundle = generateTransformerResult(`
 		function foo () {}
 		exports = foo;
 	`);
@@ -17,8 +17,8 @@ test("Converts 'exports = ...' syntax into an ExportAssignment. #1", async t => 
 	);
 });
 
-test("Converts 'exports = ...' syntax into an ExportAssignment. #2", async t => {
-	const bundle = await generateTransformerResult(`
+test("Converts 'exports = ...' syntax into an ExportAssignment. #2", t => {
+	const bundle = generateTransformerResult(`
 		function foo () {}
 		module.exports = foo;
 	`);
@@ -32,8 +32,8 @@ test("Converts 'exports = ...' syntax into an ExportAssignment. #2", async t => 
 	);
 });
 
-test("Converts 'exports = ...' syntax into an ExportAssignment. #3", async t => {
-	const bundle = await generateTransformerResult(`
+test("Converts 'exports = ...' syntax into an ExportAssignment. #3", t => {
+	const bundle = generateTransformerResult(`
 		exports = function foo () {};
 	`);
 	const [file] = bundle;
@@ -45,8 +45,8 @@ test("Converts 'exports = ...' syntax into an ExportAssignment. #3", async t => 
 	);
 });
 
-test("Converts 'exports = ...' syntax into an ExportAssignment. #4", async t => {
-	const bundle = await generateTransformerResult(`
+test("Converts 'exports = ...' syntax into an ExportAssignment. #4", t => {
+	const bundle = generateTransformerResult(`
 		class Baz {}
 
 		module.exports = {
@@ -75,8 +75,8 @@ test("Converts 'exports = ...' syntax into an ExportAssignment. #4", async t => 
 	);
 });
 
-test("Converts 'exports = ...' syntax into an ExportAssignment. #5", async t => {
-	const bundle = await generateTransformerResult(`
+test("Converts 'exports = ...' syntax into an ExportAssignment. #5", t => {
+	const bundle = generateTransformerResult(`
 
 		module.exports = {
 			aMethod () {
@@ -98,8 +98,8 @@ test("Converts 'exports = ...' syntax into an ExportAssignment. #5", async t => 
 	);
 });
 
-test("Converts 'exports = ...' syntax into an ExportAssignment. #6", async t => {
-	const bundle = await generateTransformerResult(`
+test("Converts 'exports = ...' syntax into an ExportAssignment. #6", t => {
+	const bundle = generateTransformerResult(`
 		const foo = "bar";
 		module.exports = {
 			get something () {
@@ -121,8 +121,8 @@ test("Converts 'exports = ...' syntax into an ExportAssignment. #6", async t => 
 	);
 });
 
-test("Converts 'exports = ...' syntax into an ExportAssignment. #7", async t => {
-	const bundle = await generateTransformerResult(`
+test("Converts 'exports = ...' syntax into an ExportAssignment. #7", t => {
+	const bundle = generateTransformerResult(`
 		module.exports = {};
 	`);
 	const [file] = bundle;
@@ -134,8 +134,8 @@ test("Converts 'exports = ...' syntax into an ExportAssignment. #7", async t => 
 	);
 });
 
-test("Converts 'exports = ...' syntax into an ExportAssignment. #8", async t => {
-	const bundle = await generateTransformerResult(`
+test("Converts 'exports = ...' syntax into an ExportAssignment. #8", t => {
+	const bundle = generateTransformerResult(`
 		(module.exports = {});
 	`);
 	const [file] = bundle;
@@ -147,8 +147,8 @@ test("Converts 'exports = ...' syntax into an ExportAssignment. #8", async t => 
 	);
 });
 
-test("Converts 'exports.<something> into ExportDeclarations. #1", async t => {
-	const bundle = await generateTransformerResult(`
+test("Converts 'exports.<something> into ExportDeclarations. #1", t => {
+	const bundle = generateTransformerResult(`
 		exports.foo = 1;
 	`);
 	const [file] = bundle;
@@ -161,8 +161,8 @@ test("Converts 'exports.<something> into ExportDeclarations. #1", async t => {
 	);
 });
 
-test("Converts 'exports.<something> into ExportDeclarations. #2", async t => {
-	const bundle = await generateTransformerResult(`
+test("Converts 'exports.<something> into ExportDeclarations. #2", t => {
+	const bundle = generateTransformerResult(`
 		function foo () {}
 		exports.foo = foo;
 	`);
@@ -176,8 +176,8 @@ test("Converts 'exports.<something> into ExportDeclarations. #2", async t => {
 	);
 });
 
-test("Converts 'exports.<something> into ExportDeclarations. #3", async t => {
-	const bundle = await generateTransformerResult(`
+test("Converts 'exports.<something> into ExportDeclarations. #3", t => {
+	const bundle = generateTransformerResult(`
 		exports.foo = function foo () {};
 	`);
 	const [file] = bundle;
@@ -189,8 +189,8 @@ test("Converts 'exports.<something> into ExportDeclarations. #3", async t => {
 	);
 });
 
-test("Converts 'exports.<something> into ExportDeclarations. #4", async t => {
-	const bundle = await generateTransformerResult(`
+test("Converts 'exports.<something> into ExportDeclarations. #4", t => {
+	const bundle = generateTransformerResult(`
 		exports.foo = () => {}
 	`);
 	const [file] = bundle;
@@ -202,8 +202,8 @@ test("Converts 'exports.<something> into ExportDeclarations. #4", async t => {
 	);
 });
 
-test("Converts 'exports.<something> into ExportDeclarations. #5", async t => {
-	const bundle = await generateTransformerResult(`
+test("Converts 'exports.<something> into ExportDeclarations. #5", t => {
+	const bundle = generateTransformerResult(`
 		exports.f = Object.getOwnPropertySymbols;
 	`);
 	const [file] = bundle;
@@ -215,8 +215,8 @@ test("Converts 'exports.<something> into ExportDeclarations. #5", async t => {
 	);
 });
 
-test("Converts 'exports.<something> into ExportDeclarations. #6", async t => {
-	const bundle = await generateTransformerResult(`
+test("Converts 'exports.<something> into ExportDeclarations. #6", t => {
+	const bundle = generateTransformerResult(`
 		function foo () {}
 		exports.bar = foo;
 	`);
@@ -230,8 +230,8 @@ test("Converts 'exports.<something> into ExportDeclarations. #6", async t => {
 	);
 });
 
-test("Converts 'exports.default into a default export. #1", async t => {
-	const bundle = await generateTransformerResult(`
+test("Converts 'exports.default into a default export. #1", t => {
+	const bundle = generateTransformerResult(`
 		exports.default = function foo () {}
 	`);
 	const [file] = bundle;
@@ -243,8 +243,8 @@ test("Converts 'exports.default into a default export. #1", async t => {
 	);
 });
 
-test("Converts 'exports.default into a default export. #2", async t => {
-	const bundle = await generateTransformerResult(`
+test("Converts 'exports.default into a default export. #2", t => {
+	const bundle = generateTransformerResult(`
 		module.exports.default = function foo () {}
 	`);
 	const [file] = bundle;
@@ -256,8 +256,8 @@ test("Converts 'exports.default into a default export. #2", async t => {
 	);
 });
 
-test("Won't generate duplicate ExportAssignments. #1", async t => {
-	const bundle = await generateTransformerResult(`
+test("Won't generate duplicate ExportAssignments. #1", t => {
+	const bundle = generateTransformerResult(`
 		function foo () {}
 		exports.default = foo;
 		module.exports = foo;
@@ -273,8 +273,8 @@ test("Won't generate duplicate ExportAssignments. #1", async t => {
 	);
 });
 
-test("Won't generate duplicate ExportDeclarations. #1", async t => {
-	const bundle = await generateTransformerResult(`
+test("Won't generate duplicate ExportDeclarations. #1", t => {
+	const bundle = generateTransformerResult(`
 		function foo () {}
 		exports.foo = foo;
 		module.exports.foo = foo;
@@ -293,8 +293,8 @@ test("Won't generate duplicate ExportDeclarations. #1", async t => {
 	);
 });
 
-test("Generates named exports for members of an ObjectLiteral that is assigned to 'exports = ...' if possible. #1", async t => {
-	const bundle = await generateTransformerResult(`
+test("Generates named exports for members of an ObjectLiteral that is assigned to 'exports = ...' if possible. #1", t => {
+	const bundle = generateTransformerResult(`
 		module.exports = {
 			foo: true
 		};
@@ -311,8 +311,8 @@ test("Generates named exports for members of an ObjectLiteral that is assigned t
 	);
 });
 
-test("Generates named exports for members of an ObjectLiteral that is assigned to 'exports = ...' if possible. #2", async t => {
-	const bundle = await generateTransformerResult(`
+test("Generates named exports for members of an ObjectLiteral that is assigned to 'exports = ...' if possible. #2", t => {
+	const bundle = generateTransformerResult(`
 		module.exports = {
 			foo: false
 		};
@@ -329,8 +329,8 @@ test("Generates named exports for members of an ObjectLiteral that is assigned t
 	);
 });
 
-test("Generates named exports for members of an ObjectLiteral that is assigned to 'exports = ...' if possible. #3", async t => {
-	const bundle = await generateTransformerResult(`
+test("Generates named exports for members of an ObjectLiteral that is assigned to 'exports = ...' if possible. #3", t => {
+	const bundle = generateTransformerResult(`
 		module.exports = {
 			foo: 2
 		};
@@ -347,8 +347,8 @@ test("Generates named exports for members of an ObjectLiteral that is assigned t
 	);
 });
 
-test("Generates named exports for members of an ObjectLiteral that is assigned to 'exports = ...' if possible. #4", async t => {
-	const bundle = await generateTransformerResult(`
+test("Generates named exports for members of an ObjectLiteral that is assigned to 'exports = ...' if possible. #4", t => {
+	const bundle = generateTransformerResult(`
 		module.exports = {
 			foo: 2n
 		};
@@ -365,8 +365,8 @@ test("Generates named exports for members of an ObjectLiteral that is assigned t
 	);
 });
 
-test("Generates named exports for members of an ObjectLiteral that is assigned to 'exports = ...' if possible. #5", async t => {
-	const bundle = await generateTransformerResult(`
+test("Generates named exports for members of an ObjectLiteral that is assigned to 'exports = ...' if possible. #5", t => {
+	const bundle = generateTransformerResult(`
 		module.exports = {
 			foo: /foo/
 		};
@@ -383,8 +383,8 @@ test("Generates named exports for members of an ObjectLiteral that is assigned t
 	);
 });
 
-test("Generates named exports for members of an ObjectLiteral that is assigned to 'exports = ...' if possible. #6", async t => {
-	const bundle = await generateTransformerResult(`
+test("Generates named exports for members of an ObjectLiteral that is assigned to 'exports = ...' if possible. #6", t => {
+	const bundle = generateTransformerResult(`
 		module.exports = {
 			foo: {
 				a: 1,
@@ -407,8 +407,8 @@ test("Generates named exports for members of an ObjectLiteral that is assigned t
 	);
 });
 
-test("Generates named exports for members of an ObjectLiteral that is assigned to 'exports = ...' if possible. #7", async t => {
-	const bundle = await generateTransformerResult(`
+test("Generates named exports for members of an ObjectLiteral that is assigned to 'exports = ...' if possible. #7", t => {
+	const bundle = generateTransformerResult(`
 		module.exports = {
 			foo () {
 				return 2;
@@ -429,8 +429,8 @@ test("Generates named exports for members of an ObjectLiteral that is assigned t
 	);
 });
 
-test("Generates named exports for members of an ObjectLiteral that is assigned to 'exports = ...' if possible. #8", async t => {
-	const bundle = await generateTransformerResult(`
+test("Generates named exports for members of an ObjectLiteral that is assigned to 'exports = ...' if possible. #8", t => {
+	const bundle = generateTransformerResult(`
 		const obj = {
 			foo: 1,
 			bar: 10

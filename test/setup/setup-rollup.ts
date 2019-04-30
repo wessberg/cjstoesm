@@ -1,7 +1,7 @@
 import {dirname, isAbsolute, join} from "path";
 import {rollup, RollupOptions, RollupOutput} from "rollup";
-import ts from "@wessberg/rollup-plugin-ts";
-import resolve from "rollup-plugin-node-resolve";
+import typescriptRollupPlugin from "@wessberg/rollup-plugin-ts";
+import nodeResolve from "rollup-plugin-node-resolve";
 import {cjsToEsm} from "../../src/transformer/cjs-to-esm";
 import {existsSync, readFileSync, statSync} from "fs";
 import {isInDebugMode} from "../util/is-in-debug-mode";
@@ -67,7 +67,7 @@ export async function generateRollupBundle(inputFiles: TestFile[] | TestFile, ro
 				resolveId,
 				load
 			},
-			ts({
+			typescriptRollupPlugin({
 				tsconfig: {
 					target: "esnext",
 					allowJs: true
@@ -90,7 +90,7 @@ export async function generateRollupBundle(inputFiles: TestFile[] | TestFile, ro
 				],
 				transpileOnly: true
 			}),
-			resolve(),
+			nodeResolve(),
 			...(rollupOptions.plugins == null ? [] : rollupOptions.plugins)
 		]
 	});

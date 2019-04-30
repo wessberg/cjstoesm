@@ -2,8 +2,8 @@ import test from "ava";
 import {generateTransformerResult} from "./setup/setup-transformer";
 import {formatCode} from "./util/format-code";
 
-test("Converts ObjectBindingPatterns to NamedImportBindings. #1", async t => {
-	const bundle = await generateTransformerResult([
+test("Converts ObjectBindingPatterns to NamedImportBindings. #1", t => {
+	const bundle = generateTransformerResult([
 		{
 			entry: true,
 			fileName: "index.ts",
@@ -27,8 +27,8 @@ test("Converts ObjectBindingPatterns to NamedImportBindings. #1", async t => {
 	);
 });
 
-test("Converts ObjectBindingPatterns to NamedImportBindings. #2", async t => {
-	const bundle = await generateTransformerResult([
+test("Converts ObjectBindingPatterns to NamedImportBindings. #2", t => {
+	const bundle = generateTransformerResult([
 		{
 			entry: true,
 			fileName: "index.ts",
@@ -53,8 +53,8 @@ test("Converts ObjectBindingPatterns to NamedImportBindings. #2", async t => {
 	);
 });
 
-test("Handles complex binding patterns by using the first level as an import and the remaining levels as new VariableStatements #1", async t => {
-	const bundle = await generateTransformerResult([
+test("Handles complex binding patterns by using the first level as an import and the remaining levels as new VariableStatements #1", t => {
+	const bundle = generateTransformerResult([
 		{
 			entry: true,
 			fileName: "index.ts",
@@ -81,8 +81,8 @@ test("Handles complex binding patterns by using the first level as an import and
 	);
 });
 
-test("Converts require calls wrapped in ElementAccessExpressions to NamedImportBindings. #1", async t => {
-	const bundle = await generateTransformerResult([
+test("Converts require calls wrapped in ElementAccessExpressions to NamedImportBindings. #1", t => {
+	const bundle = generateTransformerResult([
 		{
 			entry: true,
 			fileName: "index.ts",
@@ -108,8 +108,8 @@ test("Converts require calls wrapped in ElementAccessExpressions to NamedImportB
 	);
 });
 
-test("Converts require calls wrapped in ElementAccessExpressions to NamedImportBindings. #2", async t => {
-	const bundle = await generateTransformerResult([
+test("Converts require calls wrapped in ElementAccessExpressions to NamedImportBindings. #2", t => {
+	const bundle = generateTransformerResult([
 		{
 			entry: true,
 			fileName: "index.ts",
@@ -135,8 +135,8 @@ test("Converts require calls wrapped in ElementAccessExpressions to NamedImportB
 	);
 });
 
-test("Converts require calls wrapped in ElementAccessExpressions to NamedImportBindings. #3", async t => {
-	const bundle = await generateTransformerResult([
+test("Converts require calls wrapped in ElementAccessExpressions to NamedImportBindings. #3", t => {
+	const bundle = generateTransformerResult([
 		{
 			entry: true,
 			fileName: "index.ts",
@@ -162,8 +162,8 @@ test("Converts require calls wrapped in ElementAccessExpressions to NamedImportB
 	);
 });
 
-test("Converts require calls wrapped in ElementAccessExpressions to NamedImportBindings. #4", async t => {
-	const bundle = await generateTransformerResult([
+test("Converts require calls wrapped in ElementAccessExpressions to NamedImportBindings. #4", t => {
+	const bundle = generateTransformerResult([
 		{
 			entry: true,
 			fileName: "index.ts",
@@ -189,8 +189,8 @@ test("Converts require calls wrapped in ElementAccessExpressions to NamedImportB
 	);
 });
 
-test("Converts require calls wrapped in non-statically analyzable ElementAccessExpressions to Namespace ImportDeclarations. #1", async t => {
-	const bundle = await generateTransformerResult([
+test("Converts require calls wrapped in non-statically analyzable ElementAccessExpressions to Namespace ImportDeclarations. #1", t => {
+	const bundle = generateTransformerResult([
 		{
 			entry: true,
 			fileName: "index.ts",
@@ -217,8 +217,8 @@ test("Converts require calls wrapped in non-statically analyzable ElementAccessE
 	);
 });
 
-test("Converts require calls wrapped in non-statically analyzable ElementAccessExpressions to Namespace ImportDeclarations. #2", async t => {
-	const bundle = await generateTransformerResult([
+test("Converts require calls wrapped in non-statically analyzable ElementAccessExpressions to Namespace ImportDeclarations. #2", t => {
+	const bundle = generateTransformerResult([
 		{
 			entry: true,
 			fileName: "index.ts",
@@ -244,8 +244,8 @@ test("Converts require calls wrapped in non-statically analyzable ElementAccessE
 	);
 });
 
-test("Converts require calls wrapped in non-statically analyzable ElementAccessExpressions to Namespace ImportDeclarations. #3", async t => {
-	const bundle = await generateTransformerResult([
+test("Converts require calls wrapped in non-statically analyzable ElementAccessExpressions to Namespace ImportDeclarations. #3", t => {
+	const bundle = generateTransformerResult([
 		{
 			entry: true,
 			fileName: "index.ts",
@@ -271,8 +271,8 @@ test("Converts require calls wrapped in non-statically analyzable ElementAccessE
 	);
 });
 
-test("Converts default imports from modules that has none into namespace imports. #1", async t => {
-	const bundle = await generateTransformerResult([
+test("Converts default imports from modules that has none into namespace imports. #1", t => {
+	const bundle = generateTransformerResult([
 		{
 			entry: true,
 			fileName: "index.ts",
@@ -297,8 +297,8 @@ test("Converts default imports from modules that has none into namespace imports
 	);
 });
 
-test("Converts require calls wrapped in PropertyAccessExpressions to NamedImportBindings. #1", async t => {
-	const bundle = await generateTransformerResult([
+test("Converts require calls wrapped in PropertyAccessExpressions to NamedImportBindings. #1", t => {
+	const bundle = generateTransformerResult([
 		{
 			entry: true,
 			fileName: "index.ts",
@@ -324,8 +324,8 @@ test("Converts require calls wrapped in PropertyAccessExpressions to NamedImport
 	);
 });
 
-test("Converts require calls wrapped in PropertyAccessExpressions to NamedImportBindings. #2", async t => {
-	const bundle = await generateTransformerResult([
+test("Converts require calls wrapped in PropertyAccessExpressions to NamedImportBindings. #2", t => {
+	const bundle = generateTransformerResult([
 		{
 			entry: true,
 			fileName: "index.ts",
@@ -351,8 +351,8 @@ test("Converts require calls wrapped in PropertyAccessExpressions to NamedImport
 	);
 });
 
-test("Converts require calls wrapped in PropertyAccessExpressions to NamedImportBindings. #3", async t => {
-	const bundle = await generateTransformerResult([
+test("Converts require calls wrapped in PropertyAccessExpressions to NamedImportBindings. #3", t => {
+	const bundle = generateTransformerResult([
 		{
 			entry: true,
 			fileName: "index.ts",
@@ -378,8 +378,8 @@ test("Converts require calls wrapped in PropertyAccessExpressions to NamedImport
 	);
 });
 
-test("Converts require calls wrapped in PropertyAccessExpressions to NamedImportBindings. #4", async t => {
-	const bundle = await generateTransformerResult([
+test("Converts require calls wrapped in PropertyAccessExpressions to NamedImportBindings. #4", t => {
+	const bundle = generateTransformerResult([
 		{
 			entry: true,
 			fileName: "index.ts",
@@ -405,8 +405,8 @@ test("Converts require calls wrapped in PropertyAccessExpressions to NamedImport
 	);
 });
 
-test("Can handle immediately-invoked require calls. #1", async t => {
-	const bundle = await generateTransformerResult(`
+test("Can handle immediately-invoked require calls. #1", t => {
+	const bundle = generateTransformerResult(`
 		const foo = require('foo')("bar");
 	`);
 	const [file] = bundle;
@@ -419,8 +419,8 @@ test("Can handle immediately-invoked require calls. #1", async t => {
 	);
 });
 
-test("Can handle immediately-invoked require calls. #2", async t => {
-	const bundle = await generateTransformerResult([
+test("Can handle immediately-invoked require calls. #2", t => {
+	const bundle = generateTransformerResult([
 		{
 			entry: true,
 			fileName: "index.ts",
@@ -446,8 +446,8 @@ test("Can handle immediately-invoked require calls. #2", async t => {
 	);
 });
 
-test("Can handle immediately-invoked require calls. #3", async t => {
-	const bundle = await generateTransformerResult([
+test("Can handle immediately-invoked require calls. #3", t => {
+	const bundle = generateTransformerResult([
 		{
 			entry: true,
 			fileName: "index.ts",
@@ -473,8 +473,8 @@ test("Can handle immediately-invoked require calls. #3", async t => {
 	);
 });
 
-test("Can handle immediately-invoked require calls. #4", async t => {
-	const bundle = await generateTransformerResult([
+test("Can handle immediately-invoked require calls. #4", t => {
+	const bundle = generateTransformerResult([
 		{
 			entry: true,
 			fileName: "index.ts",
@@ -502,8 +502,8 @@ test("Can handle immediately-invoked require calls. #4", async t => {
 	);
 });
 
-test("Converts Identifiers to default imports. #1", async t => {
-	const bundle = await generateTransformerResult(`
+test("Converts Identifiers to default imports. #1", t => {
+	const bundle = generateTransformerResult(`
 		const foo = require("foo");
 	`);
 	const [file] = bundle;
@@ -515,8 +515,8 @@ test("Converts Identifiers to default imports. #1", async t => {
 	);
 });
 
-test("Handles multiple require() calls inside one VariableStatement. #1", async t => {
-	const bundle = await generateTransformerResult(`
+test("Handles multiple require() calls inside one VariableStatement. #1", t => {
+	const bundle = generateTransformerResult(`
 		const foo = require("foo"), bar = require("bar");
 	`);
 	const [file] = bundle;
@@ -529,8 +529,8 @@ test("Handles multiple require() calls inside one VariableStatement. #1", async 
 	);
 });
 
-test("Handles multiple require() calls inside one VariableStatement mixed with other content. #1", async t => {
-	const bundle = await generateTransformerResult(`
+test("Handles multiple require() calls inside one VariableStatement mixed with other content. #1", t => {
+	const bundle = generateTransformerResult(`
 		const foo = require("foo"), bar = require("bar"), baz = 2;
 	`);
 	const [file] = bundle;
@@ -545,8 +545,8 @@ test("Handles multiple require() calls inside one VariableStatement mixed with o
 	);
 });
 
-test("Places imports in top of the SourceFile in the order they were parsed in from top to bottom. #1", async t => {
-	const bundle = await generateTransformerResult(`
+test("Places imports in top of the SourceFile in the order they were parsed in from top to bottom. #1", t => {
+	const bundle = generateTransformerResult(`
 		const foo = 2;
 		const bar = require("bar");
 	`);
@@ -561,8 +561,8 @@ test("Places imports in top of the SourceFile in the order they were parsed in f
 	);
 });
 
-test("Takes deep require() calls and places them in top of the file. #1", async t => {
-	const bundle = await generateTransformerResult(`
+test("Takes deep require() calls and places them in top of the file. #1", t => {
+	const bundle = generateTransformerResult(`
 		(async () => {
 			const foo = require("bar");
 		})();
@@ -577,8 +577,8 @@ test("Takes deep require() calls and places them in top of the file. #1", async 
 	);
 });
 
-test("Handles anonymous require calls. #1", async t => {
-	const bundle = await generateTransformerResult(`
+test("Handles anonymous require calls. #1", t => {
+	const bundle = generateTransformerResult(`
 		myFunction(require("foo"));
 	`);
 	const [file] = bundle;
@@ -592,8 +592,8 @@ test("Handles anonymous require calls. #1", async t => {
 	);
 });
 
-test("Handles anonymous require calls. #2", async t => {
-	const bundle = await generateTransformerResult(`
+test("Handles anonymous require calls. #2", t => {
+	const bundle = generateTransformerResult(`
 		myFunction(require("foo").bar);
 	`);
 	const [file] = bundle;
@@ -607,8 +607,8 @@ test("Handles anonymous require calls. #2", async t => {
 	);
 });
 
-test("Handles anonymous require calls. #3", async t => {
-	const bundle = await generateTransformerResult(`
+test("Handles anonymous require calls. #3", t => {
+	const bundle = generateTransformerResult(`
 		myFunction(require("foo")["bar"]);
 	`);
 	const [file] = bundle;
@@ -622,8 +622,8 @@ test("Handles anonymous require calls. #3", async t => {
 	);
 });
 
-test("Handles anonymous require calls. #4", async t => {
-	const bundle = await generateTransformerResult(`
+test("Handles anonymous require calls. #4", t => {
+	const bundle = generateTransformerResult(`
 		require("foo");
 	`);
 	const [file] = bundle;
@@ -636,8 +636,8 @@ test("Handles anonymous require calls. #4", async t => {
 	);
 });
 
-test("Handles anonymous require calls. #5", async t => {
-	const bundle = await generateTransformerResult(`
+test("Handles anonymous require calls. #5", t => {
+	const bundle = generateTransformerResult(`
 		require('./foo')({foo: "bar"});
 	`);
 	const [file] = bundle;
@@ -651,8 +651,8 @@ test("Handles anonymous require calls. #5", async t => {
 	);
 });
 
-test("Handles anonymous require calls. #6", async t => {
-	const bundle = await generateTransformerResult([
+test("Handles anonymous require calls. #6", t => {
+	const bundle = generateTransformerResult([
 		{
 			entry: true,
 			fileName: "index.ts",
@@ -679,8 +679,8 @@ test("Handles anonymous require calls. #6", async t => {
 	);
 });
 
-test("Handles anonymous require calls. #7", async t => {
-	const bundle = await generateTransformerResult([
+test("Handles anonymous require calls. #7", t => {
+	const bundle = generateTransformerResult([
 		{
 			entry: true,
 			fileName: "index.ts",
@@ -707,8 +707,8 @@ test("Handles anonymous require calls. #7", async t => {
 	);
 });
 
-test("Deconflicts named imports for anonymous require calls. #1", async t => {
-	const bundle = await generateTransformerResult(`
+test("Deconflicts named imports for anonymous require calls. #1", t => {
+	const bundle = generateTransformerResult(`
 		const foo = 2;
 		myFunction(require("foo"));
 	`);
@@ -724,8 +724,8 @@ test("Deconflicts named imports for anonymous require calls. #1", async t => {
 	);
 });
 
-test("Deconflicts named imports for anonymous require calls. #2", async t => {
-	const bundle = await generateTransformerResult(`
+test("Deconflicts named imports for anonymous require calls. #2", t => {
+	const bundle = generateTransformerResult(`
 		const bar = 2;
 		myFunction(require("foo").bar);
 	`);
@@ -741,8 +741,8 @@ test("Deconflicts named imports for anonymous require calls. #2", async t => {
 	);
 });
 
-test("Deconflicts named imports for anonymous require calls. #3", async t => {
-	const bundle = await generateTransformerResult(`
+test("Deconflicts named imports for anonymous require calls. #3", t => {
+	const bundle = generateTransformerResult(`
 		const bar = 2;
 		myFunction(require("foo")["bar"]);
 	`);
@@ -758,8 +758,8 @@ test("Deconflicts named imports for anonymous require calls. #3", async t => {
 	);
 });
 
-test("Deconflicts named imports for anonymous require calls. #4", async t => {
-	const bundle = await generateTransformerResult([
+test("Deconflicts named imports for anonymous require calls. #4", t => {
+	const bundle = generateTransformerResult([
 		{
 			entry: true,
 			fileName: "index.ts",
@@ -786,8 +786,8 @@ test("Deconflicts named imports for anonymous require calls. #4", async t => {
 	);
 });
 
-test("Won't use reserved identifiers as generated names for import bindings. #1", async t => {
-	const bundle = await generateTransformerResult(`
+test("Won't use reserved identifiers as generated names for import bindings. #1", t => {
+	const bundle = generateTransformerResult(`
 		require("export")("foo");
 	`);
 	const [file] = bundle;
@@ -801,8 +801,8 @@ test("Won't use reserved identifiers as generated names for import bindings. #1"
 	);
 });
 
-test("Won't generate NamedImports when the module that is being imported from has none. #1", async t => {
-	const bundle = await generateTransformerResult([
+test("Won't generate NamedImports when the module that is being imported from has none. #1", t => {
+	const bundle = generateTransformerResult([
 		{
 			entry: true,
 			fileName: "index.ts",
@@ -826,8 +826,8 @@ test("Won't generate NamedImports when the module that is being imported from ha
 	);
 });
 
-test("Won't generate NamedImports when the module that is being imported from has none. #2", async t => {
-	const bundle = await generateTransformerResult(`
+test("Won't generate NamedImports when the module that is being imported from has none. #2", t => {
+	const bundle = generateTransformerResult(`
 		require('./foo').bar({foo: "bar"});
 	`);
 	const [file] = bundle;
@@ -841,8 +841,8 @@ test("Won't generate NamedImports when the module that is being imported from ha
 	);
 });
 
-test("Won't generate NamedImports when the module that is being imported from has none. #3", async t => {
-	const bundle = await generateTransformerResult(`
+test("Won't generate NamedImports when the module that is being imported from has none. #3", t => {
+	const bundle = generateTransformerResult(`
 		const foo = require('foo').bar("bar");
 		const bar = 2;
 	`);
@@ -858,8 +858,8 @@ test("Won't generate NamedImports when the module that is being imported from ha
 	);
 });
 
-test("Won't generate NamedImports when the module that is being imported from has none. #4", async t => {
-	const bundle = await generateTransformerResult(`
+test("Won't generate NamedImports when the module that is being imported from has none. #4", t => {
+	const bundle = generateTransformerResult(`
 		const foo = 2;
 		const {foo: {bar: baz}} = require("foo");
 	`);
@@ -875,8 +875,8 @@ test("Won't generate NamedImports when the module that is being imported from ha
 	);
 });
 
-test("Won't generate NamedImports when the module that is being imported from has none. #5", async t => {
-	const bundle = await generateTransformerResult(`
+test("Won't generate NamedImports when the module that is being imported from has none. #5", t => {
+	const bundle = generateTransformerResult(`
 		const foo = require('foo').bar("bar");
 	`);
 	const [file] = bundle;
@@ -889,8 +889,8 @@ test("Won't generate NamedImports when the module that is being imported from ha
 	);
 });
 
-test("Won't generate NamedImports when the module that is being imported from has none. #6", async t => {
-	const bundle = await generateTransformerResult(`
+test("Won't generate NamedImports when the module that is being imported from has none. #6", t => {
+	const bundle = generateTransformerResult(`
 		const {foo} = (require("./foo").BAR);
 	`);
 	const [file] = bundle;
@@ -903,8 +903,8 @@ test("Won't generate NamedImports when the module that is being imported from ha
 	);
 });
 
-test("Won't generate NamedImports when the module that is being imported from has none. #7", async t => {
-	const bundle = await generateTransformerResult(`
+test("Won't generate NamedImports when the module that is being imported from has none. #7", t => {
+	const bundle = generateTransformerResult(`
 		const bar = require('./foo').bar("bar");
 	`);
 	const [file] = bundle;
@@ -917,8 +917,8 @@ test("Won't generate NamedImports when the module that is being imported from ha
 	);
 });
 
-test("Won't generate NamedImports when the module that is being imported from has none. #8", async t => {
-	const bundle = await generateTransformerResult(`
+test("Won't generate NamedImports when the module that is being imported from has none. #8", t => {
+	const bundle = generateTransformerResult(`
 		const foo = require("./foo")[BAR];
 	`);
 	const [file] = bundle;
@@ -931,8 +931,8 @@ test("Won't generate NamedImports when the module that is being imported from ha
 	);
 });
 
-test("Won't generate NamedImports when the module that is being imported from has none. #9", async t => {
-	const bundle = await generateTransformerResult(`
+test("Won't generate NamedImports when the module that is being imported from has none. #9", t => {
+	const bundle = generateTransformerResult(`
 		const {foo} = require("./foo")[BAR];
 	`);
 	const [file] = bundle;
@@ -945,8 +945,8 @@ test("Won't generate NamedImports when the module that is being imported from ha
 	);
 });
 
-test("Won't generate NamedImports when the module that is being imported from has none. #10", async t => {
-	const bundle = await generateTransformerResult(`
+test("Won't generate NamedImports when the module that is being imported from has none. #10", t => {
+	const bundle = generateTransformerResult(`
 		const {foo: {bar: baz}} = require("./foo");
 	`);
 	const [file] = bundle;
@@ -960,8 +960,8 @@ test("Won't generate NamedImports when the module that is being imported from ha
 	);
 });
 
-test("Won't generate NamedImports when the module that is being imported from has none. #11", async t => {
-	const bundle = await generateTransformerResult(`
+test("Won't generate NamedImports when the module that is being imported from has none. #11", t => {
+	const bundle = generateTransformerResult(`
 		const {readFileSync: _foo} = require("./foo");`);
 	const [file] = bundle;
 
@@ -974,8 +974,8 @@ test("Won't generate NamedImports when the module that is being imported from ha
 	);
 });
 
-test("Can import named bindings from built in Node modules. #1", async t => {
-	const bundle = await generateTransformerResult(`
+test("Can import named bindings from built in Node modules. #1", t => {
+	const bundle = generateTransformerResult(`
 		const {join} = require("path");`);
 	const [file] = bundle;
 
@@ -987,8 +987,8 @@ test("Can import named bindings from built in Node modules. #1", async t => {
 	);
 });
 
-test("Won't duplicate imports of the same module without an ImportClause. #1", async t => {
-	const bundle = await generateTransformerResult(`
+test("Won't duplicate imports of the same module without an ImportClause. #1", t => {
+	const bundle = generateTransformerResult(`
 		import "foo";
 		require("foo");
 		`);
@@ -1002,8 +1002,8 @@ test("Won't duplicate imports of the same module without an ImportClause. #1", a
 	);
 });
 
-test("Won't duplicate imports of the same module without an ImportClause. #2", async t => {
-	const bundle = await generateTransformerResult(`
+test("Won't duplicate imports of the same module without an ImportClause. #2", t => {
+	const bundle = generateTransformerResult(`
 		require("foo");
 		require("foo");
 		`);
@@ -1017,8 +1017,8 @@ test("Won't duplicate imports of the same module without an ImportClause. #2", a
 	);
 });
 
-test("Won't duplicate imports of the same default export. #1", async t => {
-	const bundle = await generateTransformerResult(`
+test("Won't duplicate imports of the same default export. #1", t => {
+	const bundle = generateTransformerResult(`
 		myFunction(require("foo"));
 		myOtherFunction(require("foo"));
 		`);
@@ -1034,8 +1034,8 @@ test("Won't duplicate imports of the same default export. #1", async t => {
 	);
 });
 
-test("Won't duplicate imports of the same default export. #2", async t => {
-	const bundle = await generateTransformerResult(`
+test("Won't duplicate imports of the same default export. #2", t => {
+	const bundle = generateTransformerResult(`
 		const foo = require("foo");
 		const bar = require("foo");
 		`);
@@ -1050,8 +1050,8 @@ test("Won't duplicate imports of the same default export. #2", async t => {
 	);
 });
 
-test("Won't duplicate imports of the same default export. #3", async t => {
-	const bundle = await generateTransformerResult(`
+test("Won't duplicate imports of the same default export. #3", t => {
+	const bundle = generateTransformerResult(`
 		const foo = require("foo").foo;
 		const bar = require("foo").bar;
 		`);
@@ -1067,8 +1067,8 @@ test("Won't duplicate imports of the same default export. #3", async t => {
 	);
 });
 
-test("Won't duplicate imports of the same Namespace. #1", async t => {
-	const bundle = await generateTransformerResult([
+test("Won't duplicate imports of the same Namespace. #1", t => {
+	const bundle = generateTransformerResult([
 		{
 			entry: true,
 			fileName: "index.ts",
@@ -1095,8 +1095,8 @@ test("Won't duplicate imports of the same Namespace. #1", async t => {
 	);
 });
 
-test("Won't duplicate imports of the same Namespace. #2", async t => {
-	const bundle = await generateTransformerResult([
+test("Won't duplicate imports of the same Namespace. #2", t => {
+	const bundle = generateTransformerResult([
 		{
 			entry: true,
 			fileName: "index.ts",
@@ -1124,8 +1124,8 @@ test("Won't duplicate imports of the same Namespace. #2", async t => {
 	);
 });
 
-test("Won't duplicate imports of the same Named import. #1", async t => {
-	const bundle = await generateTransformerResult([
+test("Won't duplicate imports of the same Named import. #1", t => {
+	const bundle = generateTransformerResult([
 		{
 			entry: true,
 			fileName: "index.ts",
