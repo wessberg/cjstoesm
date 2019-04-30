@@ -6,7 +6,7 @@
 
 <!-- SHADOW_SECTION_DESCRIPTION_SHORT_START -->
 
-> A Custom Transformer for Typescript that transforms CommonJS to tree-shakeable ES Modules
+> A Custom Transformer for Typescript that transforms Node-style CommonJS to tree-shakeable ES Modules
 
 <!-- SHADOW_SECTION_DESCRIPTION_SHORT_END -->
 
@@ -26,6 +26,8 @@
 
 ## Description
 
+<!-- SHADOW_SECTION_DESCRIPTION_LONG_END -->
+
 This is a [Custom Transformer](https://github.com/Microsoft/TypeScript/pull/13940) for Typescript that converts Node-style [CommonJS modules](https://requirejs.org/docs/commonjs.html) into treeshakeable [ES Modules](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import).
 This allows you to not only bundle CommonJS modules for the browser, but also to bundle them in modern tools such as [Rollup](https://rollupjs.org/).
 
@@ -43,14 +45,14 @@ For example, here's how this Custom Transformer may rewrite a CommonJS module:
 **Input**
 
 ```typescript
-exports.foo = function bar () {}
-````
+exports.foo = function bar() {};
+```
 
 **Output**
 
 ```typescript
-export function bar () {}
-````
+export function bar() {}
+```
 
 Here's another example:
 
@@ -58,24 +60,24 @@ Here's another example:
 
 ```typescript
 module.exports = {
-	foo () {
+	foo() {
 		return 2 + 2;
 	},
 	bar: 3,
 	baz: new RegExp("")
-}
-````
+};
+```
 
 **Output**
 
 ```typescript
-export function foo () {
+export function foo() {
 	return 2 + 2;
 }
 export const bar = 3;
 export const baz = new RegExp("");
 export default {foo, bar, baz};
-````
+```
 
 The same goes for `require(...)` calls:
 
@@ -88,39 +90,41 @@ const {foo: bar} = require("./my-module");
 **Output:**
 
 ```typescript
-import {foo as bar} from "./my-module"
-``` 
+import {foo as bar} from "./my-module";
+```
 
 And for complex require calls such as:
 
 **Input:**
 
 ```typescript
-const {foo: {bar: baz}} = require("./my-module").something("bar");
+const {
+	foo: {bar: baz}
+} = require("./my-module").something("bar");
 ```
 
 **Output:**
 
 ```typescript
-import {something} from "./my-module"
-const {foo: {bar: baz}} = {something}.something("bar");
+import {something} from "./my-module";
+const {
+	foo: {bar: baz}
+} = {something}.something("bar");
 ```
 
 As you can see, this transformer will attempt to produce code that generates as granular imports and exports as possible.
-
-<!-- SHADOW_SECTION_DESCRIPTION_LONG_END -->
 
 <!-- SHADOW_SECTION_FEATURES_START -->
 
 ### Features
 
+<!-- SHADOW_SECTION_FEATURES_END -->
+
 - Transformation of CommonJS to ESM
 - Tree-shaking friendly
 - Clean, idiomatic output
 - No wrappers
-- Low-level implementation that can be used as the foundation for other tools such as Loaders, Plugins, CLIs, and Linters. 
-
-<!-- SHADOW_SECTION_FEATURES_END -->
+- Low-level implementation that can be used as the foundation for other tools such as Loaders, Plugins, CLIs, and Linters.
 
 <!-- SHADOW_SECTION_FEATURE_IMAGE_START -->
 
@@ -137,11 +141,20 @@ As you can see, this transformer will attempt to produce code that generates as 
   - [NPM](#npm)
   - [Yarn](#yarn)
 - [Usage](#usage)
+  - [Usage with TypeScript's Compiler APIs](#usage-with-typescripts-compiler-apis)
+  - [Usage with Rollup](#usage-with-rollup)
+    - [Usage with rollup-plugin-ts](#usage-with-rollup-plugin-ts)
+    - [Usage with rollup-plugin-typescript2](#usage-with-rollup-plugin-typescript2)
+  - [Usage with Webpack](#usage-with-webpack)
+    - [Usage with awesome-typescript-loader](#usage-with-awesome-typescript-loader)
+    - [Usage with ts-loader](#usage-with-ts-loader)
+- [Options](#options)
 - [Contributing](#contributing)
 - [Maintainers](#maintainers)
 - [Backers](#backers)
   - [Patreon](#patreon)
 - [FAQ](#faq)
+  - [Is conditinal require(...) syntax converted into dynamic imports?](#is-conditinal-require-syntax-converted-into-dynamic-imports)
 - [License](#license)
 
 <!-- SHADOW_SECTION_TOC_END -->
@@ -167,6 +180,8 @@ $ yarn add @wessberg/cjs-to-esm-transformer
 <!-- SHADOW_SECTION_USAGE_START -->
 
 ## Usage
+
+<!-- SHADOW_SECTION_USAGE_END -->
 
 Since this is a Custom Transformer, it can be used practically anywhere you use TypeScript.
 
@@ -201,10 +216,7 @@ import {cjsToEsmTransformerFactory} from "@wessberg/cjs-to-esm-transformer";
 
 transpileModule(`const {join} = require("path");`, {
 	transformers: {
-		before: [
-			cjsToEsmTransformerFactory(),
-			someOtherTransformerFactory(),
-		],
+		before: [cjsToEsmTransformerFactory(), someOtherTransformerFactory()],
 		after: [
 			// ...
 		],
@@ -215,7 +227,7 @@ transpileModule(`const {join} = require("path");`, {
 	compilerOptions: {
 		module: ModuleKind.ESNext
 	}
-})
+});
 ```
 
 You can also use Custom Transformers with entire Typescript _Programs_:
@@ -247,17 +259,15 @@ import ts from "@wessberg/rollup-plugin-ts";
 import {cjsToEsm} from "@wessberg/cjs-to-esm-transformer";
 
 export default {
-  input: "...",
-  output: [
-    /* ... */
-  ],
-  plugins: [
-    ts({
-      transformers: [
-      	cjsToEsm()
-      	]
-    })
-  ]
+	input: "...",
+	output: [
+		/* ... */
+	],
+	plugins: [
+		ts({
+			transformers: [cjsToEsm()]
+		})
+	]
 };
 ```
 
@@ -268,17 +278,15 @@ import ts from "rollup-plugin-typescript2";
 import {cjsToEsm} from "@wessberg/cjs-to-esm-transformer";
 
 export default {
-  input: "...",
-  output: [
-    /* ... */
-  ],
-  plugins: [
-    ts({
-      transformers: [
-      	() => cjsToEsm()
-      ]
-    })
-  ]
+	input: "...",
+	output: [
+		/* ... */
+	],
+	plugins: [
+		ts({
+			transformers: [() => cjsToEsm()]
+		})
+	]
 };
 ```
 
@@ -294,21 +302,21 @@ There are two popular TypeScript loaders for Webpack that support Custom Transfo
 ```typescript
 import {cjsToEsm} from "@wessberg/cjs-to-esm-transformer";
 const config = {
-    // ...
-    module: {
-        rules: [
-            {
-            		// Match .mjs, .js, .jsx, and .tsx files
-                test: /(\.mjs)|(\.[jt]sx?)$/,
-                loader: "awesome-typescript-loader",
-                options: {
-                    // ...
-                    getCustomTransformers: () => cjsToEsm()
-                }
-            }
-        ]
-    }
-    // ...
+	// ...
+	module: {
+		rules: [
+			{
+				// Match .mjs, .js, .jsx, and .tsx files
+				test: /(\.mjs)|(\.[jt]sx?)$/,
+				loader: "awesome-typescript-loader",
+				options: {
+					// ...
+					getCustomTransformers: () => cjsToEsm()
+				}
+			}
+		]
+	}
+	// ...
 };
 ```
 
@@ -317,35 +325,33 @@ const config = {
 ```typescript
 import {cjsToEsm} from "@wessberg/cjs-to-esm-transformer";
 const config = {
-    // ...
-    module: {
-            rules: [
-                {
-                		// Match .mjs, .js, .jsx, and .tsx files
-                    test: /(\.mjs)|(\.[jt]sx?)$/,
-                    loader: "ts-loader",
-                    options: {
-                        // ...
-                        getCustomTransformers: () => cjsToEsm
-                    }
-                }
-            ]
-        }
-    // ...
+	// ...
+	module: {
+		rules: [
+			{
+				// Match .mjs, .js, .jsx, and .tsx files
+				test: /(\.mjs)|(\.[jt]sx?)$/,
+				loader: "ts-loader",
+				options: {
+					// ...
+					getCustomTransformers: () => cjsToEsm
+				}
+			}
+		]
+	}
+	// ...
 };
 ```
-
-<!-- SHADOW_SECTION_USAGE_END -->
 
 ## Options
 
 You can provide options to the `cjsToEsm` Custom Transformer to configure its behavior:
 
-| Option                       | Description                                                                                                                                                   |
-|------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `debug` _(optional)_         | If `true`, errors will be thrown if unexpected or unhandled cases are encountered. Additionally, debugging information will be printed during transpilation.  |
-| `readFile` _(optional)_      | A function that will receive a file name and encoding and must return its string contents if possible, and if not, return `undefined`.                        |
-| `fileExists` _(optional)_    | A function that will receive a file name and must return true if it exists, and false otherwise                                                               |  
+| Option                    | Description                                                                                                                                                  |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `debug` _(optional)_      | If `true`, errors will be thrown if unexpected or unhandled cases are encountered. Additionally, debugging information will be printed during transpilation. |
+| `readFile` _(optional)_   | A function that will receive a file name and encoding and must return its string contents if possible, and if not, return `undefined`.                       |
+| `fileExists` _(optional)_ | A function that will receive a file name and must return true if it exists, and false otherwise                                                              |
 
 <!-- SHADOW_SECTION_CONTRIBUTING_START -->
 
@@ -382,6 +388,26 @@ Do you want to contribute? Awesome! Please follow [these recommendations](./CONT
 ## FAQ
 
 <!-- SHADOW_SECTION_FAQ_END -->
+
+### Is conditinal require(...) syntax converted into dynamic imports?
+
+No. For the input:
+
+```typescript
+const result = true ? require("./foo") : require("./bar");
+```
+
+The following may be the output, depending on the internal structure of the modules referenced by the `require` calls:
+
+```typescript
+import foo from "./foo";
+import bar from "./bar";
+
+const result = true ? foo : bar;
+```
+
+CommonJS `require()` syntax are _Expressions_, whereas ESM `import/export` syntax are _Declarations_, and to achieve the same expressiveness with ESM, dynamic imports are required.
+However, these return `Promises` and as such cannot be transformed equivalently.
 
 <!-- SHADOW_SECTION_LICENSE_START -->
 
