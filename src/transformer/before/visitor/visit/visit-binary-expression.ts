@@ -1,34 +1,4 @@
-import {
-	BinaryExpression,
-	createExportAssignment,
-	createExportDeclaration,
-	createExportSpecifier,
-	createFunctionDeclaration,
-	createIdentifier,
-	createModifier,
-	createNamedExports,
-	createObjectLiteral,
-	createPropertyAccess,
-	createPropertyAssignment,
-	createShorthandPropertyAssignment,
-	createVariableDeclaration,
-	createVariableDeclarationList,
-	createVariableStatement,
-	isGetAccessorDeclaration,
-	isIdentifier,
-	isLiteralExpression,
-	isMethodDeclaration,
-	isObjectLiteralExpression,
-	isPropertyAssignment,
-	isSetAccessorDeclaration,
-	isShorthandPropertyAssignment,
-	Node,
-	NodeFlags,
-	ObjectLiteralElementLike,
-	Statement,
-	SyntaxKind,
-	VisitResult
-} from "typescript";
+import {BinaryExpression, createExportAssignment, createExportDeclaration, createExportSpecifier, createFunctionDeclaration, createIdentifier, createModifier, createNamedExports, createObjectLiteral, createPropertyAccess, createPropertyAssignment, createShorthandPropertyAssignment, createStringLiteral, createVariableDeclaration, createVariableDeclarationList, createVariableStatement, isGetAccessorDeclaration, isIdentifier, isLiteralExpression, isMethodDeclaration, isObjectLiteralExpression, isPropertyAssignment, isSetAccessorDeclaration, isShorthandPropertyAssignment, Node, NodeFlags, ObjectLiteralElementLike, Statement, SyntaxKind, VisitResult} from "typescript";
 import {BeforeVisitorOptions} from "../before-visitor-options";
 import {getExportsData} from "../../../util/get-exports-data";
 import {walkThroughFillerNodes} from "../../../util/walk-through-filler-nodes";
@@ -36,13 +6,15 @@ import {isNamedDeclaration} from "../../../util/is-named-declaration";
 import {ensureNodeHasExportModifier} from "../../../util/ensure-node-has-export-modifier";
 import {nodeContainsSuper} from "../../../util/node-contains-super";
 import {addExportModifier} from "../../../util/add-export-modifier";
+import {isRequireCall} from "../../../util/is-require-call";
+import {getModuleExportsFromRequireDataInContext} from "../../../util/get-module-exports-from-require-data-in-context";
 
 /**
  * Visits the given BinaryExpression
  * @param {BeforeVisitorOptions<BinaryExpression>} options
  * @returns {VisitResult<BinaryExpression>}
  */
-export function visitBinaryExpression({node, context}: BeforeVisitorOptions<BinaryExpression>): VisitResult<Node> {
+export function visitBinaryExpression ({node, sourceFile, context}: BeforeVisitorOptions<BinaryExpression>): VisitResult<Node> {
 	// Check if the left-hand side contains exports. For example: 'exports = ...' or 'exports.foo = 1' or event 'module.exports = 1'
 	const exportsData = getExportsData(node.left);
 	const right = walkThroughFillerNodes(node.right);
@@ -67,7 +39,7 @@ export function visitBinaryExpression({node, context}: BeforeVisitorOptions<Bina
 				}
 
 				const statements: Statement[] = [];
-				let moduleExportsIdentifierName: string | undefined;
+				let moduleExportsIdentifierName: string|undefined;
 				const elements: ObjectLiteralElementLike[] = [];
 
 				for (const property of right.properties) {
@@ -77,8 +49,8 @@ export function visitBinaryExpression({node, context}: BeforeVisitorOptions<Bina
 							: isLiteralExpression(property.name) || isIdentifier(property.name)
 							? property.name.text
 							: isLiteralExpression(property.name.expression)
-							? property.name.expression.text
-							: undefined;
+								? property.name.expression.text
+								: undefined;
 
 					// If no property name could be decided, or if the local is already exported, or if it is a setter, skip this property
 					if (propertyName == null || isSetAccessorDeclaration(property) || isGetAccessorDeclaration(property) || context.isLocalExported(propertyName)) {
@@ -186,11 +158,63 @@ export function visitBinaryExpression({node, context}: BeforeVisitorOptions<Bina
 
 			// Convert it into an ExportAssignment instead if possible
 			else {
-				if (!context.isDefaultExported) {
-					context.markDefaultAsExported();
-					context.addTrailingStatements(createExportAssignment(undefined, undefined, false, node.right));
+				// Check if the rightvalue represents a require(...) call.
+				const requireData = isRequireCall(node.right, sourceFile, context);
+
+				// If it doesn't, export the right side
+				if (!requireData.match) {
+					if (!context.isDefaultExported) {
+						context.markDefaultAsExported();
+						context.addTrailingStatements(createExportAssignment(undefined, undefined, false, node.right));
+					}
+					return undefined;
 				}
-				return undefined;
+
+				// Otherwise, spread out the things we know about the require call
+				const {moduleSpecifier} = requireData;
+
+				// If no module specifier could be determined, there's nothing we can do
+				if (moduleSpecifier == null) {
+					if (context.debug) {
+						throw new TypeError(`Could not handle re-export from require() call. The module specifier wasn't statically analyzable`);
+					} else {
+						return undefined;
+					}
+				}
+
+				// Otherwise, take the exports from that module
+				else {
+					const moduleExports = getModuleExportsFromRequireDataInContext(requireData, context);
+					// If the module has a default export, or if we know nothing about it,
+					// export the default export from that module
+					if (!context.isDefaultExported && (moduleExports == null || (moduleExports.hasDefaultExport))) {
+						context.markDefaultAsExported();
+						context.addTrailingStatements(createExportDeclaration(
+							undefined,
+							undefined,
+							createNamedExports([
+								createExportSpecifier(
+									undefined,
+									"default"
+								)
+							]),
+							createStringLiteral(moduleSpecifier)
+						));
+						return undefined;
+					}
+
+					// Otherwise, export the entire module (e.g. all named exports)
+					else {
+						context.addTrailingStatements(createExportDeclaration(
+							undefined,
+							undefined,
+							undefined,
+							createStringLiteral(moduleSpecifier)
+						));
+						return undefined;
+					}
+				}
+
 			}
 		}
 

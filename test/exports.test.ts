@@ -456,3 +456,74 @@ test("Generates named exports for members of an ObjectLiteral that is assigned t
 		`)
 	);
 });
+
+test("Converts 'exports = require(...)' syntax into namespace re-exports if the required module has named exports. #1", t => {
+	const bundle = generateTransformerResult([
+		{
+			entry: true,
+			fileName: "index.ts",
+			text: `
+				module.exports = require("./foo");
+			`
+		},
+		{
+			entry: true,
+			fileName: "foo.ts",
+			text: `
+				exports.readFileSync = () => {};
+			`
+		}
+	]);
+	const [file] = bundle;
+	t.deepEqual(
+		formatCode(file.text),
+		formatCode(`\
+		export * from "./foo";
+		`)
+	);
+});
+
+test("Converts 'exports = require(...)' syntax into a default export if the required module has one. #1", t => {
+	const bundle = generateTransformerResult([
+		{
+			entry: true,
+			fileName: "index.ts",
+			text: `
+				module.exports = require("./foo");
+			`
+		},
+		{
+			entry: true,
+			fileName: "foo.ts",
+			text: `
+				exports = () => {};
+			`
+		}
+	]);
+	const [file] = bundle;
+	t.deepEqual(
+		formatCode(file.text),
+		formatCode(`\
+		export {default} from "./foo";
+		`)
+	);
+});
+
+test("Converts 'exports = require(...)' syntax into a default export if the required module is unknown. #1", t => {
+	const bundle = generateTransformerResult([
+		{
+			entry: true,
+			fileName: "index.ts",
+			text: `
+				module.exports = require("./foo");
+			`
+		}
+	]);
+	const [file] = bundle;
+	t.deepEqual(
+		formatCode(file.text),
+		formatCode(`\
+		export {default} from "./foo";
+		`)
+	);
+});

@@ -1,11 +1,11 @@
 import {SourceFile, TransformerFactory} from "typescript";
 import {BeforeTransformerOptions} from "./before-transformer-options";
-import {beforeTransformerSourceFileStep} from "./before-transformer-source-file-step";
+import {transformSourceFile} from "./transform-source-file";
 
 /**
  * @param {BeforeTransformerOptions} options
  * @return {TransformerFactory<SourceFile>}
  */
 export function beforeTransformer(options: BeforeTransformerOptions): TransformerFactory<SourceFile> {
-	return context => sourceFile => beforeTransformerSourceFileStep(sourceFile, options, context).sourceFile;
+	return context => sourceFile => transformSourceFile(sourceFile, options, context).sourceFile;
 }

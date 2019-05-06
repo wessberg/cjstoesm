@@ -1,7 +1,7 @@
 import {IsRequireCallResult} from "./is-require-call";
 import {ModuleExports} from "../module-exports/module-exports";
 import {BUILT_IN_MODULE_MAP, isBuiltInModule} from "../built-in/built-in-module-map";
-import {beforeTransformerSourceFileStep} from "../before/before-transformer-source-file-step";
+import {transformSourceFile} from "../before/transform-source-file";
 import {BeforeVisitorContext} from "../before/visitor/before-visitor-context";
 import {createSourceFile, ScriptKind, ScriptTarget} from "typescript";
 
@@ -37,7 +37,7 @@ export function getModuleExportsFromRequireDataInContext(data: IsRequireCallResu
 
 		// If that wasn't possible, generate a new SourceFile and parse it
 		if (moduleExports == null && resolvedModuleSpecifierText != null) {
-			moduleExports = beforeTransformerSourceFileStep(
+			moduleExports = transformSourceFile(
 				createSourceFile(resolvedModuleSpecifier, resolvedModuleSpecifierText, ScriptTarget.ESNext, true, ScriptKind.TS),
 				{
 					baseVisitorContext: {

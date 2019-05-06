@@ -33,7 +33,7 @@ export interface BeforeTransformerSourceFileStepResult {
 	exports: ModuleExports;
 }
 
-export function beforeTransformerSourceFileStep(sourceFile: SourceFile, {baseVisitorContext}: BeforeTransformerOptions, context: TransformationContext): BeforeTransformerSourceFileStepResult {
+export function transformSourceFile(sourceFile: SourceFile, {baseVisitorContext}: BeforeTransformerOptions, context: TransformationContext): BeforeTransformerSourceFileStepResult {
 	// Take a fast path of the text of the SourceFile doesn't contain anything that can be transformed
 	if (!baseVisitorContext.onlyExports && !sourceFile.text.includes("require") && !sourceFile.text.includes("exports")) {
 		return {sourceFile, exports: {namedExports: new Set(), hasDefaultExport: false}};
