@@ -483,6 +483,33 @@ test("Converts 'exports = require(...)' syntax into namespace re-exports if the 
 	);
 });
 
+test("Converts 'exports = require(...)()' syntax into namespace import along with a default export if the required module has named exports. #1", t => {
+	const bundle = generateTransformerResult([
+		{
+			entry: true,
+			fileName: "index.ts",
+			text: `
+				module.exports = require("./foo")();
+			`
+		},
+		{
+			entry: true,
+			fileName: "foo.ts",
+			text: `
+				exports.readFileSync = () => {};
+			`
+		}
+	]);
+	const [file] = bundle;
+	t.deepEqual(
+		formatCode(file.text),
+		formatCode(`\
+		import * as foo from "./foo";
+		export default foo();
+		`)
+	);
+});
+
 test("Converts 'exports = require(...)' syntax into a default export if the required module has one. #1", t => {
 	const bundle = generateTransformerResult([
 		{
@@ -524,6 +551,26 @@ test("Converts 'exports = require(...)' syntax into a default export if the requ
 		formatCode(file.text),
 		formatCode(`\
 		export {default} from "./foo";
+		`)
+	);
+});
+
+test("Converts 'exports = require(...)()' syntax into a default export if the required module is unknown. #2", t => {
+	const bundle = generateTransformerResult([
+		{
+			entry: true,
+			fileName: "index.ts",
+			text: `
+				module.exports = require("./foo")();
+			`
+		}
+	]);
+	const [file] = bundle;
+	t.deepEqual(
+		formatCode(file.text),
+		formatCode(`\
+		import foo from "./foo";
+		export default foo();
 		`)
 	);
 });

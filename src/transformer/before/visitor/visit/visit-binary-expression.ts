@@ -8,13 +8,14 @@ import {nodeContainsSuper} from "../../../util/node-contains-super";
 import {addExportModifier} from "../../../util/add-export-modifier";
 import {isRequireCall} from "../../../util/is-require-call";
 import {getModuleExportsFromRequireDataInContext} from "../../../util/get-module-exports-from-require-data-in-context";
+import {isExpression} from "../../../util/is-expression";
 
 /**
  * Visits the given BinaryExpression
  * @param {BeforeVisitorOptions<BinaryExpression>} options
  * @returns {VisitResult<BinaryExpression>}
  */
-export function visitBinaryExpression ({node, sourceFile, context}: BeforeVisitorOptions<BinaryExpression>): VisitResult<Node> {
+export function visitBinaryExpression ({node, sourceFile, context, continuation}: BeforeVisitorOptions<BinaryExpression>): VisitResult<Node> {
 	// Check if the left-hand side contains exports. For example: 'exports = ...' or 'exports.foo = 1' or event 'module.exports = 1'
 	const exportsData = getExportsData(node.left);
 	const right = walkThroughFillerNodes(node.right);
@@ -158,6 +159,7 @@ export function visitBinaryExpression ({node, sourceFile, context}: BeforeVisito
 
 			// Convert it into an ExportAssignment instead if possible
 			else {
+
 				// Check if the rightvalue represents a require(...) call.
 				const requireData = isRequireCall(node.right, sourceFile, context);
 
@@ -165,7 +167,14 @@ export function visitBinaryExpression ({node, sourceFile, context}: BeforeVisito
 				if (!requireData.match) {
 					if (!context.isDefaultExported) {
 						context.markDefaultAsExported();
-						context.addTrailingStatements(createExportAssignment(undefined, undefined, false, node.right));
+						const continuationResult = continuation(node.right);
+						if (continuationResult == null || Array.isArray(continuationResult) || !isExpression(continuationResult)) {
+							return undefined;
+						}
+
+						else {
+							context.addTrailingStatements(createExportAssignment(undefined, undefined, false, continuationResult));
+						}
 					}
 					return undefined;
 				}
