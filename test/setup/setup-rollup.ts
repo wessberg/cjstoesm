@@ -42,14 +42,14 @@ export async function generateRollupBundle(inputFiles: TestFile[] | TestFile, ro
 		throw new ReferenceError(`No entry could be found`);
 	}
 
-	const resolveId = (fileName: string, parent: string | null): string | undefined => {
+	const resolveId = (fileName: string, parent: string | undefined): string | null => {
 		const absolute = isAbsolute(fileName) ? fileName : join(parent == null ? "" : dirname(parent), fileName);
 		for (const ext of ["", ".ts", ".js", ".mjs"]) {
 			const withExtension = `${absolute}${ext}`;
 			const matchedFile = files.find(file => file.fileName === withExtension);
 			if (matchedFile != null) return withExtension;
 		}
-		return undefined;
+		return null;
 	};
 
 	const load = (id: string): string | null => {
