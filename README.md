@@ -45,13 +45,13 @@ For example, here's how this Custom Transformer may rewrite a CommonJS module:
 **Input**
 
 ```typescript
-exports.foo = function bar() {};
+exports.foo = function foo() {};
 ```
 
 **Output**
 
 ```typescript
-export function bar() {}
+export function foo() {}
 ```
 
 Here's another example:
