@@ -1,3 +1,9 @@
+## [0.0.9](https://github.com/wessberg/cjs-to-esm-transformer/compare/v0.0.8...v0.0.9) (2019-07-09)
+
+### Bug Fixes
+
+- **bug:** fixes issues with handling patterns such as 'const foo = module.exports = ...' or 'const foo = exports.bar = ...' ([ef0fe30](https://github.com/wessberg/cjs-to-esm-transformer/commit/ef0fe30))
+
 ## [0.0.8](https://github.com/wessberg/cjs-to-esm-transformer/compare/v0.0.7...v0.0.8) (2019-06-26)
 
 ## [0.0.7](https://github.com/wessberg/cjs-to-esm-transformer/compare/v0.0.6...v0.0.7) (2019-06-21)
