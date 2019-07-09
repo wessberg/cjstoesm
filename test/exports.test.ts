@@ -574,3 +574,123 @@ test("Converts 'exports = require(...)()' syntax into a default export if the re
 		`)
 	);
 });
+
+test("Converts 'const foo = module.exports = ...' syntax into a VariableStatement followed by an ExportAssignment. #1", t => {
+	const bundle = generateTransformerResult([
+		{
+			entry: true,
+			fileName: "index.ts",
+			text: `
+				const iterate = module.exports = {};
+			`
+		}
+	]);
+	const [file] = bundle;
+	t.deepEqual(
+		formatCode(file.text),
+		formatCode(`\
+		const iterate = {};
+		export default iterate;
+		`)
+	);
+});
+
+test("Converts 'const foo = module.exports = ...' syntax into a VariableStatement followed by an ExportAssignment. #2", t => {
+	const bundle = generateTransformerResult([
+		{
+			entry: true,
+			fileName: "index.ts",
+			text: `
+				const iterate = module.exports = function () {};
+			`
+		}
+	]);
+	const [file] = bundle;
+	t.deepEqual(
+		formatCode(file.text),
+		formatCode(`\
+		const iterate = function () {};
+		export default iterate;
+		`)
+	);
+});
+
+test("Converts 'const foo = module.exports = ...' syntax into a VariableStatement followed by an ExportAssignment. #3", t => {
+	const bundle = generateTransformerResult([
+		{
+			entry: true,
+			fileName: "index.ts",
+			text: `
+				const iterate = module.exports = {foo: 1};
+			`
+		}
+	]);
+	const [file] = bundle;
+	t.deepEqual(
+		formatCode(file.text),
+		formatCode(`\
+		const iterate = {foo: 1};
+		export default iterate;
+		`)
+	);
+});
+
+test("Converts 'const foo = exports.foo = ...' syntax into a VariableStatement followed by an ExportDeclaration. #4", t => {
+	const bundle = generateTransformerResult([
+		{
+			entry: true,
+			fileName: "index.ts",
+			text: `
+				const iterate = exports.foo = 1;
+			`
+		}
+	]);
+	const [file] = bundle;
+	t.deepEqual(
+		formatCode(file.text),
+		formatCode(`\
+		const iterate = 1;
+		export {iterate as foo};
+		`)
+	);
+});
+
+test("Converts 'const foo = exports.foo = ...' syntax into a VariableStatement followed by an ExportDeclaration. #5", t => {
+	const bundle = generateTransformerResult([
+		{
+			entry: true,
+			fileName: "index.ts",
+			text: `
+				const foo = exports.foo = function foobarbaz () {};
+			`
+		}
+	]);
+	const [file] = bundle;
+	t.deepEqual(
+		formatCode(file.text),
+		formatCode(`\
+		const foo = function foobarbaz () {};
+		export {foo};
+		`)
+	);
+});
+
+test("Converts 'const foo = exports.foo = ...' syntax into a VariableStatement followed by an ExportDeclaration. #6", t => {
+	const bundle = generateTransformerResult([
+		{
+			entry: true,
+			fileName: "index.ts",
+			text: `
+				const foo = exports.foo = function foobarbaz () {}, bar = 3;
+			`
+		}
+	]);
+	const [file] = bundle;
+	t.deepEqual(
+		formatCode(file.text),
+		formatCode(`\
+		const foo = function foobarbaz () {}, bar = 3;
+		export {foo};
+		`)
+	);
+});

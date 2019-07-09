@@ -1,4 +1,36 @@
-import {BinaryExpression, createExportAssignment, createExportDeclaration, createExportSpecifier, createFunctionDeclaration, createIdentifier, createModifier, createNamedExports, createObjectLiteral, createPropertyAccess, createPropertyAssignment, createShorthandPropertyAssignment, createStringLiteral, createVariableDeclaration, createVariableDeclarationList, createVariableStatement, isGetAccessorDeclaration, isIdentifier, isLiteralExpression, isMethodDeclaration, isObjectLiteralExpression, isPropertyAssignment, isSetAccessorDeclaration, isShorthandPropertyAssignment, Node, NodeFlags, ObjectLiteralElementLike, Statement, SyntaxKind, VisitResult} from "typescript";
+import {
+	BinaryExpression,
+	createExportAssignment,
+	createExportDeclaration,
+	createExportSpecifier,
+	createFunctionDeclaration,
+	createIdentifier,
+	createModifier,
+	createNamedExports,
+	createObjectLiteral,
+	createPropertyAccess,
+	createPropertyAssignment,
+	createShorthandPropertyAssignment,
+	createStringLiteral,
+	createVariableDeclaration,
+	createVariableDeclarationList,
+	createVariableStatement,
+	isGetAccessorDeclaration,
+	isIdentifier,
+	isLiteralExpression,
+	isMethodDeclaration,
+	isObjectLiteralExpression,
+	isPropertyAssignment,
+	isSetAccessorDeclaration,
+	isShorthandPropertyAssignment,
+	isVariableDeclaration,
+	Node,
+	NodeFlags,
+	ObjectLiteralElementLike,
+	Statement,
+	SyntaxKind,
+	VisitResult
+} from "typescript";
 import {BeforeVisitorOptions} from "../before-visitor-options";
 import {getExportsData} from "../../../util/get-exports-data";
 import {walkThroughFillerNodes} from "../../../util/walk-through-filler-nodes";
@@ -9,13 +41,15 @@ import {addExportModifier} from "../../../util/add-export-modifier";
 import {isRequireCall} from "../../../util/is-require-call";
 import {getModuleExportsFromRequireDataInContext} from "../../../util/get-module-exports-from-require-data-in-context";
 import {isExpression} from "../../../util/is-expression";
+import {findNodeUp} from "../../../util/find-node-up";
+import {getLocalsForBindingName} from "../../../util/get-locals-for-binding-name";
 
 /**
  * Visits the given BinaryExpression
  * @param {BeforeVisitorOptions<BinaryExpression>} options
  * @returns {VisitResult<BinaryExpression>}
  */
-export function visitBinaryExpression ({node, sourceFile, context, continuation}: BeforeVisitorOptions<BinaryExpression>): VisitResult<Node> {
+export function visitBinaryExpression({node, sourceFile, context, continuation}: BeforeVisitorOptions<BinaryExpression>): VisitResult<Node> {
 	// Check if the left-hand side contains exports. For example: 'exports = ...' or 'exports.foo = 1' or event 'module.exports = 1'
 	const exportsData = getExportsData(node.left);
 	const right = walkThroughFillerNodes(node.right);
@@ -23,24 +57,39 @@ export function visitBinaryExpression ({node, sourceFile, context, continuation}
 
 	// If it is an assignment
 	if (node.operatorToken.kind === SyntaxKind.EqualsToken) {
+		// Check if this expression is part of a VariableDeclaration.
+		// For example: 'const foo = module.exports = ...'
+		const variableDeclarationParent = findNodeUp(node, isVariableDeclaration);
+		const variableDeclarationLocal =
+			variableDeclarationParent != null ? createIdentifier(getLocalsForBindingName(variableDeclarationParent.name)[0]) : undefined;
+
 		// This is something like for example 'exports = ...', 'module.exports = ...', 'exports.default', or 'module.exports.default'
 		if (exportsData.property == null || exportsData.property === "default") {
 			// Take all individual key-value pairs of that ObjectLiteral
 			// and turn them into named exports if possible.
 			// Also generate a default export of the entire exports object
 			if (isObjectLiteralExpression(right)) {
-				// If it has no properties, create a simple default export declaration
-				if (right.properties.length === 0) {
+				// If it has no properties, or if the literal is exported as part of the right-hand side of the assignment for a VariableDeclaration, create a simple default export declaration
+				if (right.properties.length === 0 || variableDeclarationLocal != null) {
+					const continuationResult = continuation(node.right);
+
+					if (continuationResult == null || Array.isArray(continuationResult) || !isExpression(continuationResult)) {
+						return undefined;
+					}
+
+					const exportedSymbol = variableDeclarationLocal != null ? variableDeclarationLocal : continuationResult;
+
 					// Only generate the default export if the module don't already include a default export
 					if (!context.isDefaultExported) {
 						context.markDefaultAsExported();
-						context.addTrailingStatements(createExportAssignment(undefined, undefined, false, node.right));
+						context.addTrailingStatements(createExportAssignment(undefined, undefined, false, exportedSymbol));
 					}
-					return undefined;
+
+					return variableDeclarationParent != null ? node.right : undefined;
 				}
 
 				const statements: Statement[] = [];
-				let moduleExportsIdentifierName: string|undefined;
+				let moduleExportsIdentifierName: string | undefined;
 				const elements: ObjectLiteralElementLike[] = [];
 
 				for (const property of right.properties) {
@@ -50,11 +99,16 @@ export function visitBinaryExpression ({node, sourceFile, context, continuation}
 							: isLiteralExpression(property.name) || isIdentifier(property.name)
 							? property.name.text
 							: isLiteralExpression(property.name.expression)
-								? property.name.expression.text
-								: undefined;
+							? property.name.expression.text
+							: undefined;
 
 					// If no property name could be decided, or if the local is already exported, or if it is a setter, skip this property
-					if (propertyName == null || isSetAccessorDeclaration(property) || isGetAccessorDeclaration(property) || context.isLocalExported(propertyName)) {
+					if (
+						propertyName == null ||
+						isSetAccessorDeclaration(property) ||
+						isGetAccessorDeclaration(property) ||
+						context.isLocalExported(propertyName)
+					) {
 						elements.push(property);
 						continue;
 					}
@@ -80,7 +134,11 @@ export function visitBinaryExpression ({node, sourceFile, context, continuation}
 							createExportDeclaration(
 								undefined,
 								undefined,
-								createNamedExports([propertyName === property.initializer.text ? createExportSpecifier(undefined, propertyName) : createExportSpecifier(property.initializer.text, propertyName)])
+								createNamedExports([
+									propertyName === property.initializer.text
+										? createExportSpecifier(undefined, propertyName)
+										: createExportSpecifier(property.initializer.text, propertyName)
+								])
 							)
 						);
 					} else if (context.isIdentifierFree(propertyName) && isPropertyAssignment(property) && !nodeContainsSuper(property.initializer)) {
@@ -95,7 +153,12 @@ export function visitBinaryExpression ({node, sourceFile, context, continuation}
 					}
 
 					// If it is a MethodDeclaration that can be safely rewritten to a function, do so
-					else if (context.isIdentifierFree(propertyName) && isMethodDeclaration(property) && isIdentifier(property.name) && !nodeContainsSuper(property)) {
+					else if (
+						context.isIdentifierFree(propertyName) &&
+						isMethodDeclaration(property) &&
+						isIdentifier(property.name) &&
+						!nodeContainsSuper(property)
+					) {
 						elements.push(createShorthandPropertyAssignment(propertyName));
 
 						statements.push(
@@ -124,7 +187,16 @@ export function visitBinaryExpression ({node, sourceFile, context, continuation}
 						statements.push(
 							createVariableStatement(
 								[createModifier(SyntaxKind.ExportKeyword)],
-								createVariableDeclarationList([createVariableDeclaration(propertyName, undefined, createPropertyAccess(createIdentifier(moduleExportsIdentifierName), propertyName))], NodeFlags.Const)
+								createVariableDeclarationList(
+									[
+										createVariableDeclaration(
+											propertyName,
+											undefined,
+											createPropertyAccess(createIdentifier(moduleExportsIdentifierName), propertyName)
+										)
+									],
+									NodeFlags.Const
+								)
 							)
 						);
 					} else {
@@ -137,7 +209,13 @@ export function visitBinaryExpression ({node, sourceFile, context, continuation}
 				if (moduleExportsIdentifierName != null) {
 					// Create a VariableStatement that exports the ObjectLiteral
 					statements.push(
-						createVariableStatement(undefined, createVariableDeclarationList([createVariableDeclaration(moduleExportsIdentifierName, undefined, createObjectLiteral(elements, true))], NodeFlags.Const))
+						createVariableStatement(
+							undefined,
+							createVariableDeclarationList(
+								[createVariableDeclaration(moduleExportsIdentifierName, undefined, createObjectLiteral(elements, true))],
+								NodeFlags.Const
+							)
+						)
 					);
 
 					if (!context.isDefaultExported) {
@@ -149,7 +227,8 @@ export function visitBinaryExpression ({node, sourceFile, context, continuation}
 
 				// Otherwise, we don't need to assign it to a VariableStatement. Instead, we can just provide the ObjectLiteralExpression to the ExportAssignment directly.
 				else if (!context.isDefaultExported) {
-					statements.push(createExportAssignment(undefined, undefined, false, createObjectLiteral(elements, true)));
+					const defaultExportInitializer = createObjectLiteral(elements, true);
+					statements.push(createExportAssignment(undefined, undefined, false, defaultExportInitializer));
 				}
 
 				// Return all of the statements
@@ -159,7 +238,6 @@ export function visitBinaryExpression ({node, sourceFile, context, continuation}
 
 			// Convert it into an ExportAssignment instead if possible
 			else {
-
 				// Check if the rightvalue represents a require(...) call.
 				const requireData = isRequireCall(node.right, sourceFile, context);
 
@@ -170,10 +248,12 @@ export function visitBinaryExpression ({node, sourceFile, context, continuation}
 						const continuationResult = continuation(node.right);
 						if (continuationResult == null || Array.isArray(continuationResult) || !isExpression(continuationResult)) {
 							return undefined;
-						}
+						} else {
+							const replacementNode = variableDeclarationParent != null ? continuationResult : undefined;
+							const exportedSymbol = variableDeclarationLocal != null ? variableDeclarationLocal : continuationResult;
 
-						else {
-							context.addTrailingStatements(createExportAssignment(undefined, undefined, false, continuationResult));
+							context.addTrailingStatements(createExportAssignment(undefined, undefined, false, exportedSymbol));
+							return replacementNode;
 						}
 					}
 					return undefined;
@@ -196,35 +276,51 @@ export function visitBinaryExpression ({node, sourceFile, context, continuation}
 					const moduleExports = getModuleExportsFromRequireDataInContext(requireData, context);
 					// If the module has a default export, or if we know nothing about it,
 					// export the default export from that module
-					if (!context.isDefaultExported && (moduleExports == null || (moduleExports.hasDefaultExport))) {
+					if (!context.isDefaultExported && (moduleExports == null || moduleExports.hasDefaultExport)) {
 						context.markDefaultAsExported();
-						context.addTrailingStatements(createExportDeclaration(
-							undefined,
-							undefined,
-							createNamedExports([
-								createExportSpecifier(
-									undefined,
-									"default"
-								)
-							]),
-							createStringLiteral(moduleSpecifier)
-						));
+						context.addTrailingStatements(
+							createExportDeclaration(
+								undefined,
+								undefined,
+								createNamedExports([createExportSpecifier(undefined, "default")]),
+								createStringLiteral(moduleSpecifier)
+							)
+						);
 						return undefined;
 					}
 
 					// Otherwise, export the entire module (e.g. all named exports)
 					else {
-						context.addTrailingStatements(createExportDeclaration(
-							undefined,
-							undefined,
-							undefined,
-							createStringLiteral(moduleSpecifier)
-						));
+						context.addTrailingStatements(createExportDeclaration(undefined, undefined, undefined, createStringLiteral(moduleSpecifier)));
 						return undefined;
 					}
 				}
-
 			}
+		}
+
+		// If this is part of a VariableDeclaration, such as for 'const foo = exports.bar = ...', it should be translated into:
+		// const foo = ...;
+		// export {foo as bar}
+		else if (variableDeclarationLocal != null) {
+			const local = exportsData.property;
+			const continuationResult = continuation(node.right);
+
+			if (continuationResult == null || Array.isArray(continuationResult) || !isExpression(continuationResult)) {
+				return undefined;
+			}
+
+			context.addTrailingStatements(
+				createExportDeclaration(
+					undefined,
+					undefined,
+					createNamedExports([
+						local === variableDeclarationLocal.text
+							? createExportSpecifier(undefined, createIdentifier(local))
+							: createExportSpecifier(variableDeclarationLocal.text, createIdentifier(local))
+					])
+				)
+			);
+			return continuationResult;
 		}
 
 		// If the right-hand side is an identifier, this can safely be converted into an ExportDeclaration
@@ -237,7 +333,11 @@ export function visitBinaryExpression ({node, sourceFile, context, continuation}
 					createExportDeclaration(
 						undefined,
 						undefined,
-						createNamedExports([local === right.text ? createExportSpecifier(undefined, createIdentifier(local)) : createExportSpecifier(right.text, createIdentifier(local))])
+						createNamedExports([
+							local === right.text
+								? createExportSpecifier(undefined, createIdentifier(local))
+								: createExportSpecifier(right.text, createIdentifier(local))
+						])
 					)
 				);
 			}
@@ -255,7 +355,10 @@ export function visitBinaryExpression ({node, sourceFile, context, continuation}
 			if (!context.isLocalExported(exportsData.property)) {
 				context.markLocalAsExported(exportsData.property);
 				context.addTrailingStatements(
-					createVariableStatement([createModifier(SyntaxKind.ExportKeyword)], createVariableDeclarationList([createVariableDeclaration(exportsData.property, undefined, right)], NodeFlags.Const))
+					createVariableStatement(
+						[createModifier(SyntaxKind.ExportKeyword)],
+						createVariableDeclarationList([createVariableDeclaration(exportsData.property, undefined, right)], NodeFlags.Const)
+					)
 				);
 			}
 			return undefined;
