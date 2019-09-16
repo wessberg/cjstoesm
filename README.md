@@ -366,7 +366,7 @@ Commands:
   transform [options] <input> <outDir>  Transforms CJS to ESM modules based on the input glob
 ```
 
-For example, you can run `cjstoesm transform "**/*.*" dist` to transform all files matched by the glob `**/*.*` and emit them to the folder `dit` from the current working directory.
+For example, you can run `cjstoesm transform "**/*.*" dist` to transform all files matched by the glob `**/*.*` and emit them to the folder `dist` from the current working directory.
 
 ## Options
 
