@@ -1,0 +1,5 @@
+#!/usr/bin/env node
+'use strict';
+
+process.title = 'cjstoesm';
+require("../dist/cli/index.js");

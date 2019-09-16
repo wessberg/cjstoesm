@@ -17,6 +17,7 @@
 		"prebuild": "npm run clean:dist",
 		"build": "npm run rollup",
 		"build:built_in_module_map": "ts-node script/generate-built-in-module-map.ts",
+		"prewatch": "npm run clean:dist",
 		"watch": "npm run rollup -- --watch",
 		"rollup": "rollup -c rollup.config.js",
 		"preversion": "npm run lint && npm run build:built_in_module_map && NODE_ENV=production npm run build",
@@ -34,7 +35,11 @@
 		"custom transformer",
 		"treeshake"
 	],
+	"bin": {
+		"cjstoesm": "bin/cjstoesm"
+	},
 	"files": [
+		"bin/**/*.*",
 		"dist/**/*.*"
 	],
 	"contributors": [
@@ -50,29 +55,34 @@
 	],
 	"license": "MIT",
 	"devDependencies": {
-		"core-js": "3.1.4",
+		"core-js": "3.2.1",
 		"@wessberg/scaffold": "1.0.19",
 		"@wessberg/ts-config": "0.0.41",
-		"@wessberg/rollup-plugin-ts": "1.1.59",
+		"@wessberg/rollup-plugin-ts": "1.1.64",
 		"rollup-plugin-node-resolve": "5.2.0",
-		"rollup": "1.16.7",
-		"rollup-pluginutils": "2.8.1",
-		"ava": "2.2.0",
-		"standard-changelog": "2.0.11",
-		"ts-node": "8.3.0",
-		"tslint": "5.18.0",
+		"rollup": "1.21.4",
+		"rollup-pluginutils": "2.8.2",
+		"ava": "2.4.0",
+		"standard-changelog": "2.0.13",
+		"ts-node": "8.4.1",
+		"tslint": "5.20.0",
 		"prettier": "1.18.2",
 		"pretty-quick": "1.11.1",
-		"husky": "3.0.0",
-		"np": "5.0.3"
+		"husky": "3.0.5",
+		"np": "5.1.0",
+		"typescript": "^3.6.3"
 	},
 	"dependencies": {
-		"@types/node": "12.6.1",
+		"@types/node": "12.7.5",
 		"@types/reserved-words": "^0.1.0",
 		"@types/resolve": "0.0.8",
 		"@wessberg/stringutil": "1.0.18",
+		"chalk": "^2.4.2",
+		"commander": "^3.0.1",
+		"glob": "^7.1.4",
+		"inquirer": "^7.0.0",
 		"reserved-words": "^0.1.2",
-		"resolve": "1.11.1"
+		"resolve": "1.12.0"
 	},
 	"peerDependencies": {
 		"typescript": "^3.x"

@@ -6,7 +6,7 @@
 
 <!-- SHADOW_SECTION_DESCRIPTION_SHORT_START -->
 
-> A Custom Transformer for Typescript that transforms Node-style CommonJS to tree-shakeable ES Modules
+> A CLI and Custom Transformer for Typescript that transforms Node-style CommonJS to tree-shakeable ES Modules
 
 <!-- SHADOW_SECTION_DESCRIPTION_SHORT_END -->
 
@@ -125,6 +125,7 @@ As you can see, this transformer will attempt to produce code that generates as 
 - Clean, idiomatic output
 - No wrappers
 - Low-level implementation that can be used as the foundation for other tools such as Loaders, Plugins, CLIs, and Linters.
+- CLI integration, enabling you to convert a project from CJS to ESM from the command line.
 
 <!-- SHADOW_SECTION_FEATURE_IMAGE_START -->
 
@@ -342,6 +343,29 @@ const config = {
 	// ...
 };
 ```
+
+## CLI
+
+You can also use this library as a CLI to convert your project files from using CommonJS to using ESM.
+This is still considered somewhat experimental. If you have any issues, please submit an issue.
+
+If you install `cjs-to-esm` globally, you'll have `cjstoesm` in your path. If you install it locally, you can run `npx cjstoesm`.
+
+```
+$ cjstoesm --help
+
+Welcome to the CJS to ESM CLI!
+
+Usage: cjstoesm [options] [command]
+
+Options:
+  -h, --help                            output usage information
+
+Commands:
+  transform [options] <input> <outDir>  Transforms CJS to ESM modules based on the input glob
+```
+
+For example, you can run `cjstoesm transform "**/*.*" dist` to transform all files matched by the glob `**/*.*` and emit them to the folder `dit` from the current working directory.
 
 ## Options
 
