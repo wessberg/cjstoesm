@@ -9,6 +9,7 @@ import {
 	isNamespaceImport,
 	isStringLiteralLike,
 	isVariableStatement,
+	Modifier,
 	Node,
 	SourceFile,
 	Statement,
@@ -101,13 +102,16 @@ export function transformSourceFile(
 
 		const getLocalForNamespaceImportFromModule = (moduleSpecifier: string): string | undefined => {
 			const matchingDeclaration = getImportDeclarationWithModuleSpecifier(moduleSpecifier);
-			if (matchingDeclaration == null) return undefined;
+			if (matchingDeclaration == null) {
+				return undefined;
+			}
 			if (
 				matchingDeclaration.importClause == null ||
 				matchingDeclaration.importClause.namedBindings == null ||
 				!isNamespaceImport(matchingDeclaration.importClause.namedBindings)
-			)
+			) {
 				return undefined;
+			}
 			return matchingDeclaration.importClause.namedBindings.name.text;
 		};
 
@@ -122,8 +126,9 @@ export function transformSourceFile(
 				matchingDeclaration.importClause == null ||
 				matchingDeclaration.importClause.namedBindings == null ||
 				!isNamedImports(matchingDeclaration.importClause.namedBindings)
-			)
+			) {
 				return undefined;
+			}
 			for (const element of matchingDeclaration.importClause.namedBindings.elements) {
 				if (element.propertyName != null && element.propertyName.text === propertyName) return element.name.text;
 				else if (element.propertyName == null && element.name.text === propertyName) return element.name.text;
@@ -311,8 +316,8 @@ export function transformSourceFile(
 			}
 		} else if (isExportAssignment(statement)) {
 			moduleExports.hasDefaultExport = true;
-		} else if (statement.modifiers != null && statement.modifiers.some(m => m.kind === SyntaxKind.ExportKeyword)) {
-			if (statement.modifiers.some(m => m.kind === SyntaxKind.DefaultKeyword)) {
+		} else if (statement.modifiers != null && statement.modifiers.some((m: Modifier) => m.kind === SyntaxKind.ExportKeyword)) {
+			if (statement.modifiers.some((m: Modifier) => m.kind === SyntaxKind.DefaultKeyword)) {
 				moduleExports.hasDefaultExport = true;
 			} else if (isVariableStatement(statement)) {
 				for (const declaration of statement.declarationList.declarations) {
