@@ -6,7 +6,7 @@
 
 <!-- SHADOW_SECTION_DESCRIPTION_SHORT_START -->
 
-> A CLI and Custom Transformer for Typescript that transforms Node-style CommonJS to tree-shakeable ES Modules
+> A Custom Transformer for Typescript that transforms Node-style CommonJS to tree-shakeable ES Modules
 
 <!-- SHADOW_SECTION_DESCRIPTION_SHORT_END -->
 
@@ -149,6 +149,7 @@ As you can see, this transformer will attempt to produce code that generates as 
   - [Usage with Webpack](#usage-with-webpack)
     - [Usage with awesome-typescript-loader](#usage-with-awesome-typescript-loader)
     - [Usage with ts-loader](#usage-with-ts-loader)
+- [CLI](#cli)
 - [Options](#options)
 - [Contributing](#contributing)
 - [Maintainers](#maintainers)
