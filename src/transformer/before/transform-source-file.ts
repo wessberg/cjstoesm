@@ -41,7 +41,6 @@ export function transformSourceFile(
 ): BeforeTransformerSourceFileStepResult {
 	// Take a fast path of the text of the SourceFile doesn't contain anything that can be transformed
 	if (!baseVisitorContext.onlyExports && !sourceFile.text.includes("require") && !sourceFile.text.includes("exports")) {
-		baseVisitorContext.sourceFileHook(sourceFile);
 		return {sourceFile, exports: {namedExports: new Set(), hasDefaultExport: false}};
 	}
 
@@ -337,10 +336,6 @@ export function transformSourceFile(
 		console.log("===", sourceFile.fileName, "===");
 		console.log(visitorContext.printer.printFile(updatedSourceFile));
 		console.log("EXPORTS:", visitorContext.exportedLocals);
-	}
-
-	if (!visitorContext.onlyExports) {
-		baseVisitorContext.sourceFileHook(updatedSourceFile);
 	}
 
 	return {

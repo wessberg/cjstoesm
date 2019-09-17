@@ -2,9 +2,9 @@ import {TransformTaskOptions} from "./transform-task-options";
 import {CONSTANT} from "../../constant/constant";
 import {inspect} from "util";
 import {sync} from "glob";
-import {CompilerOptions, createPrinter, createProgram, NewLineKind, ScriptTarget, sys} from "typescript";
-import {cjsToEsm} from "../../../transformer/cjs-to-esm";
+import {CompilerOptions, createEmptyStatement, createPrinter, createProgram, NewLineKind, ScriptTarget, sys, TransformationContext} from "typescript";
 import {dirname, isAbsolute, join, relative} from "path";
+import {cjsToEsmTransformerFactory} from "../../../transformer/cjs-to-esm-transformer-factory";
 
 /**
  * Executes the 'generate' task
@@ -54,25 +54,36 @@ export async function transformTask({logger, input, outDir, root, fs}: Transform
 			rootDir: root
 		}
 	});
-	program.emit(
-		undefined,
-		(_fileName, _data) => {
-			// Noop
-		},
-		undefined,
-		false,
-		cjsToEsm({
-			sourceFileHook: async sourceFile => {
-				if (!matchedFiles.has(sourceFile.fileName)) return;
 
-				const destinationFile = join(absoluteOutDir, relative(root, sourceFile.fileName));
+	// Prepare a noop TransformationContext
+	const context: TransformationContext = {
+		enableEmitNotification: () => {},
+		endLexicalEnvironment: () => [],
+		enableSubstitution: () => {},
+		getCompilerOptions: () => options,
+		startLexicalEnvironment: () => {},
+		hoistFunctionDeclaration: () => {},
+		hoistVariableDeclaration: () => {},
+		isEmitNotificationEnabled: () => false,
+		isSubstitutionEnabled: () => false,
+		onEmitNode: () => {},
+		onSubstituteNode: () => createEmptyStatement(),
+		readEmitHelpers: () => [],
+		requestEmitHelper: () => {},
+		resumeLexicalEnvironment: () => {},
+		suspendLexicalEnvironment: () => {}
+	};
 
-				if (!fs.existsSync(destinationFile)) {
-					fs.mkdirSync(dirname(destinationFile), {recursive: true});
-					fs.writeFileSync(destinationFile, printer.printFile(sourceFile));
-					logger.info(`${relative(root, sourceFile.fileName)} => ${relative(root, destinationFile)}`);
-				}
-			}
-		})
-	);
+	const transformer = cjsToEsmTransformerFactory()(context);
+
+	for (const sourceFile of program.getSourceFiles()) {
+		if (!matchedFiles.has(sourceFile.fileName)) continue;
+		const transformedSourceFile = transformer(sourceFile);
+
+		const destinationFile = join(absoluteOutDir, relative(root, transformedSourceFile.fileName));
+
+		fs.mkdirSync(dirname(destinationFile), {recursive: true});
+		fs.writeFileSync(destinationFile, printer.printFile(transformedSourceFile));
+		logger.info(`${relative(root, transformedSourceFile.fileName)} => ${relative(root, destinationFile)}`);
+	}
 }

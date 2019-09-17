@@ -12,7 +12,6 @@ import {existsSync, readFileSync, statSync} from "fs";
 export function cjsToEsmTransformerFactory({
 	fileExists = file => existsSync(file) && !statSync(file).isDirectory(),
 	readFile = (file: string, encoding?: string) => (existsSync(file) ? readFileSync(file, encoding).toString() : undefined),
-	sourceFileHook = () => {},
 	debug = false,
 	...rest
 }: CjsToEsmOptions = {}): TransformerFactory<SourceFile> {
@@ -24,7 +23,6 @@ export function cjsToEsmTransformerFactory({
 			printer: debug ? createPrinter() : undefined,
 			fileExists,
 			readFile,
-			sourceFileHook,
 			onlyExports: false
 		};
 	})();
