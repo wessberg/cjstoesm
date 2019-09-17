@@ -1,3 +1,9 @@
+## [0.0.11](https://github.com/wessberg/cjs-to-esm-transformer/compare/v0.0.10...v0.0.11) (2019-09-17)
+
+### Performance Improvements
+
+- improves performance by avoiding the emit-phase of TSC in the CLI ([f0e3923](https://github.com/wessberg/cjs-to-esm-transformer/commit/f0e3923))
+
 ## [0.0.10](https://github.com/wessberg/cjs-to-esm-transformer/compare/v0.0.9...v0.0.10) (2019-09-16)
 
 ### Features
