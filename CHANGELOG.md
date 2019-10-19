@@ -1,20 +1,26 @@
+## [0.0.12](https://github.com/wessberg/cjs-to-esm-transformer/compare/v0.0.11...v0.0.12) (2019-10-19)
+
+### Features
+
+- **cli:** make it possible to run the transform command with simple 'cjstoesm'. ([43e51b6](https://github.com/wessberg/cjs-to-esm-transformer/commit/43e51b6a15f85c2b5f95e56c42059a49d48c0bb4))
+
 ## [0.0.11](https://github.com/wessberg/cjs-to-esm-transformer/compare/v0.0.10...v0.0.11) (2019-09-17)
 
 ### Performance Improvements
 
-- improves performance by avoiding the emit-phase of TSC in the CLI ([f0e3923](https://github.com/wessberg/cjs-to-esm-transformer/commit/f0e3923))
+- improves performance by avoiding the emit-phase of TSC in the CLI ([f0e3923](https://github.com/wessberg/cjs-to-esm-transformer/commit/f0e39233d63cecfc3c919e2d71b1c8c9ab1ab6de))
 
 ## [0.0.10](https://github.com/wessberg/cjs-to-esm-transformer/compare/v0.0.9...v0.0.10) (2019-09-16)
 
 ### Features
 
-- **cli:** adds CLI support for transforming a project from CJS to ESM ([b542834](https://github.com/wessberg/cjs-to-esm-transformer/commit/b542834))
+- **cli:** adds CLI support for transforming a project from CJS to ESM ([b542834](https://github.com/wessberg/cjs-to-esm-transformer/commit/b5428345abb918901f8e471d81f200440f0ac068))
 
 ## [0.0.9](https://github.com/wessberg/cjs-to-esm-transformer/compare/v0.0.8...v0.0.9) (2019-07-09)
 
 ### Bug Fixes
 
-- **bug:** fixes issues with handling patterns such as 'const foo = module.exports = ...' or 'const foo = exports.bar = ...' ([ef0fe30](https://github.com/wessberg/cjs-to-esm-transformer/commit/ef0fe30))
+- **bug:** fixes issues with handling patterns such as 'const foo = module.exports = ...' or 'const foo = exports.bar = ...' ([ef0fe30](https://github.com/wessberg/cjs-to-esm-transformer/commit/ef0fe303d355b15e68fcdf836277270748f517e2))
 
 ## [0.0.8](https://github.com/wessberg/cjs-to-esm-transformer/compare/v0.0.7...v0.0.8) (2019-06-26)
 
@@ -26,13 +32,13 @@
 
 ### Bug Fixes
 
-- **exports:** fixes a bug where exports = require(...)() would lead to SyntaxErrors ([1803b54](https://github.com/wessberg/cjs-to-esm-transformer/commit/1803b54))
+- **exports:** fixes a bug where exports = require(...)() would lead to SyntaxErrors ([1803b54](https://github.com/wessberg/cjs-to-esm-transformer/commit/1803b54c80a23540311cd7f92095af2eeb7f804a))
 
 ## [0.0.4](https://github.com/wessberg/cjs-to-esm-transformer/compare/v0.0.3...v0.0.4) (2019-05-06)
 
 ### Features
 
-- **exports:** adds support for re-exports with 'exports = require(...)' syntax ([19753ce](https://github.com/wessberg/cjs-to-esm-transformer/commit/19753ce))
+- **exports:** adds support for re-exports with 'exports = require(...)' syntax ([19753ce](https://github.com/wessberg/cjs-to-esm-transformer/commit/19753cef73ece3af39687ff49819a0ff388cc710))
 
 ## [0.0.3](https://github.com/wessberg/cjs-to-esm-transformer/compare/v0.0.2...v0.0.3) (2019-04-30)
 
