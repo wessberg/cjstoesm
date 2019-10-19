@@ -350,7 +350,8 @@ const config = {
 You can also use this library as a CLI to convert your project files from using CommonJS to using ESM.
 This is still considered somewhat experimental. If you have any issues, please submit an issue.
 
-If you install `cjs-to-esm` globally, you'll have `cjstoesm` in your path. If you install it locally, you can run `npx cjstoesm`.
+If you install `@wessberg/cjs-to-esm-transformer` globally, you'll have `cjstoesm` in your path. If you install it locally, you can run `npx cjstoesm`.
+If you don't install it globally nor locally, you can run it with npx with the command `npx -p typescript -p @wessberg/cjs-to-esm-transformer cjstoesm <glob> <outdir>`.
 
 ```
 $ cjstoesm --help
@@ -367,6 +368,7 @@ Commands:
 ```
 
 For example, you can run `cjstoesm transform "**/*.*" dist` to transform all files matched by the glob `**/*.*` and emit them to the folder `dist` from the current working directory.
+You can also just run `cjstoesm "**/*.*" dist` which is an alias for the `transform` command.
 
 ## Options
 

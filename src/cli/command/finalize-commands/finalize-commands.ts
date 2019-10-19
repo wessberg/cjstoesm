@@ -1,6 +1,10 @@
 import commander from "commander";
 
-commander.parse(process.argv);
+const args = [...process.argv];
+if (args[2] !== "transform") {
+	args.splice(2, 0, "transform");
+}
+commander.parse(args);
 
 // Show help if no arguments are given
 if (commander.args.length === 0) {
