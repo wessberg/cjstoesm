@@ -1,3 +1,9 @@
+## [0.0.13](https://github.com/wessberg/cjs-to-esm-transformer/compare/v0.0.12...v0.0.13) (2019-11-09)
+
+### Bug Fixes
+
+- fix bug where parent links wasn't being set. Closes [#2](https://github.com/wessberg/cjs-to-esm-transformer/issues/2) ([29808ff](https://github.com/wessberg/cjs-to-esm-transformer/commit/29808ff8f74a811f25603ecc7a74893a9a1f4d61))
+
 ## [0.0.12](https://github.com/wessberg/cjs-to-esm-transformer/compare/v0.0.11...v0.0.12) (2019-10-19)
 
 ### Features
