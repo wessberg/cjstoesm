@@ -13,7 +13,7 @@
 		"clean": "npm run clean:dist",
 		"lint": "tsc --noEmit && tslint -c tslint.json --project tsconfig.json",
 		"prettier": "prettier --write '{src,test,documentation}/**/*.{js,ts,json,html,xml,css,md}'",
-		"test": "ava **/*.test.* --fail-fast",
+		"test": "ava",
 		"prebuild": "npm run clean:dist",
 		"build": "npm run rollup",
 		"build:built_in_module_map": "ts-node script/generate-built-in-module-map.ts",
@@ -55,31 +55,31 @@
 	],
 	"license": "MIT",
 	"devDependencies": {
-		"@wessberg/rollup-plugin-ts": "1.1.73",
+		"@wessberg/rollup-plugin-ts": "1.1.74",
 		"@wessberg/scaffold": "1.0.19",
-		"@wessberg/ts-config": "0.0.41",
+		"@wessberg/ts-config": "0.0.42",
 		"ava": "2.4.0",
-		"core-js": "3.3.2",
+		"core-js": "3.4.0",
 		"husky": "3.0.9",
-		"np": "5.1.1",
-		"prettier": "1.18.2",
-		"pretty-quick": "2.0.0",
-		"rollup": "1.25.0",
+		"np": "5.1.3",
+		"prettier": "1.19.1",
+		"pretty-quick": "2.0.1",
+		"rollup": "1.26.4",
 		"rollup-plugin-node-resolve": "5.2.0",
 		"rollup-pluginutils": "2.8.2",
 		"standard-changelog": "2.0.15",
 		"ts-node": "8.4.1",
-		"tslint": "5.20.0",
-		"typescript": "^3.6.4"
+		"tslint": "5.20.1",
+		"typescript": "^3.7.2"
 	},
 	"dependencies": {
-		"@types/node": "12.11.1",
+		"@types/node": "12.12.7",
 		"@types/reserved-words": "^0.1.0",
 		"@types/resolve": "0.0.8",
 		"@wessberg/stringutil": "1.0.19",
-		"chalk": "^2.4.2",
-		"commander": "^3.0.2",
-		"glob": "^7.1.4",
+		"chalk": "^3.0.0",
+		"commander": "^4.0.0",
+		"glob": "^7.1.6",
 		"inquirer": "^7.0.0",
 		"reserved-words": "^0.1.2",
 		"resolve": "1.12.0"
@@ -87,12 +87,12 @@
 	"peerDependencies": {
 		"typescript": "^3.x"
 	},
-	"main": "./dist/cjs/index.js",
-	"module": "./dist/esm/index.js",
-	"browser": "./dist/esm/index.js",
-	"types": "./dist/esm/index.d.ts",
-	"typings": "./dist/esm/index.d.ts",
-	"es2015": "./dist/esm/index.js",
+	"main": "./dist/lib/index.js",
+	"module": "./dist/lib/index.js",
+	"browser": "./dist/lib/index.js",
+	"types": "./dist/lib/index.d.ts",
+	"typings": "./dist/lib/index.d.ts",
+	"es2015": "./dist/lib/index.js",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/wessberg/cjs-to-esm-transformer.git"
@@ -109,6 +109,11 @@
 		}
 	},
 	"ava": {
+		"files": [
+			"test/**.test.ts"
+		],
+		"verbose": true,
+		"failFast": true,
 		"compileEnhancements": false,
 		"extensions": [
 			"ts"

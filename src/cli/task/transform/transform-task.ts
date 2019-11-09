@@ -2,7 +2,17 @@ import {TransformTaskOptions} from "./transform-task-options";
 import {CONSTANT} from "../../constant/constant";
 import {inspect} from "util";
 import {sync} from "glob";
-import {CompilerOptions, createEmptyStatement, createPrinter, createProgram, NewLineKind, ScriptTarget, sys, TransformationContext} from "typescript";
+import {
+	CompilerOptions,
+	createCompilerHost,
+	createEmptyStatement,
+	createPrinter,
+	createProgram,
+	NewLineKind,
+	ScriptTarget,
+	sys,
+	TransformationContext
+} from "typescript";
 import {dirname, isAbsolute, join, relative} from "path";
 import {cjsToEsmTransformerFactory} from "../../../transformer/cjs-to-esm-transformer-factory";
 
@@ -36,7 +46,8 @@ export async function transformTask({logger, input, outDir, root, fs}: Transform
 		declaration: false,
 		outDir,
 		sourceMap: false,
-		newLine: sys.newLine === "\n" ? NewLineKind.LineFeed : NewLineKind.CarriageReturnLineFeed
+		newLine: sys.newLine === "\n" ? NewLineKind.LineFeed : NewLineKind.CarriageReturnLineFeed,
+		rootDir: root
 	};
 
 	// Create a printer
@@ -45,14 +56,8 @@ export async function transformTask({logger, input, outDir, root, fs}: Transform
 	// Create a TypeScript program based on the glob
 	const program = createProgram({
 		rootNames: [...matchedFiles],
-		options: {
-			target: ScriptTarget.ESNext,
-			allowJs: true,
-			declaration: false,
-			outDir,
-			sourceMap: false,
-			rootDir: root
-		}
+		options,
+		host: createCompilerHost(options, true)
 	});
 
 	// Prepare a noop TransformationContext
