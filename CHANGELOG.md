@@ -1,3 +1,5 @@
+## [0.0.14](https://github.com/wessberg/cjs-to-esm-transformer/compare/v0.0.13...v0.0.14) (2019-11-11)
+
 ## [0.0.13](https://github.com/wessberg/cjs-to-esm-transformer/compare/v0.0.12...v0.0.13) (2019-11-09)
 
 ### Bug Fixes
