@@ -1,4 +1,4 @@
-import {dirname, isAbsolute, join} from "path";
+import {dirname, isAbsolute, join, normalize} from "path";
 import {rollup, RollupOptions, RollupOutput} from "rollup";
 import typescriptRollupPlugin from "@wessberg/rollup-plugin-ts";
 import nodeResolve from "rollup-plugin-node-resolve";
@@ -43,7 +43,11 @@ export async function generateRollupBundle(inputFiles: TestFile[] | TestFile, ro
 	}
 
 	const resolveId = (fileName: string, parent: string | undefined): string | null => {
-		const absolute = isAbsolute(fileName) ? fileName : join(parent == null ? "" : dirname(parent), fileName);
+		const normalizedFileName = normalize(fileName);
+		const normalizedParent = parent == null ? undefined : normalize(parent);
+		const absolute = isAbsolute(normalizedFileName)
+			? normalizedFileName
+			: join(normalizedParent == null ? "" : dirname(normalizedParent), normalizedFileName);
 		for (const ext of ["", ".ts", ".js", ".mjs"]) {
 			const withExtension = `${absolute}${ext}`;
 			const matchedFile = files.find(file => file.fileName === withExtension);
@@ -53,7 +57,8 @@ export async function generateRollupBundle(inputFiles: TestFile[] | TestFile, ro
 	};
 
 	const load = (id: string): string | null => {
-		const matchedFile = files.find(file => file.fileName === id);
+		const normalized = normalize(id);
+		const matchedFile = files.find(file => file.fileName === normalized);
 		return matchedFile == null ? null : matchedFile.text;
 	};
 
@@ -76,15 +81,17 @@ export async function generateRollupBundle(inputFiles: TestFile[] | TestFile, ro
 					cjsToEsm({
 						debug: isInDebugMode(),
 						readFile: fileName => {
-							const file = files.find(currentFile => currentFile.fileName === fileName);
+							const normalized = normalize(fileName);
+							const file = files.find(currentFile => currentFile.fileName === normalized);
 							if (file != null) return file.text;
-							else if (existsSync(fileName)) {
-								return readFileSync(fileName, "utf8");
+							else if (existsSync(normalized)) {
+								return readFileSync(normalized, "utf8");
 							} else return undefined;
 						},
 						fileExists: fileName => {
-							if (files.some(file => file.fileName === fileName)) return true;
-							return existsSync(fileName) && !statSync(fileName).isDirectory();
+							const normalized = normalize(fileName);
+							if (files.some(file => file.fileName === normalized)) return true;
+							return existsSync(normalized) && !statSync(normalized).isDirectory();
 						}
 					})
 				],
