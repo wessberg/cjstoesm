@@ -1,6 +1,7 @@
 import {isIdentifier, isStringLiteralLike, SourceFile, Expression, isCallExpression} from "typescript";
 import {VisitorContext} from "../visitor-context";
 import {resolvePath} from "./resolve-path";
+import {normalize} from "path";
 import {walkThroughFillerNodes} from "./walk-through-filler-nodes";
 import {isBuiltInModule} from "../built-in/built-in-module-map";
 
@@ -22,7 +23,10 @@ export interface IsRequireCallMatchResultWithResolvedModuleSpecifier {
 	resolvedModuleSpecifierText: string;
 }
 
-export type IsRequireCallResult = IsRequireCallNoMatchResult | IsRequireCallMatchResultWithNoResolvedModuleSpecifier | IsRequireCallMatchResultWithResolvedModuleSpecifier;
+export type IsRequireCallResult =
+	| IsRequireCallNoMatchResult
+	| IsRequireCallMatchResultWithNoResolvedModuleSpecifier
+	| IsRequireCallMatchResultWithResolvedModuleSpecifier;
 
 /**
  * Checks if the CallExpression represents a require call (e.g.: 'require(...)')
@@ -49,12 +53,13 @@ export function isRequireCall(inputExpression: Expression, sourceFile: SourceFil
 			? undefined
 			: resolvePath({
 					id: moduleSpecifier,
-					parent: sourceFile.fileName,
+					parent: normalize(sourceFile.fileName),
 					readFile: context.readFile,
 					fileExists: context.fileExists
 			  });
 
-	const resolvedModuleSpecifierText = resolvedModuleSpecifier == null || isBuiltInModule(resolvedModuleSpecifier) ? undefined : context.readFile(resolvedModuleSpecifier);
+	const resolvedModuleSpecifierText =
+		resolvedModuleSpecifier == null || isBuiltInModule(resolvedModuleSpecifier) ? undefined : context.readFile(resolvedModuleSpecifier);
 
 	if (moduleSpecifier == null || resolvedModuleSpecifier == null || resolvedModuleSpecifierText == null) {
 		return {
@@ -67,7 +72,7 @@ export function isRequireCall(inputExpression: Expression, sourceFile: SourceFil
 		return {
 			match: true,
 			moduleSpecifier,
-			resolvedModuleSpecifier,
+			resolvedModuleSpecifier: normalize(resolvedModuleSpecifier),
 			resolvedModuleSpecifierText
 		};
 	}

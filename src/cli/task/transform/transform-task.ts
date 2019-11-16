@@ -13,7 +13,7 @@ import {
 	sys,
 	TransformationContext
 } from "typescript";
-import {dirname, isAbsolute, join, relative} from "path";
+import {normalize, dirname, isAbsolute, join, relative} from "path";
 import {cjsToEsmTransformerFactory} from "../../../transformer/cjs-to-esm-transformer-factory";
 
 /**
@@ -82,13 +82,13 @@ export async function transformTask({logger, input, outDir, root, fs}: Transform
 	const transformer = cjsToEsmTransformerFactory()(context);
 
 	for (const sourceFile of program.getSourceFiles()) {
-		if (!matchedFiles.has(sourceFile.fileName)) continue;
+		if (!matchedFiles.has(normalize(sourceFile.fileName))) continue;
 		const transformedSourceFile = transformer(sourceFile);
 
-		const destinationFile = join(absoluteOutDir, relative(root, transformedSourceFile.fileName));
+		const destinationFile = join(absoluteOutDir, relative(root, normalize(transformedSourceFile.fileName)));
 
 		fs.mkdirSync(dirname(destinationFile), {recursive: true});
 		fs.writeFileSync(destinationFile, printer.printFile(transformedSourceFile));
-		logger.info(`${relative(root, transformedSourceFile.fileName)} => ${relative(root, destinationFile)}`);
+		logger.info(`${relative(root, normalize(transformedSourceFile.fileName))} => ${relative(root, destinationFile)}`);
 	}
 }

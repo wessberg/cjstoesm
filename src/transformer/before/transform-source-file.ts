@@ -28,6 +28,7 @@ import {getLocalsForBindingName} from "../util/get-locals-for-binding-name";
 import {shouldSkipEmit} from "../util/should-skip-emit";
 import {ModuleExports} from "../module-exports/module-exports";
 import {visitImportAndExportDeclarations} from "./visitor/visit/visit-import-and-export-declarations";
+import {normalize} from "path";
 
 export interface BeforeTransformerSourceFileStepResult {
 	sourceFile: SourceFile;
@@ -192,9 +193,9 @@ export function transformSourceFile(
 			isIdentifierFree,
 			getFreeIdentifier,
 			ignoreIdentifier,
-			getModuleExportsForPath: path => moduleExportsMap.get(path),
+			getModuleExportsForPath: path => moduleExportsMap.get(normalize(path)),
 			addModuleExportsForPath: (path, exports) => {
-				return moduleExportsMap.set(path, exports);
+				return moduleExportsMap.set(normalize(path), exports);
 			},
 			get imports() {
 				return [...imports.entries()].filter(([, noEmit]) => !noEmit).map(([declaration]) => declaration);
@@ -331,9 +332,9 @@ export function transformSourceFile(
 	}
 
 	// Add the relevant module exports for the SourceFile
-	visitorContext.addModuleExportsForPath(sourceFile.fileName, moduleExports);
+	visitorContext.addModuleExportsForPath(normalize(sourceFile.fileName), moduleExports);
 	if (!visitorContext.onlyExports && visitorContext.debug && visitorContext.printer != null) {
-		console.log("===", sourceFile.fileName, "===");
+		console.log("===", normalize(sourceFile.fileName), "===");
 		console.log(visitorContext.printer.printFile(updatedSourceFile));
 		console.log("EXPORTS:", visitorContext.exportedLocals);
 	}
