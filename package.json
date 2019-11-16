@@ -103,7 +103,7 @@
 		"url": "https://github.com/wessberg/cjs-to-esm-transformer/issues"
 	},
 	"engines": {
-		"node": ">=9.0.0"
+		"node": ">=8.0.0"
 	},
 	"husky": {
 		"hooks": {
