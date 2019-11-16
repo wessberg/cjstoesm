@@ -139,8 +139,9 @@ As you can see, this transformer will attempt to produce code that generates as 
   - [Features](#features)
 - [Table of Contents](#table-of-contents)
 - [Install](#install)
-  - [NPM](#npm)
+  - [npm](#npm)
   - [Yarn](#yarn)
+  - [pnpm](#pnpm)
 - [Usage](#usage)
   - [Usage with TypeScript's Compiler APIs](#usage-with-typescripts-compiler-apis)
   - [Usage with Rollup](#usage-with-rollup)
@@ -165,7 +166,7 @@ As you can see, this transformer will attempt to produce code that generates as 
 
 ## Install
 
-### NPM
+### npm
 
 ```
 $ npm install @wessberg/cjs-to-esm-transformer
@@ -175,6 +176,12 @@ $ npm install @wessberg/cjs-to-esm-transformer
 
 ```
 $ yarn add @wessberg/cjs-to-esm-transformer
+```
+
+### pnpm
+
+```
+$ pnpm add @wessberg/cjs-to-esm-transformer
 ```
 
 <!-- SHADOW_SECTION_INSTALL_END -->
