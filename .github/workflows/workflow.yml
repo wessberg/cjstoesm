@@ -22,15 +22,6 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
 
-      - name: Cache
-        uses: actions/cache@preview
-        id: cache
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-${{ matrix.node }}-node-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-${{ matrix.node }}-node-
-
       - name: Setup pnpm
         run: npm install pnpm -g
 
