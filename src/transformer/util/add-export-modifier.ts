@@ -7,5 +7,7 @@ export function addExportModifier<T extends ModifiersArray>(modifiers: T | undef
 		return (modifiers as unknown) as T extends ModifiersArray ? ModifiersArray : undefined;
 	}
 
-	return createNodeArray([createModifier(SyntaxKind.ExportKeyword), ...modifiers.map(m => createModifier(m.kind))]) as T extends ModifiersArray ? ModifiersArray : undefined;
+	return createNodeArray([createModifier(SyntaxKind.ExportKeyword), ...modifiers.map(m => createModifier(m.kind))]) as T extends ModifiersArray
+		? ModifiersArray
+		: undefined;
 }

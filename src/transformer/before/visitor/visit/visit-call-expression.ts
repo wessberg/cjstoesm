@@ -66,7 +66,11 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 	const moduleExports = getModuleExportsFromRequireDataInContext(requireData, context);
 
 	// Find the first ExpressionStatement going up from the Node, breaking if part of a BinaryExpression, CallExpression, or a NewExpression
-	const expressionStatementParent = findNodeUp(node, isExpressionStatement, currentNode => isBinaryExpression(currentNode) || isCallExpression(currentNode) || isNewExpression(currentNode));
+	const expressionStatementParent = findNodeUp(
+		node,
+		isExpressionStatement,
+		currentNode => isBinaryExpression(currentNode) || isCallExpression(currentNode) || isNewExpression(currentNode)
+	);
 
 	// If we don't know anything about the exports of the module, or if it doesn't export any named exports,
 	// there's really not much we can do in terms of using the context of the CallExpression to import the maximally
@@ -93,7 +97,9 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 				return createIdentifier(local);
 			} else {
 				const identifier = createIdentifier(context.getFreeIdentifier(generateNameFromModuleSpecifier(moduleSpecifier)));
-				context.addImport(createImportDeclaration(undefined, undefined, createImportClause(identifier, undefined), createStringLiteral(moduleSpecifier)));
+				context.addImport(
+					createImportDeclaration(undefined, undefined, createImportClause(identifier, undefined), createStringLiteral(moduleSpecifier))
+				);
 
 				// Replace the CallExpression by the identifier
 				return identifier;
@@ -162,7 +168,9 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 
 				// Replace the CallExpression by an ObjectLiteral that can be accessed by the wrapping Element- or PropertyAccessExpression
 				return createObjectLiteral([
-					identifier.text !== rightValue ? createPropertyAssignment(rightValue, createIdentifier(identifier.text)) : createShorthandPropertyAssignment(createIdentifier(identifier.text))
+					identifier.text !== rightValue
+						? createPropertyAssignment(rightValue, createIdentifier(identifier.text))
+						: createShorthandPropertyAssignment(createIdentifier(identifier.text))
 				]);
 			}
 
@@ -187,7 +195,9 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 					importBindingName = context.getLocalForNamespaceImportFromModule(moduleSpecifier)!;
 				} else {
 					// If that binding isn't free within the context, import it as another local name
-					importBindingName = context.isIdentifierFree(importBindingPropertyName) ? importBindingPropertyName : context.getFreeIdentifier(importBindingPropertyName);
+					importBindingName = context.isIdentifierFree(importBindingPropertyName)
+						? importBindingPropertyName
+						: context.getFreeIdentifier(importBindingPropertyName);
 
 					context.addImport(
 						createImportDeclaration(
@@ -213,7 +223,9 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 				// Otherwise leave an ObjectLiteral that can be accessed by the wrapping Element- or PropertyAccessExpression
 				if (expressionStatementParent == null) {
 					return createObjectLiteral([
-						importBindingName !== rightValue ? createPropertyAssignment(rightValue, createIdentifier(importBindingName)) : createShorthandPropertyAssignment(createIdentifier(importBindingName))
+						importBindingName !== rightValue
+							? createPropertyAssignment(rightValue, createIdentifier(importBindingName))
+							: createShorthandPropertyAssignment(createIdentifier(importBindingName))
 					]);
 				} else {
 					return undefined;
@@ -287,7 +299,9 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 						if (context.hasLocalForNamedImportPropertyNameFromModule(element.name.text, moduleSpecifier)) {
 							const local = context.getLocalForNamedImportPropertyNameFromModule(element.name.text, moduleSpecifier)!;
 							skippedImportSpecifiers.push(
-								local === element.name.text ? createImportSpecifier(undefined, createIdentifier(local)) : createImportSpecifier(createIdentifier(element.name.text), createIdentifier(local))
+								local === element.name.text
+									? createImportSpecifier(undefined, createIdentifier(local))
+									: createImportSpecifier(createIdentifier(element.name.text), createIdentifier(local))
 							);
 						}
 
@@ -360,7 +374,14 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 			// and then replace this CallExpression with an Object literal that can be destructured
 			else {
 				if (importSpecifiers.length > 0) {
-					context.addImport(createImportDeclaration(undefined, undefined, createImportClause(undefined, createNamedImports(importSpecifiers)), createStringLiteral(moduleSpecifier)));
+					context.addImport(
+						createImportDeclaration(
+							undefined,
+							undefined,
+							createImportClause(undefined, createNamedImports(importSpecifiers)),
+							createStringLiteral(moduleSpecifier)
+						)
+					);
 				}
 
 				return createObjectLiteral(

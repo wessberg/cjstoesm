@@ -2,6 +2,8 @@ import Module from "module";
 import {join} from "path";
 import {existsSync, mkdirSync, writeFileSync} from "fs";
 import {format} from "prettier";
+// @ts-ignore
+import prettierConfig from "../prettier.config.js";
 
 const IGNORED_MODULE_NAMES = new Set([
 	"_http_agent",
@@ -45,7 +47,8 @@ function generateBuiltInModuleInnerContents(): string {
 }
 
 function generateBuiltInModule(): string {
-	return format(`\
+	return format(
+		`\
 /**
  * @file This file is auto-generated. Do not change its contents.
  */
@@ -69,7 +72,12 @@ export function isBuiltInModule (moduleName: string): moduleName is BuiltInModul
 export const BUILT_IN_MODULE_MAP: BuiltInModuleMap = {
 	${generateBuiltInModuleMapInnerContents()}
 };
-`, {parser: "typescript"});
+`,
+		{
+			...prettierConfig,
+			parser: "typescript"
+		}
+	);
 }
 
 function generateBuiltInModuleMapInnerContents(): string {

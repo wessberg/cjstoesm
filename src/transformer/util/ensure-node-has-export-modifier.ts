@@ -44,11 +44,38 @@ export function ensureNodeHasExportModifier<T extends NamedDeclaration>(node: T,
 	const newModifiers = [createModifier(SyntaxKind.ExportKeyword), ...existingModifierKinds.map(kind => createModifier(kind) as Modifier)];
 
 	if (isFunctionDeclaration(node)) {
-		return (updateFunctionDeclaration(node, node.decorators, newModifiers, node.asteriskToken, node.name, node.typeParameters, node.parameters, node.type, node.body) as unknown) as T;
+		return (updateFunctionDeclaration(
+			node,
+			node.decorators,
+			newModifiers,
+			node.asteriskToken,
+			node.name,
+			node.typeParameters,
+			node.parameters,
+			node.type,
+			node.body
+		) as unknown) as T;
 	} else if (isFunctionExpression(node)) {
-		return (updateFunctionExpression(node, newModifiers, node.asteriskToken, node.name, node.typeParameters, node.parameters, node.type, node.body) as unknown) as T;
+		return (updateFunctionExpression(
+			node,
+			newModifiers,
+			node.asteriskToken,
+			node.name,
+			node.typeParameters,
+			node.parameters,
+			node.type,
+			node.body
+		) as unknown) as T;
 	} else if (isClassDeclaration(node)) {
-		return (updateClassDeclaration(node, node.decorators, newModifiers, node.name, node.typeParameters, node.heritageClauses, node.members) as unknown) as T;
+		return (updateClassDeclaration(
+			node,
+			node.decorators,
+			newModifiers,
+			node.name,
+			node.typeParameters,
+			node.heritageClauses,
+			node.members
+		) as unknown) as T;
 	} else if (isClassExpression(node)) {
 		return (updateClassExpression(node, newModifiers, node.name, node.typeParameters, node.heritageClauses, node.members) as unknown) as T;
 	} else if (isVariableStatement(node)) {
@@ -56,7 +83,15 @@ export function ensureNodeHasExportModifier<T extends NamedDeclaration>(node: T,
 	} else if (isEnumDeclaration(node)) {
 		return (updateEnumDeclaration(node, node.decorators, newModifiers, node.name, node.members) as unknown) as T;
 	} else if (isInterfaceDeclaration(node)) {
-		return (updateInterfaceDeclaration(node, node.decorators, newModifiers, node.name, node.typeParameters, node.heritageClauses, node.members) as unknown) as T;
+		return (updateInterfaceDeclaration(
+			node,
+			node.decorators,
+			newModifiers,
+			node.name,
+			node.typeParameters,
+			node.heritageClauses,
+			node.members
+		) as unknown) as T;
 	} else if (isTypeAliasDeclaration(node)) {
 		return (updateTypeAliasDeclaration(node, node.decorators, newModifiers, node.name, node.typeParameters, node.type) as unknown) as T;
 	}

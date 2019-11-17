@@ -24,7 +24,12 @@ import {getModuleExportsFromRequireDataInContext} from "../../../util/get-module
  * @param {BeforeVisitorOptions<VariableDeclaration>} options
  * @returns {VisitResult<VariableDeclaration>}
  */
-export function visitVariableDeclaration({node, childContinuation, sourceFile, context}: BeforeVisitorOptions<VariableDeclaration>): VisitResult<Node> {
+export function visitVariableDeclaration({
+	node,
+	childContinuation,
+	sourceFile,
+	context
+}: BeforeVisitorOptions<VariableDeclaration>): VisitResult<Node> {
 	if (context.onlyExports || node.initializer == null) {
 		return childContinuation(node);
 	}
@@ -125,7 +130,14 @@ export function visitVariableDeclaration({node, childContinuation, sourceFile, c
 		}
 		// If more then 1 import specifier was generated, add an ImportDeclaration and remove this VariableDeclaration
 		if (importSpecifiers.length > 0) {
-			context.addImport(createImportDeclaration(undefined, undefined, createImportClause(undefined, createNamedImports(importSpecifiers)), createStringLiteral(moduleSpecifier)));
+			context.addImport(
+				createImportDeclaration(
+					undefined,
+					undefined,
+					createImportClause(undefined, createNamedImports(importSpecifiers)),
+					createStringLiteral(moduleSpecifier)
+				)
+			);
 			return undefined;
 		}
 	}
