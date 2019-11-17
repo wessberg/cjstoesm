@@ -1,3 +1,10 @@
+## [0.0.15](https://github.com/wessberg/cjs-to-esm-transformer/compare/v0.0.14...v0.0.15) (2019-11-17)
+
+### Bug Fixes
+
+- fix Windows bugs ([5a2fa10](https://github.com/wessberg/cjs-to-esm-transformer/commit/5a2fa10c584c808f95022981c56f631702ca595c))
+- fix Windows bugs ([9de491b](https://github.com/wessberg/cjs-to-esm-transformer/commit/9de491b80bb7b3f0d0f302afed114e90b613cb6a))
+
 ## [0.0.14](https://github.com/wessberg/cjs-to-esm-transformer/compare/v0.0.13...v0.0.14) (2019-11-11)
 
 ## [0.0.13](https://github.com/wessberg/cjs-to-esm-transformer/compare/v0.0.12...v0.0.13) (2019-11-09)
