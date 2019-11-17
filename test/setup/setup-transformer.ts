@@ -1,6 +1,16 @@
-import {join} from "path";
+import {join, normalize} from "path";
 import {cjsToEsm} from "../../src/transformer/cjs-to-esm";
-import {CompilerOptions, createProgram, createSourceFile, getDefaultLibFileName, ModuleKind, ScriptKind, ScriptTarget, SourceFile, sys} from "typescript";
+import {
+	CompilerOptions,
+	createProgram,
+	createSourceFile,
+	getDefaultLibFileName,
+	ModuleKind,
+	ScriptKind,
+	ScriptTarget,
+	SourceFile,
+	sys
+} from "typescript";
 import {isInDebugMode} from "../util/is-in-debug-mode";
 
 // tslint:disable:no-any
@@ -41,11 +51,13 @@ export function generateTransformerResult(inputFiles: TestFile[] | TestFile): {f
 	const outputFiles: {fileName: string; text: string}[] = [];
 
 	const readFile = (fileName: string): string | undefined => {
-		const matchedFile = files.find(currentFile => currentFile.fileName === fileName);
+		const normalized = normalize(fileName);
+		const matchedFile = files.find(currentFile => currentFile.fileName === normalized);
 		return matchedFile == null ? undefined : matchedFile.text;
 	};
 	const fileExists = (fileName: string): boolean => {
-		return files.some(currentFile => currentFile.fileName === fileName);
+		const normalized = normalize(fileName);
+		return files.some(currentFile => currentFile.fileName === normalized);
 	};
 
 	const transformers = cjsToEsm({readFile, fileExists, debug: isInDebugMode()});
@@ -65,10 +77,11 @@ export function generateTransformerResult(inputFiles: TestFile[] | TestFile): {f
 			readFile,
 			fileExists,
 			getSourceFile(fileName: string, languageVersion: ScriptTarget): SourceFile | undefined {
-				const sourceText = this.readFile(fileName);
+				const normalized = normalize(fileName);
+				const sourceText = this.readFile(normalized);
 				if (sourceText == null) return undefined;
 
-				return createSourceFile(fileName, sourceText, languageVersion, true, ScriptKind.TS);
+				return createSourceFile(normalized, sourceText, languageVersion, true, ScriptKind.TS);
 			},
 
 			getCurrentDirectory() {
@@ -76,7 +89,8 @@ export function generateTransformerResult(inputFiles: TestFile[] | TestFile): {f
 			},
 
 			getDirectories(directoryName: string) {
-				return sys.getDirectories(directoryName);
+				const normalized = normalize(directoryName);
+				return sys.getDirectories(normalized);
 			},
 
 			getDefaultLibFileName(options: CompilerOptions): string {
