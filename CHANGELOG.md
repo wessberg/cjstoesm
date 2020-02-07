@@ -1,3 +1,9 @@
+## [0.0.18](https://github.com/wessberg/cjs-to-esm-transformer/compare/v0.0.17...v0.0.18) (2020-02-07)
+
+### Bug Fixes
+
+- fix UMD bug ([1b579a9](https://github.com/wessberg/cjs-to-esm-transformer/commit/1b579a9d394983d94cf58082816ec8588a7a67e7))
+
 ## [0.0.17](https://github.com/wessberg/cjs-to-esm-transformer/compare/v0.0.16...v0.0.17) (2020-02-07)
 
 ### Bug Fixes
