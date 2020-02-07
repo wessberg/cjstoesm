@@ -1,32 +1,3 @@
-import {
-	CallExpression,
-	createIdentifier,
-	createImportClause,
-	createImportDeclaration,
-	createImportSpecifier,
-	createNamedImports,
-	createNamespaceImport,
-	createObjectLiteral,
-	createPropertyAssignment,
-	createShorthandPropertyAssignment,
-	createStringLiteral,
-	ElementAccessExpression,
-	Identifier,
-	ImportSpecifier,
-	isBinaryExpression,
-	isCallExpression,
-	isElementAccessExpression,
-	isExpressionStatement,
-	isIdentifier,
-	isNewExpression,
-	isObjectBindingPattern,
-	isPropertyAccessExpression,
-	isStringLiteralLike,
-	isVariableDeclaration,
-	Node,
-	PropertyAccessExpression,
-	VisitResult
-} from "typescript";
 import {BeforeVisitorOptions} from "../before-visitor-options";
 import {isRequireCall} from "../../../util/is-require-call";
 import {findNodeUp} from "../../../util/find-node-up";
@@ -34,6 +5,7 @@ import {isStatementOrDeclaration} from "../../../util/is-statement-or-declaratio
 import {isStatement} from "../../../util/is-statement";
 import {generateNameFromModuleSpecifier} from "../../../util/generate-name-from-module-specifier";
 import {getModuleExportsFromRequireDataInContext} from "../../../util/get-module-exports-from-require-data-in-context";
+import {TS} from "../../../../type/type";
 
 /**
  * Visits the given CallExpression
@@ -41,13 +13,19 @@ import {getModuleExportsFromRequireDataInContext} from "../../../util/get-module
  * @param options
  * @returns
  */
-export function visitCallExpression({node, childContinuation, sourceFile, context}: BeforeVisitorOptions<CallExpression>): VisitResult<Node> {
+export function visitCallExpression({
+	node,
+	childContinuation,
+	sourceFile,
+	context
+}: BeforeVisitorOptions<TS.CallExpression>): TS.VisitResult<TS.Node> {
 	if (context.onlyExports) {
 		return childContinuation(node);
 	}
 
 	// Check if the node represents a require(...) call.
 	const requireData = isRequireCall(node, sourceFile, context);
+	const {typescript} = context;
 
 	// If it doesn't proceed without applying any transformations
 	if (!requireData.match) {
@@ -69,8 +47,8 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 	// Find the first ExpressionStatement going up from the Node, breaking if part of a BinaryExpression, CallExpression, or a NewExpression
 	const expressionStatementParent = findNodeUp(
 		node,
-		isExpressionStatement,
-		currentNode => isBinaryExpression(currentNode) || isCallExpression(currentNode) || isNewExpression(currentNode)
+		typescript.isExpressionStatement,
+		currentNode => typescript.isBinaryExpression(currentNode) || typescript.isCallExpression(currentNode) || typescript.isNewExpression(currentNode)
 	);
 
 	// If we don't know anything about the exports of the module, or if it doesn't export any named exports,
@@ -82,7 +60,7 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 		if (expressionStatementParent != null) {
 			// Only add the import if there isn't already an import within the SourceFile of the entire module without any bindings
 			if (!context.isModuleSpecifierImportedWithoutLocals(moduleSpecifier)) {
-				context.addImport(createImportDeclaration(undefined, undefined, undefined, createStringLiteral(moduleSpecifier)));
+				context.addImport(typescript.createImportDeclaration(undefined, undefined, undefined, typescript.createStringLiteral(moduleSpecifier)));
 			}
 
 			// Drop this CallExpression
@@ -95,11 +73,16 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 			// rather than generating a new unnecessary import
 			if (context.hasLocalForDefaultImportFromModule(moduleSpecifier)) {
 				const local = context.getLocalForDefaultImportFromModule(moduleSpecifier)!;
-				return createIdentifier(local);
+				return typescript.createIdentifier(local);
 			} else {
-				const identifier = createIdentifier(context.getFreeIdentifier(generateNameFromModuleSpecifier(moduleSpecifier)));
+				const identifier = typescript.createIdentifier(context.getFreeIdentifier(generateNameFromModuleSpecifier(moduleSpecifier)));
 				context.addImport(
-					createImportDeclaration(undefined, undefined, createImportClause(identifier, undefined), createStringLiteral(moduleSpecifier))
+					typescript.createImportDeclaration(
+						undefined,
+						undefined,
+						typescript.createImportClause(identifier, undefined),
+						typescript.createStringLiteral(moduleSpecifier)
+					)
 				);
 
 				// Replace the CallExpression by the identifier
@@ -113,10 +96,10 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 
 	// Find the first Element- or PropertyAccessExpression that wraps the require(...) call, whatever it is.
 	// That means that if it is wrapped in 'require(...)["foo"].bar', then the ElementAccessExpression will be matched first
-	const elementOrPropertyAccessExpressionParent = findNodeUp<PropertyAccessExpression | ElementAccessExpression>(
+	const elementOrPropertyAccessExpressionParent = findNodeUp<TS.PropertyAccessExpression | TS.ElementAccessExpression>(
 		node,
-		child => isElementAccessExpression(child) || isPropertyAccessExpression(child),
-		isStatementOrDeclaration
+		child => typescript.isElementAccessExpression(child) || typescript.isPropertyAccessExpression(child),
+		nextNode => isStatementOrDeclaration(nextNode, typescript)
 	);
 
 	if (elementOrPropertyAccessExpressionParent != null) {
@@ -124,11 +107,11 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 		let rightValue: string | undefined;
 
 		// If it is a PropertyAccessExpression, the name will always be an identifier
-		if (isPropertyAccessExpression(elementOrPropertyAccessExpressionParent)) {
+		if (typescript.isPropertyAccessExpression(elementOrPropertyAccessExpressionParent)) {
 			rightValue = elementOrPropertyAccessExpressionParent.name.text;
 		} else {
 			// Otherwise, the argument may be any kind of expression. Try to evaluate it to a string literal if possible
-			if (isStringLiteralLike(elementOrPropertyAccessExpressionParent.argumentExpression)) {
+			if (typescript.isStringLiteralLike(elementOrPropertyAccessExpressionParent.argumentExpression)) {
 				rightValue = elementOrPropertyAccessExpressionParent.argumentExpression.text;
 			}
 		}
@@ -138,40 +121,40 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 			// If the module doesn't include a named export with a name matching the right value,
 			// we should instead import the default export if it has any (otherwise we'll use a Namespace import) and replace the CallExpression with an identifier for it
 			if (!moduleExports.namedExports.has(rightValue)) {
-				let identifier: Identifier;
+				let identifier: TS.Identifier;
 
 				// If the default export is already imported, get the local binding name for it and create an identifier for it
 				// rather than generating a new unnecessary import
 				if (moduleExports.hasDefaultExport && context.hasLocalForDefaultImportFromModule(moduleSpecifier)) {
-					identifier = createIdentifier(context.getLocalForDefaultImportFromModule(moduleSpecifier)!);
+					identifier = typescript.createIdentifier(context.getLocalForDefaultImportFromModule(moduleSpecifier)!);
 				}
 
 				// If the namespace is already imported, get the local binding name for it and create an identifier for it
 				// rather than generating a new unnecessary import
 				else if (!moduleExports.hasDefaultExport && context.hasLocalForNamespaceImportFromModule(moduleSpecifier)) {
-					identifier = createIdentifier(context.getLocalForNamespaceImportFromModule(moduleSpecifier)!);
+					identifier = typescript.createIdentifier(context.getLocalForNamespaceImportFromModule(moduleSpecifier)!);
 				} else {
-					identifier = createIdentifier(context.getFreeIdentifier(generateNameFromModuleSpecifier(moduleSpecifier)));
+					identifier = typescript.createIdentifier(context.getFreeIdentifier(generateNameFromModuleSpecifier(moduleSpecifier)));
 					context.addImport(
-						createImportDeclaration(
+						typescript.createImportDeclaration(
 							undefined,
 							undefined,
 
 							moduleExports.hasDefaultExport
 								? // Import the default if it has any (or if we don't know if it has)
-								  createImportClause(identifier, undefined)
+								  typescript.createImportClause(identifier, undefined)
 								: // Otherwise, import the entire namespace
-								  createImportClause(undefined, createNamespaceImport(identifier)),
-							createStringLiteral(moduleSpecifier)
+								  typescript.createImportClause(undefined, typescript.createNamespaceImport(identifier)),
+							typescript.createStringLiteral(moduleSpecifier)
 						)
 					);
 				}
 
 				// Replace the CallExpression by an ObjectLiteral that can be accessed by the wrapping Element- or PropertyAccessExpression
-				return createObjectLiteral([
+				return typescript.createObjectLiteral([
 					identifier.text !== rightValue
-						? createPropertyAssignment(rightValue, createIdentifier(identifier.text))
-						: createShorthandPropertyAssignment(createIdentifier(identifier.text))
+						? typescript.createPropertyAssignment(rightValue, typescript.createIdentifier(identifier.text))
+						: typescript.createShorthandPropertyAssignment(typescript.createIdentifier(identifier.text))
 				]);
 			}
 
@@ -201,20 +184,23 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 						: context.getFreeIdentifier(importBindingPropertyName);
 
 					context.addImport(
-						createImportDeclaration(
+						typescript.createImportDeclaration(
 							undefined,
 							undefined,
-							createImportClause(
+							typescript.createImportClause(
 								undefined,
-								createNamedImports([
+								typescript.createNamedImports([
 									importBindingPropertyName === importBindingName
 										? // If the property name is free within the context, don't alias the import
-										  createImportSpecifier(undefined, createIdentifier(importBindingPropertyName))
+										  typescript.createImportSpecifier(undefined, typescript.createIdentifier(importBindingPropertyName))
 										: // Otherwise, import it aliased by another name that is free within the context
-										  createImportSpecifier(createIdentifier(importBindingPropertyName), createIdentifier(importBindingName))
+										  typescript.createImportSpecifier(
+												typescript.createIdentifier(importBindingPropertyName),
+												typescript.createIdentifier(importBindingName)
+										  )
 								])
 							),
-							createStringLiteral(moduleSpecifier)
+							typescript.createStringLiteral(moduleSpecifier)
 						)
 					);
 				}
@@ -223,10 +209,10 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 				// and isn't part of another expression such as a BinaryExpression, only preserve the import.
 				// Otherwise leave an ObjectLiteral that can be accessed by the wrapping Element- or PropertyAccessExpression
 				if (expressionStatementParent == null) {
-					return createObjectLiteral([
+					return typescript.createObjectLiteral([
 						importBindingName !== rightValue
-							? createPropertyAssignment(rightValue, createIdentifier(importBindingName))
-							: createShorthandPropertyAssignment(createIdentifier(importBindingName))
+							? typescript.createPropertyAssignment(rightValue, typescript.createIdentifier(importBindingName))
+							: typescript.createShorthandPropertyAssignment(typescript.createIdentifier(importBindingName))
 					]);
 				} else {
 					return undefined;
@@ -240,41 +226,41 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 
 	// Find the first VariableDeclaration that holds the require(...) call, if any.
 	// For example, 'const foo = require(...)' would match the VariableDeclaration for 'foo'
-	const variableDeclarationParent = findNodeUp(node, isVariableDeclaration, isStatement);
+	const variableDeclarationParent = findNodeUp(node, typescript.isVariableDeclaration, nextNode => isStatement(nextNode, typescript));
 
 	if (variableDeclarationParent != null) {
 		// If the VariableDeclaration is simply bound to a name, it doesn't tell us anything interesting.
 		// Simply add an import for the default export - if it has any (otherwise we'll import the entire namespace), and
 		// replace this CallExpression by an identifier for it
-		if (isIdentifier(variableDeclarationParent.name)) {
+		if (typescript.isIdentifier(variableDeclarationParent.name)) {
 			// If the default export is already imported, get the local binding name for it and create an identifier for it
 			// rather than generating a new unnecessary import
 			if (moduleExports.hasDefaultExport && context.hasLocalForDefaultImportFromModule(moduleSpecifier)) {
 				const local = context.getLocalForDefaultImportFromModule(moduleSpecifier)!;
-				return createIdentifier(local);
+				return typescript.createIdentifier(local);
 			}
 
 			// If the namespace is already imported, get the local binding name for it and create an identifier for it
 			// rather than generating a new unnecessary import
 			else if (!moduleExports.hasDefaultExport && context.hasLocalForNamespaceImportFromModule(moduleSpecifier)) {
 				const local = context.getLocalForNamespaceImportFromModule(moduleSpecifier)!;
-				return createIdentifier(local);
+				return typescript.createIdentifier(local);
 			}
 
 			// Otherwise proceed as planned
 			else {
-				const identifier = createIdentifier(context.getFreeIdentifier(generateNameFromModuleSpecifier(moduleSpecifier)));
+				const identifier = typescript.createIdentifier(context.getFreeIdentifier(generateNameFromModuleSpecifier(moduleSpecifier)));
 				context.addImport(
-					createImportDeclaration(
+					typescript.createImportDeclaration(
 						undefined,
 						undefined,
 
 						moduleExports.hasDefaultExport
 							? // Import the default if it has any (or if we don't know if it has)
-							  createImportClause(identifier, undefined)
+							  typescript.createImportClause(identifier, undefined)
 							: // Otherwise, import the entire namespace
-							  createImportClause(undefined, createNamespaceImport(identifier)),
-						createStringLiteral(moduleSpecifier)
+							  typescript.createImportClause(undefined, typescript.createNamespaceImport(identifier)),
+						typescript.createStringLiteral(moduleSpecifier)
 					)
 				);
 				return identifier;
@@ -285,14 +271,14 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 		// For example, 'const {foo, bar} = require("./bar")' could import the named export bindings 'foo' and 'bar' from the module './bar'.
 		// However, if as much as a single one of these elements don't directly match a named export, opt out of this behavior and instead
 		// import the default export (if it has any, otherwise import the entire namespace).
-		else if (isObjectBindingPattern(variableDeclarationParent.name)) {
-			const importSpecifiers: ImportSpecifier[] = [];
-			const skippedImportSpecifiers: ImportSpecifier[] = [];
+		else if (typescript.isObjectBindingPattern(variableDeclarationParent.name)) {
+			const importSpecifiers: TS.ImportSpecifier[] = [];
+			const skippedImportSpecifiers: TS.ImportSpecifier[] = [];
 
 			// Check each of the BindingElements
 			for (const element of variableDeclarationParent.name.elements) {
 				// If the property name isn't given, the name will always be an Identifier
-				if (element.propertyName == null && isIdentifier(element.name)) {
+				if (element.propertyName == null && typescript.isIdentifier(element.name)) {
 					// If the module exports contains a named export matching the identifier name,
 					// use that as an ImportSpecifier
 					if (moduleExports.namedExports.has(element.name.text)) {
@@ -301,18 +287,20 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 							const local = context.getLocalForNamedImportPropertyNameFromModule(element.name.text, moduleSpecifier)!;
 							skippedImportSpecifiers.push(
 								local === element.name.text
-									? createImportSpecifier(undefined, createIdentifier(local))
-									: createImportSpecifier(createIdentifier(element.name.text), createIdentifier(local))
+									? typescript.createImportSpecifier(undefined, typescript.createIdentifier(local))
+									: typescript.createImportSpecifier(typescript.createIdentifier(element.name.text), typescript.createIdentifier(local))
 							);
 						}
 
 						// If the name is free, just import it as it is
 						else if (context.isIdentifierFree(element.name.text)) {
-							importSpecifiers.push(createImportSpecifier(undefined, createIdentifier(element.name.text)));
+							importSpecifiers.push(typescript.createImportSpecifier(undefined, typescript.createIdentifier(element.name.text)));
 						} else {
 							// Otherwise, import it under an aliased name
 							const alias = context.getFreeIdentifier(element.name.text);
-							importSpecifiers.push(createImportSpecifier(createIdentifier(element.name.text), createIdentifier(alias)));
+							importSpecifiers.push(
+								typescript.createImportSpecifier(typescript.createIdentifier(element.name.text), typescript.createIdentifier(alias))
+							);
 						}
 					}
 				}
@@ -323,13 +311,15 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 				// and preserve the remaining BindingName.
 				// Since the ':bar' assignment comes from the VariableDeclaration that surrounds this CallExpression, we'll only
 				// need to import the actual named export without considering the alias
-				else if (element.propertyName != null && isIdentifier(element.propertyName)) {
+				else if (element.propertyName != null && typescript.isIdentifier(element.propertyName)) {
 					// If the name is free, just import it as it is
 					if (context.isIdentifierFree(element.propertyName.text)) {
-						importSpecifiers.push(createImportSpecifier(undefined, createIdentifier(element.propertyName.text)));
+						importSpecifiers.push(typescript.createImportSpecifier(undefined, typescript.createIdentifier(element.propertyName.text)));
 					} else {
 						const alias = context.getFreeIdentifier(element.propertyName.text);
-						importSpecifiers.push(createImportSpecifier(createIdentifier(element.propertyName.text), createIdentifier(alias)));
+						importSpecifiers.push(
+							typescript.createImportSpecifier(typescript.createIdentifier(element.propertyName.text), typescript.createIdentifier(alias))
+						);
 					}
 				}
 			}
@@ -341,30 +331,30 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 				// rather than generating a new unnecessary import
 				if (moduleExports.hasDefaultExport && context.hasLocalForDefaultImportFromModule(moduleSpecifier)) {
 					const local = context.getLocalForDefaultImportFromModule(moduleSpecifier)!;
-					return createIdentifier(local);
+					return typescript.createIdentifier(local);
 				}
 
 				// If the namespace is already imported, get the local binding name for it and create an identifier for it
 				// rather than generating a new unnecessary import
 				else if (!moduleExports.hasDefaultExport && context.hasLocalForNamespaceImportFromModule(moduleSpecifier)) {
 					const local = context.getLocalForNamespaceImportFromModule(moduleSpecifier)!;
-					return createIdentifier(local);
+					return typescript.createIdentifier(local);
 				}
 
 				// Otherwise proceed as planned
 				else {
-					const identifier = createIdentifier(context.getFreeIdentifier(generateNameFromModuleSpecifier(moduleSpecifier)));
+					const identifier = typescript.createIdentifier(context.getFreeIdentifier(generateNameFromModuleSpecifier(moduleSpecifier)));
 					context.addImport(
-						createImportDeclaration(
+						typescript.createImportDeclaration(
 							undefined,
 							undefined,
 
 							moduleExports.hasDefaultExport
 								? // Import the default if it has any (or if we don't know if it has)
-								  createImportClause(identifier, undefined)
+								  typescript.createImportClause(identifier, undefined)
 								: // Otherwise, import the entire namespace
-								  createImportClause(undefined, createNamespaceImport(identifier)),
-							createStringLiteral(moduleSpecifier)
+								  typescript.createImportClause(undefined, typescript.createNamespaceImport(identifier)),
+							typescript.createStringLiteral(moduleSpecifier)
 						)
 					);
 					return identifier;
@@ -376,20 +366,20 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 			else {
 				if (importSpecifiers.length > 0) {
 					context.addImport(
-						createImportDeclaration(
+						typescript.createImportDeclaration(
 							undefined,
 							undefined,
-							createImportClause(undefined, createNamedImports(importSpecifiers)),
-							createStringLiteral(moduleSpecifier)
+							typescript.createImportClause(undefined, typescript.createNamedImports(importSpecifiers)),
+							typescript.createStringLiteral(moduleSpecifier)
 						)
 					);
 				}
 
-				return createObjectLiteral(
+				return typescript.createObjectLiteral(
 					[...importSpecifiers, ...skippedImportSpecifiers].map(specifier =>
 						specifier.propertyName != null
-							? createPropertyAssignment(specifier.propertyName.text, createIdentifier(specifier.name.text))
-							: createShorthandPropertyAssignment(createIdentifier(specifier.name.text))
+							? typescript.createPropertyAssignment(specifier.propertyName.text, typescript.createIdentifier(specifier.name.text))
+							: typescript.createShorthandPropertyAssignment(typescript.createIdentifier(specifier.name.text))
 					)
 				);
 			}
@@ -398,7 +388,7 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 
 	// Otherwise, check if the require(...) call is part of another CallExpression.
 	// For example: 'myFunction(require(...)' or 'require(...)(...)'
-	const callExpressionParent = findNodeUp(node, isCallExpression, isStatementOrDeclaration);
+	const callExpressionParent = findNodeUp(node, typescript.isCallExpression, nextNode => isStatementOrDeclaration(nextNode, typescript));
 
 	// If it is wrapped in a CallExpression, import the default export if it has any (otherwise the entire namespace)
 	// and replace the require() call by an identifier for it
@@ -407,30 +397,30 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 		// rather than generating a new unnecessary import
 		if (moduleExports.hasDefaultExport && context.hasLocalForDefaultImportFromModule(moduleSpecifier)) {
 			const local = context.getLocalForDefaultImportFromModule(moduleSpecifier)!;
-			return createIdentifier(local);
+			return typescript.createIdentifier(local);
 		}
 
 		// If the namespace is already imported, get the local binding name for it and create an identifier for it
 		// rather than generating a new unnecessary import
 		else if (!moduleExports.hasDefaultExport && context.hasLocalForNamespaceImportFromModule(moduleSpecifier)) {
 			const local = context.getLocalForNamespaceImportFromModule(moduleSpecifier)!;
-			return createIdentifier(local);
+			return typescript.createIdentifier(local);
 		}
 
 		// Otherwise, proceed as planned
 		else {
-			const identifier = createIdentifier(context.getFreeIdentifier(generateNameFromModuleSpecifier(moduleSpecifier)));
+			const identifier = typescript.createIdentifier(context.getFreeIdentifier(generateNameFromModuleSpecifier(moduleSpecifier)));
 			context.addImport(
-				createImportDeclaration(
+				typescript.createImportDeclaration(
 					undefined,
 					undefined,
 
 					moduleExports.hasDefaultExport
 						? // Import the default if it has any (or if we don't know if it has)
-						  createImportClause(identifier, undefined)
+						  typescript.createImportClause(identifier, undefined)
 						: // Otherwise, import the entire namespace
-						  createImportClause(undefined, createNamespaceImport(identifier)),
-					createStringLiteral(moduleSpecifier)
+						  typescript.createImportClause(undefined, typescript.createNamespaceImport(identifier)),
+					typescript.createStringLiteral(moduleSpecifier)
 				)
 			);
 			return identifier;

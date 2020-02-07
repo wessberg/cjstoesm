@@ -1,13 +1,10 @@
-import * as ts from "typescript";
 import {isStatement} from "./is-statement";
 import {isDeclaration} from "./is-declaration";
+import {TS} from "../../type/type";
 
 /**
  * Returns true if the given Node is a Statement is a Declaration
- *
- * @param node
- * @return
  */
-export function isStatementOrDeclaration(node: ts.Node): node is ts.Statement | ts.Declaration {
-	return isStatement(node) || isDeclaration(node);
+export function isStatementOrDeclaration(node: TS.Node, typescript: typeof TS): node is TS.Statement | TS.Declaration {
+	return isStatement(node, typescript) || isDeclaration(node, typescript);
 }

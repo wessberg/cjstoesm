@@ -102,8 +102,8 @@ test("Converts require calls wrapped in ElementAccessExpressions to NamedImportB
 	t.deepEqual(
 		formatCode(file.text),
 		formatCode(`\
-		import {BAR as BAR_$0} from "./foo";
-		const BAR = {BAR: BAR_$0}["BAR"];
+		import {BAR as BAR$0} from "./foo";
+		const BAR = {BAR: BAR$0}["BAR"];
 		`)
 	);
 });
@@ -211,8 +211,8 @@ test("Converts require calls wrapped in non-statically analyzable ElementAccessE
 	t.deepEqual(
 		formatCode(file.text),
 		formatCode(`\
-		import * as foo_$0 from "./foo";
-		const foo = foo_$0[BAR];
+		import * as foo$0 from "./foo";
+		const foo = foo$0[BAR];
 		`)
 	);
 });
@@ -238,8 +238,8 @@ test("Converts require calls wrapped in non-statically analyzable ElementAccessE
 	t.deepEqual(
 		formatCode(file.text),
 		formatCode(`\
-		import * as foo_$0 from "./foo";
-		const {foo} = foo_$0[BAR];
+		import * as foo$0 from "./foo";
+		const {foo} = foo$0[BAR];
 		`)
 	);
 });
@@ -318,8 +318,8 @@ test("Converts require calls wrapped in PropertyAccessExpressions to NamedImport
 	t.deepEqual(
 		formatCode(file.text),
 		formatCode(`\
-		import {BAR as BAR_$0} from "./foo";
-		const BAR = {BAR: BAR_$0}.BAR
+		import {BAR as BAR$0} from "./foo";
+		const BAR = {BAR: BAR$0}.BAR
 		`)
 	);
 });
@@ -413,8 +413,8 @@ test("Can handle immediately-invoked require calls. #1", t => {
 	t.deepEqual(
 		formatCode(file.text),
 		formatCode(`\
-		import foo_$0 from "foo";
-		const foo = foo_$0("bar");
+		import foo$0 from "foo";
+		const foo = foo$0("bar");
 		`)
 	);
 });
@@ -440,8 +440,8 @@ test("Can handle immediately-invoked require calls. #2", t => {
 	t.deepEqual(
 		formatCode(file.text),
 		formatCode(`\
-		import {bar as bar_$0} from "./foo";
-		const bar = {bar: bar_$0}.bar("bar");
+		import {bar as bar$0} from "./foo";
+		const bar = {bar: bar$0}.bar("bar");
 		`)
 	);
 });
@@ -495,8 +495,8 @@ test("Can handle immediately-invoked require calls. #4", t => {
 	t.deepEqual(
 		formatCode(file.text),
 		formatCode(`\
-		import {bar as bar_$0} from "./foo";
-		const foo = {bar: bar_$0}.bar("bar");
+		import {bar as bar$0} from "./foo";
+		const foo = {bar: bar$0}.bar("bar");
 		const bar = 2;
 		`)
 	);
@@ -701,8 +701,8 @@ test("Handles anonymous require calls. #7", t => {
 	t.deepEqual(
 		formatCode(file.text),
 		formatCode(`\
-		import foo_$0 from "./foo";
-		const foo = foo_$0 ? true : false;
+		import foo$0 from "./foo";
+		const foo = foo$0 ? true : false;
 		`)
 	);
 });
@@ -717,9 +717,9 @@ test("Deconflicts named imports for anonymous require calls. #1", t => {
 	t.deepEqual(
 		formatCode(file.text),
 		formatCode(`\
-		import foo_$0 from "foo";
+		import foo$0 from "foo";
 		const foo = 2;
-		myFunction(foo_$0);
+		myFunction(foo$0);
 		`)
 	);
 });
@@ -779,9 +779,9 @@ test("Deconflicts named imports for anonymous require calls. #4", t => {
 	t.deepEqual(
 		formatCode(file.text),
 		formatCode(`\
-		import {foo as foo_$0} from "./foo";
+		import {foo as foo$0} from "./foo";
 		const foo = 2;
-		const {foo: {bar: baz}} = {foo: foo_$0};
+		const {foo: {bar: baz}} = {foo: foo$0};
 		`)
 	);
 });
@@ -795,8 +795,8 @@ test("Won't use reserved identifiers as generated names for import bindings. #1"
 	t.deepEqual(
 		formatCode(file.text),
 		formatCode(`\
-		import export_$0 from "export";
-		export_$0("foo");
+		import export$0 from "export";
+		export$0("foo");
 		`)
 	);
 });
@@ -851,8 +851,8 @@ test("Won't generate NamedImports when the module that is being imported from ha
 	t.deepEqual(
 		formatCode(file.text),
 		formatCode(`\
-		import foo_$0 from "foo";
-		const foo = foo_$0.bar("bar");
+		import foo$0 from "foo";
+		const foo = foo$0.bar("bar");
 		const bar = 2;
 		`)
 	);
@@ -868,9 +868,9 @@ test("Won't generate NamedImports when the module that is being imported from ha
 	t.deepEqual(
 		formatCode(file.text),
 		formatCode(`\
-		import foo_$0 from "foo";
+		import foo$0 from "foo";
 		const foo = 2;
-		const {foo: {bar: baz}} = foo_$0;
+		const {foo: {bar: baz}} = foo$0;
 		`)
 	);
 });
@@ -883,8 +883,8 @@ test("Won't generate NamedImports when the module that is being imported from ha
 	t.deepEqual(
 		formatCode(file.text),
 		formatCode(`\
-		import foo_$0 from "foo";
-		const foo = foo_$0.bar("bar");
+		import foo$0 from "foo";
+		const foo = foo$0.bar("bar");
 		`)
 	);
 });
@@ -897,8 +897,8 @@ test("Won't generate NamedImports when the module that is being imported from ha
 	t.deepEqual(
 		formatCode(file.text),
 		formatCode(`\
-		import foo_$0 from "./foo";
-		const {foo} = (foo_$0.BAR);
+		import foo$0 from "./foo";
+		const {foo} = (foo$0.BAR);
 		`)
 	);
 });
@@ -925,8 +925,8 @@ test("Won't generate NamedImports when the module that is being imported from ha
 	t.deepEqual(
 		formatCode(file.text),
 		formatCode(`\
-		import foo_$0 from "./foo";
-		const foo = foo_$0[BAR];
+		import foo$0 from "./foo";
+		const foo = foo$0[BAR];
 		`)
 	);
 });
@@ -939,8 +939,8 @@ test("Won't generate NamedImports when the module that is being imported from ha
 	t.deepEqual(
 		formatCode(file.text),
 		formatCode(`\
-		import foo_$0 from "./foo";
-		const {foo} = foo_$0[BAR];
+		import foo$0 from "./foo";
+		const {foo} = foo$0[BAR];
 		`)
 	);
 });
@@ -1060,9 +1060,9 @@ test("Won't duplicate imports of the same default export. #3", t => {
 	t.deepEqual(
 		formatCode(file.text),
 		formatCode(`\
-		import foo_$0 from "foo";
-		const foo = foo_$0.foo;
-		const bar = foo_$0.bar;
+		import foo$0 from "foo";
+		const foo = foo$0.foo;
+		const bar = foo$0.bar;
 		`)
 	);
 });

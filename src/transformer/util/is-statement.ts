@@ -1,12 +1,9 @@
-import * as ts from "typescript";
+import {TS} from "../../type/type";
 
 /**
  * Returns true if the given Node is a Statement
  * Uses an internal non-exposed Typescript helper to decide whether or not the Node is an Expression
- *
- * @param node
- * @return
  */
-export function isStatement(node: ts.Node): node is ts.Statement {
-	return ((ts as unknown) as {isStatementButNotDeclaration(node: ts.Node): boolean}).isStatementButNotDeclaration(node);
+export function isStatement(node: TS.Node, typescript: typeof TS): node is TS.Statement {
+	return ((typescript as unknown) as {isStatementButNotDeclaration(node: TS.Node): boolean}).isStatementButNotDeclaration(node);
 }

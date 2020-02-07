@@ -1,5 +1,5 @@
-import {ImportDeclaration, Node, VisitResult} from "typescript";
 import {BeforeVisitorOptions} from "../before-visitor-options";
+import {TS} from "../../../../type/type";
 
 /**
  * Visits the given ImportDeclaration
@@ -7,7 +7,7 @@ import {BeforeVisitorOptions} from "../before-visitor-options";
  * @param options
  * @returns
  */
-export function visitImportDeclaration({node, context}: BeforeVisitorOptions<ImportDeclaration>): VisitResult<Node> {
+export function visitImportDeclaration({node, context}: BeforeVisitorOptions<TS.ImportDeclaration>): TS.VisitResult<TS.Node> {
 	context.addImport(node, true);
 	return undefined;
 }

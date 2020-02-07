@@ -1,12 +1,9 @@
-import * as ts from "typescript";
+import {TS} from "../../type/type";
 
 /**
  * Returns true if the given Node is an Expression.
  * Uses an internal non-exposed Typescript helper to decide whether or not the Node is an Expression
- *
- * @param node
- * @return
  */
-export function isExpression(node: ts.Node): node is ts.Expression {
-	return ((ts as unknown) as {isExpressionNode(node: ts.Node): boolean}).isExpressionNode(node) || ts.isIdentifier(node);
+export function isExpression(node: TS.Node, typescript: typeof TS): node is TS.Expression {
+	return ((typescript as unknown) as {isExpressionNode(node: TS.Node): boolean}).isExpressionNode(node) || typescript.isIdentifier(node);
 }

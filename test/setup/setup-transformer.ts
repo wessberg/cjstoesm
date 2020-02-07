@@ -1,17 +1,8 @@
 import {join, normalize} from "path";
 import {cjsToEsm} from "../../src/transformer/cjs-to-esm";
-import {
-	CompilerOptions,
-	createProgram,
-	createSourceFile,
-	getDefaultLibFileName,
-	ModuleKind,
-	ScriptKind,
-	ScriptTarget,
-	SourceFile,
-	sys
-} from "typescript";
 import {isInDebugMode} from "../util/is-in-debug-mode";
+import {TS} from "../../src/type/type";
+import * as typescript from "typescript";
 
 // tslint:disable:no-any
 
@@ -25,8 +16,6 @@ export type TestFile = ITestFile | string;
 
 /**
  * Prepares a test
- * @param {ITestFile[]|TestFile} inputFiles
- * @returns {Promise<{fileName: string, text: string}[]>}
  */
 export function generateTransformerResult(inputFiles: TestFile[] | TestFile): {fileName: string; text: string}[] {
 	const cwd = process.cwd();
@@ -62,26 +51,26 @@ export function generateTransformerResult(inputFiles: TestFile[] | TestFile): {f
 
 	const transformers = cjsToEsm({readFile, fileExists, debug: isInDebugMode()});
 
-	const compilerOptions: CompilerOptions = {
-		module: ModuleKind.ESNext,
-		target: ScriptTarget.ESNext,
+	const compilerOptions: TS.CompilerOptions = {
+		module: typescript.ModuleKind.ESNext,
+		target: typescript.ScriptTarget.ESNext,
 		allowJs: true,
 		sourceMap: false
 	};
 
-	const program = createProgram({
+	const program = typescript.createProgram({
 		rootNames: files.map(file => file.fileName),
 		options: compilerOptions,
 		host: {
 			writeFile: () => {},
 			readFile,
 			fileExists,
-			getSourceFile(fileName: string, languageVersion: ScriptTarget): SourceFile | undefined {
+			getSourceFile(fileName: string, languageVersion: TS.ScriptTarget): TS.SourceFile | undefined {
 				const normalized = normalize(fileName);
 				const sourceText = this.readFile(normalized);
 				if (sourceText == null) return undefined;
 
-				return createSourceFile(normalized, sourceText, languageVersion, true, ScriptKind.TS);
+				return typescript.createSourceFile(normalized, sourceText, languageVersion, true, typescript.ScriptKind.TS);
 			},
 
 			getCurrentDirectory() {
@@ -90,11 +79,11 @@ export function generateTransformerResult(inputFiles: TestFile[] | TestFile): {f
 
 			getDirectories(directoryName: string) {
 				const normalized = normalize(directoryName);
-				return sys.getDirectories(normalized);
+				return typescript.sys.getDirectories(normalized);
 			},
 
-			getDefaultLibFileName(options: CompilerOptions): string {
-				return getDefaultLibFileName(options);
+			getDefaultLibFileName(options: TS.CompilerOptions): string {
+				return typescript.getDefaultLibFileName(options);
 			},
 
 			getCanonicalFileName(fileName: string): string {
@@ -102,11 +91,11 @@ export function generateTransformerResult(inputFiles: TestFile[] | TestFile): {f
 			},
 
 			getNewLine(): string {
-				return sys.newLine;
+				return typescript.sys.newLine;
 			},
 
 			useCaseSensitiveFileNames() {
-				return sys.useCaseSensitiveFileNames;
+				return typescript.sys.useCaseSensitiveFileNames;
 			}
 		}
 	});

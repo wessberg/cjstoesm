@@ -1,19 +1,19 @@
-import {BindingName, isIdentifier, isObjectBindingPattern, isOmittedExpression} from "typescript";
+import {TS} from "../../type/type";
 
-export function getLocalsForBindingName(name: BindingName): string[] {
-	if (isIdentifier(name)) {
+export function getLocalsForBindingName(name: TS.BindingName, typescript: typeof TS): string[] {
+	if (typescript.isIdentifier(name)) {
 		return [name.text];
-	} else if (isObjectBindingPattern(name)) {
+	} else if (typescript.isObjectBindingPattern(name)) {
 		const locals: string[] = [];
 		for (const element of name.elements) {
-			locals.push(...getLocalsForBindingName(element.name));
+			locals.push(...getLocalsForBindingName(element.name, typescript));
 		}
 		return locals;
 	} else {
 		const locals: string[] = [];
 		for (const element of name.elements) {
-			if (isOmittedExpression(element)) continue;
-			locals.push(...getLocalsForBindingName(element.name));
+			if (typescript.isOmittedExpression(element)) continue;
+			locals.push(...getLocalsForBindingName(element.name, typescript));
 		}
 		return locals;
 	}

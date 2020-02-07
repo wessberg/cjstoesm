@@ -1,13 +1,10 @@
-import {ExportDeclaration, Node, VisitResult} from "typescript";
 import {BeforeVisitorOptions} from "../before-visitor-options";
+import {TS} from "../../../../type/type";
 
 /**
  * Visits the given ExportDeclaration
- *
- * @param options
- * @returns
  */
-export function visitExportDeclaration({node, context}: BeforeVisitorOptions<ExportDeclaration>): VisitResult<Node> {
+export function visitExportDeclaration({node, context}: BeforeVisitorOptions<TS.ExportDeclaration>): TS.VisitResult<TS.Node> {
 	if (node.exportClause != null) {
 		for (const element of node.exportClause.elements) {
 			// If the name is 'default' that name is considered special since it represents the default export

@@ -1,23 +1,3 @@
-import {
-	createNotEmittedStatement,
-	ImportDeclaration,
-	isExportAssignment,
-	isExportDeclaration,
-	isIdentifier,
-	isImportDeclaration,
-	isNamedImports,
-	isNamespaceImport,
-	isStringLiteralLike,
-	isVariableStatement,
-	Modifier,
-	Node,
-	SourceFile,
-	Statement,
-	SyntaxKind,
-	TransformationContext,
-	updateSourceFileNode,
-	visitEachChild
-} from "typescript";
 import {visitNode} from "./visitor/visit/visit-node";
 import {BeforeVisitorContext} from "./visitor/before-visitor-context";
 import {BeforeVisitorOptions} from "./visitor/before-visitor-options";
@@ -29,33 +9,36 @@ import {shouldSkipEmit} from "../util/should-skip-emit";
 import {ModuleExports} from "../module-exports/module-exports";
 import {visitImportAndExportDeclarations} from "./visitor/visit/visit-import-and-export-declarations";
 import {normalize} from "path";
+import {TS} from "../../type/type";
 
 export interface BeforeTransformerSourceFileStepResult {
-	sourceFile: SourceFile;
+	sourceFile: TS.SourceFile;
 	exports: ModuleExports;
 }
 
 export function transformSourceFile(
-	sourceFile: SourceFile,
+	sourceFile: TS.SourceFile,
 	{baseVisitorContext}: BeforeTransformerOptions,
-	context: TransformationContext
+	context: TS.TransformationContext
 ): BeforeTransformerSourceFileStepResult {
 	// Take a fast path of the text of the SourceFile doesn't contain anything that can be transformed
 	if (!baseVisitorContext.onlyExports && !sourceFile.text.includes("require") && !sourceFile.text.includes("exports")) {
 		return {sourceFile, exports: {namedExports: new Set(), hasDefaultExport: false}};
 	}
 
+	const {typescript} = baseVisitorContext;
+
 	// Prepare a VisitorContext
 	const visitorContext = ((): BeforeVisitorContext => {
-		const imports: Map<ImportDeclaration, boolean> = new Map();
-		const trailingStatements: Statement[] = [];
+		const imports: Map<TS.ImportDeclaration, boolean> = new Map();
+		const trailingStatements: TS.Statement[] = [];
 		const moduleExportsMap: Map<string, ModuleExports> = new Map();
 		const localsMap = (sourceFile as {locals?: Map<string, symbol>}).locals;
 		const locals = localsMap == null ? new Set() : new Set(localsMap.keys());
 		const exportedLocals = new Set<string>();
 		let isDefaultExported = false;
 
-		const addImport = (declaration: ImportDeclaration, noEmit = false): void => {
+		const addImport = (declaration: TS.ImportDeclaration, noEmit = false): void => {
 			imports.set(declaration, noEmit);
 		};
 
@@ -69,11 +52,11 @@ export function transformSourceFile(
 			isDefaultExported = true;
 		};
 
-		const getImportDeclarationWithModuleSpecifier = (moduleSpecifier: string): ImportDeclaration | undefined =>
+		const getImportDeclarationWithModuleSpecifier = (moduleSpecifier: string): TS.ImportDeclaration | undefined =>
 			[...imports.keys()].find(
 				declaration =>
 					declaration.moduleSpecifier != null &&
-					isStringLiteralLike(declaration.moduleSpecifier) &&
+					typescript.isStringLiteralLike(declaration.moduleSpecifier) &&
 					declaration.moduleSpecifier.text === moduleSpecifier
 			);
 
@@ -103,7 +86,7 @@ export function transformSourceFile(
 			if (
 				matchingDeclaration.importClause == null ||
 				matchingDeclaration.importClause.namedBindings == null ||
-				!isNamespaceImport(matchingDeclaration.importClause.namedBindings)
+				!typescript.isNamespaceImport(matchingDeclaration.importClause.namedBindings)
 			) {
 				return undefined;
 			}
@@ -118,7 +101,7 @@ export function transformSourceFile(
 			if (
 				matchingDeclaration.importClause == null ||
 				matchingDeclaration.importClause.namedBindings == null ||
-				!isNamedImports(matchingDeclaration.importClause.namedBindings)
+				!typescript.isNamedImports(matchingDeclaration.importClause.namedBindings)
 			) {
 				return undefined;
 			}
@@ -132,7 +115,7 @@ export function transformSourceFile(
 		const hasLocalForNamedImportPropertyNameFromModule = (propertyName: string, moduleSpecifier: string): boolean =>
 			getLocalForNamedImportPropertyNameFromModule(propertyName, moduleSpecifier) != null;
 
-		const addTrailingStatements = (...statements: Statement[]): void => {
+		const addTrailingStatements = (...statements: TS.Statement[]): void => {
 			trailingStatements.push(...statements);
 		};
 
@@ -147,7 +130,7 @@ export function transformSourceFile(
 		const ignoreIdentifier = (identifier: string): boolean => locals.delete(identifier);
 
 		const getFreeIdentifier = (candidate: string): string => {
-			const suffix = "_$";
+			const suffix = "$";
 			let counter = 0;
 
 			if (isIdentifierFree(candidate)) {
@@ -169,6 +152,7 @@ export function transformSourceFile(
 		return {
 			...baseVisitorContext,
 			transformationContext: context,
+			exportsName: undefined,
 			addImport,
 			markLocalAsExported,
 			markDefaultAsExported,
@@ -202,7 +186,7 @@ export function transformSourceFile(
 		};
 	})();
 
-	const visitorBaseOptions: Pick<BeforeVisitorOptions<Node>, Exclude<keyof BeforeVisitorOptions<Node>, "node" | "sourceFile">> = {
+	const visitorBaseOptions: Pick<BeforeVisitorOptions<TS.Node>, Exclude<keyof BeforeVisitorOptions<TS.Node>, "node" | "sourceFile">> = {
 		context: visitorContext,
 
 		continuation: node =>
@@ -212,7 +196,7 @@ export function transformSourceFile(
 				node
 			}),
 		childContinuation: node =>
-			visitEachChild(
+			typescript.visitEachChild(
 				node,
 				cbNode => {
 					const visitResult = visitNode({
@@ -220,8 +204,8 @@ export function transformSourceFile(
 						sourceFile,
 						node: cbNode
 					});
-					if (shouldSkipEmit(visitResult)) {
-						return createNotEmittedStatement(cbNode);
+					if (shouldSkipEmit(visitResult, typescript)) {
+						return typescript.createNotEmittedStatement(cbNode);
 					}
 					return visitResult;
 				},
@@ -229,7 +213,7 @@ export function transformSourceFile(
 			)
 	};
 
-	const importVisitorBaseOptions: Pick<BeforeVisitorOptions<Node>, Exclude<keyof BeforeVisitorOptions<Node>, "node" | "sourceFile">> = {
+	const importVisitorBaseOptions: Pick<BeforeVisitorOptions<TS.Node>, Exclude<keyof BeforeVisitorOptions<TS.Node>, "node" | "sourceFile">> = {
 		context: visitorContext,
 
 		continuation: node =>
@@ -239,7 +223,7 @@ export function transformSourceFile(
 				node
 			}),
 		childContinuation: node =>
-			visitEachChild(
+			typescript.visitEachChild(
 				node,
 				cbNode => {
 					const visitResult = visitImportAndExportDeclarations({
@@ -247,8 +231,8 @@ export function transformSourceFile(
 						sourceFile,
 						node: cbNode
 					});
-					if (shouldSkipEmit(visitResult)) {
-						return createNotEmittedStatement(cbNode);
+					if (shouldSkipEmit(visitResult, typescript)) {
+						return typescript.createNotEmittedStatement(cbNode);
 					}
 					return visitResult;
 				},
@@ -259,27 +243,27 @@ export function transformSourceFile(
 	// Visit all imports and exports first
 	visitImportAndExportDeclarations({...importVisitorBaseOptions, sourceFile, node: sourceFile});
 
-	let updatedSourceFile = visitNode({...visitorBaseOptions, sourceFile, node: sourceFile}) as SourceFile;
+	let updatedSourceFile = visitNode({...visitorBaseOptions, sourceFile, node: sourceFile}) as TS.SourceFile;
 
-	const allImports: Statement[] = [
+	const allImports: TS.Statement[] = [
 		...visitorContext.imports,
-		...updatedSourceFile.statements.filter(isImportDeclaration),
-		...visitorContext.trailingStatements.filter(isImportDeclaration)
+		...updatedSourceFile.statements.filter(typescript.isImportDeclaration),
+		...visitorContext.trailingStatements.filter(typescript.isImportDeclaration)
 	];
 
-	const allExports: Statement[] = [
-		...updatedSourceFile.statements.filter(statement => isExportDeclaration(statement) || isExportAssignment(statement)),
-		...visitorContext.trailingStatements.filter(statement => isExportDeclaration(statement) || isExportAssignment(statement))
+	const allExports: TS.Statement[] = [
+		...updatedSourceFile.statements.filter(statement => typescript.isExportDeclaration(statement) || typescript.isExportAssignment(statement)),
+		...visitorContext.trailingStatements.filter(statement => typescript.isExportDeclaration(statement) || typescript.isExportAssignment(statement))
 	];
 
 	const allOtherStatements = [
 		...updatedSourceFile.statements.filter(
-			statement => !allImports.includes(statement) && !allExports.includes(statement) && statement.kind !== SyntaxKind.NotEmittedStatement
+			statement => !allImports.includes(statement) && !allExports.includes(statement) && statement.kind !== typescript.SyntaxKind.NotEmittedStatement
 		),
 		...visitorContext.trailingStatements.filter(statement => !allImports.includes(statement) && !allExports.includes(statement))
 	];
 
-	updatedSourceFile = updateSourceFileNode(
+	updatedSourceFile = typescript.updateSourceFileNode(
 		updatedSourceFile,
 		[...allImports, ...allOtherStatements, ...allExports],
 		sourceFile.isDeclarationFile,
@@ -296,22 +280,22 @@ export function transformSourceFile(
 	};
 
 	for (const statement of updatedSourceFile.statements) {
-		if (isExportDeclaration(statement) && statement.exportClause != null) {
+		if (typescript.isExportDeclaration(statement) && statement.exportClause != null) {
 			for (const element of statement.exportClause.elements) {
 				moduleExports.namedExports.add(element.name.text);
 			}
-		} else if (isExportAssignment(statement)) {
+		} else if (typescript.isExportAssignment(statement)) {
 			moduleExports.hasDefaultExport = true;
-		} else if (statement.modifiers != null && statement.modifiers.some((m: Modifier) => m.kind === SyntaxKind.ExportKeyword)) {
-			if (statement.modifiers.some((m: Modifier) => m.kind === SyntaxKind.DefaultKeyword)) {
+		} else if (statement.modifiers != null && statement.modifiers.some((m: TS.Modifier) => m.kind === typescript.SyntaxKind.ExportKeyword)) {
+			if (statement.modifiers.some((m: TS.Modifier) => m.kind === typescript.SyntaxKind.DefaultKeyword)) {
 				moduleExports.hasDefaultExport = true;
-			} else if (isVariableStatement(statement)) {
+			} else if (typescript.isVariableStatement(statement)) {
 				for (const declaration of statement.declarationList.declarations) {
-					for (const local of getLocalsForBindingName(declaration.name)) {
+					for (const local of getLocalsForBindingName(declaration.name, typescript)) {
 						moduleExports.namedExports.add(local);
 					}
 				}
-			} else if (isNamedDeclaration(statement) && statement.name != null && isIdentifier(statement.name)) {
+			} else if (isNamedDeclaration(statement, typescript) && statement.name != null && typescript.isIdentifier(statement.name)) {
 				moduleExports.namedExports.add(statement.name.text);
 			}
 		}

@@ -386,6 +386,7 @@ You can provide options to the `cjsToEsm` Custom Transformer to configure its be
 | `debug` _(optional)_      | If `true`, errors will be thrown if unexpected or unhandled cases are encountered. Additionally, debugging information will be printed during transpilation. |
 | `readFile` _(optional)_   | A function that will receive a file name and encoding and must return its string contents if possible, and if not, return `undefined`.                       |
 | `fileExists` _(optional)_ | A function that will receive a file name and must return true if it exists, and false otherwise                                                              |
+| `typescript` _(optional)_ | If given, the TypeScript version to use internally for all operations.                                                                                       |
 
 <!-- SHADOW_SECTION_CONTRIBUTING_START -->
 

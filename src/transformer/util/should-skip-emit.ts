@@ -1,15 +1,17 @@
-import {forEachChild, isSourceFile, Node, VisitResult} from "typescript";
 import {isNotEmittedStatement} from "../before/visitor/visit/is-not-emitted-statement";
+import {TS} from "../../type/type";
 
 /**
  * Returns true if the given Node contains an empty child
- *
- * @param node
- * @return
  */
-export function shouldSkipEmit(node: VisitResult<Node>): boolean {
+export function shouldSkipEmit(node: TS.VisitResult<TS.Node>, typescript: typeof TS): boolean {
 	if (node == null) return true;
-	if (Array.isArray(node)) return node.some(shouldSkipEmit);
-	if (isSourceFile(node)) return false;
-	return isNotEmittedStatement(node) || Boolean(forEachChild<boolean>(node, shouldSkipEmit));
+	if (Array.isArray(node)) return node.some(otherNode => shouldSkipEmit(otherNode, typescript));
+	if (typescript.isSourceFile(node)) return false;
+	return (
+		isNotEmittedStatement(node, typescript) ||
+		Boolean(
+			typescript.forEachChild<boolean>(node, nextNode => shouldSkipEmit(nextNode, typescript))
+		)
+	);
 }

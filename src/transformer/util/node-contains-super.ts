@@ -1,6 +1,6 @@
-import {forEachChild, Node, SyntaxKind} from "typescript";
+import {TS} from "../../type/type";
 
-export function nodeContainsSuper<T extends Node>(node: T): boolean {
-	if (node.kind === SyntaxKind.ThisKeyword) return true;
-	return forEachChild<boolean>(node, nodeContainsSuper) === true;
+export function nodeContainsSuper<T extends TS.Node>(node: T, typescript: typeof TS): boolean {
+	if (node.kind === typescript.SyntaxKind.ThisKeyword) return true;
+	return typescript.forEachChild<boolean>(node, nextNode => nodeContainsSuper(nextNode, typescript)) === true;
 }

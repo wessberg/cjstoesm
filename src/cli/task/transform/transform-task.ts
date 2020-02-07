@@ -2,24 +2,14 @@ import {TransformTaskOptions} from "./transform-task-options";
 import {CONSTANT} from "../../constant/constant";
 import {inspect} from "util";
 import {sync} from "glob";
-import {
-	CompilerOptions,
-	createCompilerHost,
-	createEmptyStatement,
-	createPrinter,
-	createProgram,
-	NewLineKind,
-	ScriptTarget,
-	sys,
-	TransformationContext
-} from "typescript";
 import {normalize, dirname, isAbsolute, join, relative} from "path";
 import {cjsToEsmTransformerFactory} from "../../../transformer/cjs-to-esm-transformer-factory";
+import {TS} from "../../../type/type";
 
 /**
  * Executes the 'generate' task
  */
-export async function transformTask({logger, input, outDir, root, fs}: TransformTaskOptions): Promise<void> {
+export async function transformTask({logger, input, outDir, root, fs, typescript}: TransformTaskOptions): Promise<void> {
 	if (input == null) {
 		throw new ReferenceError(`Missing required argument: 'input'`);
 	}
@@ -38,28 +28,28 @@ export async function transformTask({logger, input, outDir, root, fs}: Transform
 	logger.debug(`Matched files:`, matchedFiles.size < 1 ? "(none)" : [...matchedFiles].map(f => `"${f}"`).join(", "));
 
 	// Prepare CompilerOptions
-	const options: CompilerOptions = {
-		target: ScriptTarget.ESNext,
+	const options: TS.CompilerOptions = {
+		target: typescript.ScriptTarget.ESNext,
 		allowJs: true,
 		declaration: false,
 		outDir,
 		sourceMap: false,
-		newLine: sys.newLine === "\n" ? NewLineKind.LineFeed : NewLineKind.CarriageReturnLineFeed,
+		newLine: typescript.sys.newLine === "\n" ? typescript.NewLineKind.LineFeed : typescript.NewLineKind.CarriageReturnLineFeed,
 		rootDir: root
 	};
 
 	// Create a printer
-	const printer = createPrinter({newLine: options.newLine});
+	const printer = typescript.createPrinter({newLine: options.newLine});
 
 	// Create a TypeScript program based on the glob
-	const program = createProgram({
+	const program = typescript.createProgram({
 		rootNames: [...matchedFiles],
 		options,
-		host: createCompilerHost(options, true)
+		host: typescript.createCompilerHost(options, true)
 	});
 
 	// Prepare a noop TransformationContext
-	const context: TransformationContext = {
+	const context: TS.TransformationContext = {
 		enableEmitNotification: () => {
 			// This is OK
 		},
@@ -82,7 +72,7 @@ export async function transformTask({logger, input, outDir, root, fs}: Transform
 		onEmitNode: () => {
 			// This is OK
 		},
-		onSubstituteNode: () => createEmptyStatement(),
+		onSubstituteNode: () => typescript.createEmptyStatement(),
 		readEmitHelpers: () => [],
 		requestEmitHelper: () => {
 			// This is OK

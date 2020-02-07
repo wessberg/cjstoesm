@@ -1,19 +1,19 @@
-import {Expression, isAsExpression, isExpressionWithTypeArguments, isNonNullExpression, isParenthesizedExpression, isTypeAssertion} from "typescript";
-
 /**
  * Returns the given Expression itself if it isn't considered a "filler node"
  *
  * @param expression
  * @returns
  */
-export function walkThroughFillerNodes(expression: Expression): Expression {
+import {TS} from "../../type/type";
+
+export function walkThroughFillerNodes(expression: TS.Expression, typescript: typeof TS): TS.Expression {
 	if (
-		isParenthesizedExpression(expression) ||
-		isAsExpression(expression) ||
-		isTypeAssertion(expression) ||
-		isNonNullExpression(expression) ||
-		isTypeAssertion(expression) ||
-		isExpressionWithTypeArguments(expression)
+		typescript.isParenthesizedExpression(expression) ||
+		typescript.isAsExpression(expression) ||
+		typescript.isTypeAssertion(expression) ||
+		typescript.isNonNullExpression(expression) ||
+		typescript.isTypeAssertion(expression) ||
+		typescript.isExpressionWithTypeArguments(expression)
 	) {
 		return expression.expression;
 	}

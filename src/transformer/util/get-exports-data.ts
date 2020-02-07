@@ -1,32 +1,32 @@
-import {Expression, isElementAccessExpression, isIdentifier, isPropertyAccessExpression, isStringLiteralLike} from "typescript";
 import {walkThroughFillerNodes} from "./walk-through-filler-nodes";
+import {TS} from "../../type/type";
 
 export interface ExportsData {
 	property: string;
 }
 
-export function getExportsData(expression: Expression): Partial<ExportsData> | undefined {
-	expression = walkThroughFillerNodes(expression);
+export function getExportsData(expression: TS.Expression, exportsName = "exports", typescript: typeof TS): Partial<ExportsData> | undefined {
+	expression = walkThroughFillerNodes(expression, typescript);
 
-	if (isIdentifier(expression)) {
-		if (expression.text === "exports") {
+	if (typescript.isIdentifier(expression)) {
+		if (expression.text === exportsName) {
 			return {};
 		} else {
 			return undefined;
 		}
-	} else if (isPropertyAccessExpression(expression)) {
-		const left = walkThroughFillerNodes(expression.expression);
+	} else if (typescript.isPropertyAccessExpression(expression)) {
+		const left = walkThroughFillerNodes(expression.expression, typescript);
 		const right = expression.name;
 
 		// If the left-hand side is an identifier, it may be something like 'module.exports',
 		// but it may also be something completely unrelated such as 'foo.bar'
-		if (isIdentifier(left)) {
-			if (left.text === "module" && right.text === "exports") {
+		if (typescript.isIdentifier(left)) {
+			if (left.text === "module" && right.text === exportsName) {
 				return {};
 			}
 
 			// This will be something like 'exports.foo'
-			else if (left.text === "exports") {
+			else if (left.text === exportsName) {
 				return {
 					property: right.text
 				};
@@ -38,7 +38,7 @@ export function getExportsData(expression: Expression): Partial<ExportsData> | u
 			}
 		} else {
 			// Otherwise, check if the left-hand side leads to exports data
-			const leftData = getExportsData(left);
+			const leftData = getExportsData(left, exportsName, typescript);
 			if (leftData == null) {
 				return undefined;
 			}
@@ -51,22 +51,22 @@ export function getExportsData(expression: Expression): Partial<ExportsData> | u
 				};
 			}
 		}
-	} else if (isElementAccessExpression(expression)) {
-		const left = walkThroughFillerNodes(expression.expression);
-		const right = walkThroughFillerNodes(expression.argumentExpression);
+	} else if (typescript.isElementAccessExpression(expression)) {
+		const left = walkThroughFillerNodes(expression.expression, typescript);
+		const right = walkThroughFillerNodes(expression.argumentExpression, typescript);
 
 		// If the argument expression is something that isn't statically analyzable, skip it
-		if (!isStringLiteralLike(right)) return undefined;
+		if (!typescript.isStringLiteralLike(right)) return undefined;
 
 		// If the left-hand side is an identifier, it may be something like 'module.exports',
 		// but it may also be something completely unrelated such as 'foo.bar'
-		if (isIdentifier(left)) {
-			if (left.text === "module" && right.text === "exports") {
+		if (typescript.isIdentifier(left)) {
+			if (left.text === "module" && right.text === exportsName) {
 				return {};
 			}
 
 			// This will be something like 'exports.foo'
-			else if (left.text === "exports") {
+			else if (left.text === exportsName) {
 				return {
 					property: right.text
 				};
@@ -78,7 +78,7 @@ export function getExportsData(expression: Expression): Partial<ExportsData> | u
 			}
 		} else {
 			// Otherwise, check if the left-hand side leads to exports data
-			const leftData = getExportsData(left);
+			const leftData = getExportsData(left, exportsName, typescript);
 			if (leftData == null) {
 				return undefined;
 			}

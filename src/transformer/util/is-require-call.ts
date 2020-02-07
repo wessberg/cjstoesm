@@ -1,9 +1,9 @@
-import {isIdentifier, isStringLiteralLike, SourceFile, Expression, isCallExpression} from "typescript";
 import {VisitorContext} from "../visitor-context";
 import {resolvePath} from "./resolve-path";
 import {normalize} from "path";
 import {walkThroughFillerNodes} from "./walk-through-filler-nodes";
 import {isBuiltInModule} from "../built-in/built-in-module-map";
+import {TS} from "../../type/type";
 
 export interface IsRequireCallNoMatchResult {
 	match: false;
@@ -31,18 +31,19 @@ export type IsRequireCallResult =
 /**
  * Checks if the CallExpression represents a require call (e.g.: 'require(...)')
  */
-export function isRequireCall(inputExpression: Expression, sourceFile: SourceFile, context: VisitorContext): IsRequireCallResult {
-	const callExpression = walkThroughFillerNodes(inputExpression);
-	if (!isCallExpression(callExpression)) return {match: false};
+export function isRequireCall(inputExpression: TS.Expression, sourceFile: TS.SourceFile, context: VisitorContext): IsRequireCallResult {
+	const {typescript} = context;
+	const callExpression = walkThroughFillerNodes(inputExpression, typescript);
+	if (!typescript.isCallExpression(callExpression)) return {match: false};
 
-	const expression = walkThroughFillerNodes(callExpression.expression);
-	if (!isIdentifier(expression) || expression.text !== "require") return {match: false};
+	const expression = walkThroughFillerNodes(callExpression.expression, typescript);
+	if (!typescript.isIdentifier(expression) || expression.text !== "require") return {match: false};
 
 	// Take the first argument, if there is any
 	const [firstArgument] = callExpression.arguments;
 	if (firstArgument == null) return {match: false};
 
-	const moduleSpecifier = isStringLiteralLike(firstArgument) ? firstArgument.text : undefined;
+	const moduleSpecifier = typescript.isStringLiteralLike(firstArgument) ? firstArgument.text : undefined;
 
 	const resolvedModuleSpecifier =
 		moduleSpecifier == null

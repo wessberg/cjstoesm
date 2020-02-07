@@ -1,3 +1,3 @@
-import {Node, VisitResult} from "typescript";
+import {TS} from "../type/type";
 
-export type VisitorContinuation<T extends Node> = (node: T) => VisitResult<T>;
+export type VisitorContinuation<T extends TS.Node> = (node: T) => TS.VisitResult<T>;

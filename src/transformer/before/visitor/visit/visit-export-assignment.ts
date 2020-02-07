@@ -1,5 +1,5 @@
-import {ExportAssignment, Node, VisitResult} from "typescript";
 import {BeforeVisitorOptions} from "../before-visitor-options";
+import {TS} from "../../../../type/type";
 
 /**
  * Visits the given ExportAssignment
@@ -7,7 +7,7 @@ import {BeforeVisitorOptions} from "../before-visitor-options";
  * @param options
  * @returns
  */
-export function visitExportAssignment({context}: BeforeVisitorOptions<ExportAssignment>): VisitResult<Node> {
+export function visitExportAssignment({context}: BeforeVisitorOptions<TS.ExportAssignment>): TS.VisitResult<TS.Node> {
 	context.markDefaultAsExported();
 	return undefined;
 }

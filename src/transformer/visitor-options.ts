@@ -1,11 +1,11 @@
-import {Node, SourceFile} from "typescript";
 import {VisitorContinuation} from "./visitor-continuation";
 import {VisitorContext} from "./visitor-context";
+import {TS} from "../type/type";
 
-export interface VisitorOptions<T extends Node> {
+export interface VisitorOptions<T extends TS.Node> {
 	node: T;
-	sourceFile: SourceFile;
+	sourceFile: TS.SourceFile;
 	context: VisitorContext;
-	continuation: VisitorContinuation<Node>;
-	childContinuation: VisitorContinuation<Node>;
+	continuation: VisitorContinuation<TS.Node>;
+	childContinuation: VisitorContinuation<TS.Node>;
 }

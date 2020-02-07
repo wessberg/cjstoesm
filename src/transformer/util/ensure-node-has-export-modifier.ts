@@ -1,33 +1,11 @@
-import {
-	createModifier,
-	getNameOfDeclaration,
-	isClassDeclaration,
-	isClassExpression,
-	isEnumDeclaration,
-	isFunctionDeclaration,
-	isFunctionExpression,
-	isIdentifier,
-	isInterfaceDeclaration,
-	isTypeAliasDeclaration,
-	isVariableStatement,
-	Modifier,
-	NamedDeclaration,
-	SyntaxKind,
-	updateClassDeclaration,
-	updateClassExpression,
-	updateEnumDeclaration,
-	updateFunctionDeclaration,
-	updateFunctionExpression,
-	updateInterfaceDeclaration,
-	updateTypeAliasDeclaration,
-	updateVariableStatement
-} from "typescript";
 import {BeforeVisitorContext} from "../before/visitor/before-visitor-context";
+import {TS} from "../../type/type";
 
-export function ensureNodeHasExportModifier<T extends NamedDeclaration>(node: T, context: BeforeVisitorContext): T {
+export function ensureNodeHasExportModifier<T extends TS.NamedDeclaration>(node: T, context: BeforeVisitorContext): T {
 	const existingModifierKinds = node.modifiers == null ? [] : node.modifiers.map(m => m.kind);
-	const declarationName = getNameOfDeclaration(node);
-	if (declarationName != null && isIdentifier(declarationName)) {
+	const {typescript} = context;
+	const declarationName = typescript.getNameOfDeclaration(node);
+	if (declarationName != null && typescript.isIdentifier(declarationName)) {
 		// If the declaration name is part of the exports of the SourceFile, return the node as it is
 		if (context.isLocalExported(declarationName.text)) {
 			return node;
@@ -37,14 +15,17 @@ export function ensureNodeHasExportModifier<T extends NamedDeclaration>(node: T,
 	}
 
 	// If the node already has an Export modifier, there's nothing to do
-	if (existingModifierKinds.includes(SyntaxKind.ExportKeyword)) {
+	if (existingModifierKinds.includes(typescript.SyntaxKind.ExportKeyword)) {
 		return (node as unknown) as T;
 	}
 
-	const newModifiers = [createModifier(SyntaxKind.ExportKeyword), ...existingModifierKinds.map(kind => createModifier(kind) as Modifier)];
+	const newModifiers = [
+		typescript.createModifier(typescript.SyntaxKind.ExportKeyword),
+		...existingModifierKinds.map(kind => typescript.createModifier(kind) as TS.Modifier)
+	];
 
-	if (isFunctionDeclaration(node)) {
-		return (updateFunctionDeclaration(
+	if (typescript.isFunctionDeclaration(node)) {
+		return (typescript.updateFunctionDeclaration(
 			node,
 			node.decorators,
 			newModifiers,
@@ -55,8 +36,8 @@ export function ensureNodeHasExportModifier<T extends NamedDeclaration>(node: T,
 			node.type,
 			node.body
 		) as unknown) as T;
-	} else if (isFunctionExpression(node)) {
-		return (updateFunctionExpression(
+	} else if (typescript.isFunctionExpression(node)) {
+		return (typescript.updateFunctionExpression(
 			node,
 			newModifiers,
 			node.asteriskToken,
@@ -66,8 +47,8 @@ export function ensureNodeHasExportModifier<T extends NamedDeclaration>(node: T,
 			node.type,
 			node.body
 		) as unknown) as T;
-	} else if (isClassDeclaration(node)) {
-		return (updateClassDeclaration(
+	} else if (typescript.isClassDeclaration(node)) {
+		return (typescript.updateClassDeclaration(
 			node,
 			node.decorators,
 			newModifiers,
@@ -76,14 +57,14 @@ export function ensureNodeHasExportModifier<T extends NamedDeclaration>(node: T,
 			node.heritageClauses,
 			node.members
 		) as unknown) as T;
-	} else if (isClassExpression(node)) {
-		return (updateClassExpression(node, newModifiers, node.name, node.typeParameters, node.heritageClauses, node.members) as unknown) as T;
-	} else if (isVariableStatement(node)) {
-		return (updateVariableStatement(node, newModifiers, node.declarationList) as unknown) as T;
-	} else if (isEnumDeclaration(node)) {
-		return (updateEnumDeclaration(node, node.decorators, newModifiers, node.name, node.members) as unknown) as T;
-	} else if (isInterfaceDeclaration(node)) {
-		return (updateInterfaceDeclaration(
+	} else if (typescript.isClassExpression(node)) {
+		return (typescript.updateClassExpression(node, newModifiers, node.name, node.typeParameters, node.heritageClauses, node.members) as unknown) as T;
+	} else if (typescript.isVariableStatement(node)) {
+		return (typescript.updateVariableStatement(node, newModifiers, node.declarationList) as unknown) as T;
+	} else if (typescript.isEnumDeclaration(node)) {
+		return (typescript.updateEnumDeclaration(node, node.decorators, newModifiers, node.name, node.members) as unknown) as T;
+	} else if (typescript.isInterfaceDeclaration(node)) {
+		return (typescript.updateInterfaceDeclaration(
 			node,
 			node.decorators,
 			newModifiers,
@@ -92,13 +73,13 @@ export function ensureNodeHasExportModifier<T extends NamedDeclaration>(node: T,
 			node.heritageClauses,
 			node.members
 		) as unknown) as T;
-	} else if (isTypeAliasDeclaration(node)) {
-		return (updateTypeAliasDeclaration(node, node.decorators, newModifiers, node.name, node.typeParameters, node.type) as unknown) as T;
+	} else if (typescript.isTypeAliasDeclaration(node)) {
+		return (typescript.updateTypeAliasDeclaration(node, node.decorators, newModifiers, node.name, node.typeParameters, node.type) as unknown) as T;
 	}
 
 	// Only throw if debugging is active
 	else if (context.debug) {
-		throw new TypeError(`Could not handle Node of kind: ${SyntaxKind[node.kind]}`);
+		throw new TypeError(`Could not handle Node of kind: ${typescript.SyntaxKind[node.kind]}`);
 	} else {
 		return node;
 	}

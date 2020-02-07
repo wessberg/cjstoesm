@@ -1,7 +1,7 @@
 import {CjsToEsmOptions} from "./cjs-to-esm-options";
-import {Printer} from "typescript";
+import {TS} from "../type/type";
 
 export interface VisitorContext extends Required<CjsToEsmOptions> {
 	onlyExports: boolean;
-	printer?: Printer;
+	printer?: TS.Printer;
 }

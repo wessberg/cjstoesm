@@ -2,6 +2,7 @@ import {TaskOptions} from "../task-options";
 import {SanitizedSharedOptions} from "./sanitized-shared-options";
 import {selectLogLevel} from "./select-log-level/select-log-level";
 import fs from "fs";
+import * as TSModule from "typescript";
 import {Logger} from "../../logger/logger";
 import {LogLevel} from "../../logger/log-level";
 
@@ -24,6 +25,7 @@ export async function generateTaskOptions(options: SanitizedSharedOptions): Prom
 	return {
 		fs,
 		logger,
-		root: process.cwd()
+		root: process.cwd(),
+		typescript: TSModule
 	};
 }

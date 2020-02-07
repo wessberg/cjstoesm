@@ -3,7 +3,6 @@ import {ModuleExports} from "../module-exports/module-exports";
 import {BUILT_IN_MODULE_MAP, isBuiltInModule} from "../built-in/built-in-module-map";
 import {transformSourceFile} from "../before/transform-source-file";
 import {BeforeVisitorContext} from "../before/visitor/before-visitor-context";
-import {createSourceFile, ScriptKind, ScriptTarget} from "typescript";
 
 /**
  * Tries to get or potentially parse module exports based on the given data in the given context
@@ -12,6 +11,8 @@ import {createSourceFile, ScriptKind, ScriptTarget} from "typescript";
  */
 export function getModuleExportsFromRequireDataInContext(data: IsRequireCallResult, context: BeforeVisitorContext): ModuleExports | undefined {
 	if (!data.match) return undefined;
+
+	const {typescript} = context;
 
 	// Otherwise, spread out the things we know about the require call
 	const {moduleSpecifier, resolvedModuleSpecifierText, resolvedModuleSpecifier} = data;
@@ -38,7 +39,13 @@ export function getModuleExportsFromRequireDataInContext(data: IsRequireCallResu
 		// If that wasn't possible, generate a new SourceFile and parse it
 		if (moduleExports == null && resolvedModuleSpecifierText != null) {
 			moduleExports = transformSourceFile(
-				createSourceFile(resolvedModuleSpecifier, resolvedModuleSpecifierText, ScriptTarget.ESNext, true, ScriptKind.TS),
+				typescript.createSourceFile(
+					resolvedModuleSpecifier,
+					resolvedModuleSpecifierText,
+					typescript.ScriptTarget.ESNext,
+					true,
+					typescript.ScriptKind.TS
+				),
 				{
 					baseVisitorContext: {
 						...context,

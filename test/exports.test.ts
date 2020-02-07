@@ -694,3 +694,59 @@ test("Converts 'const foo = exports.foo = ...' syntax into a VariableStatement f
 		`)
 	);
 });
+
+test("When rewriting 'exports.something = function () {...}', no error will occur if a local binding already exists for 'something'", t => {
+	const bundle = generateTransformerResult([
+		{
+			entry: true,
+			fileName: "index.ts",
+			text: `
+				function something () {}
+				module.exports.something = function () {
+					return something;
+				}
+			`
+		}
+	]);
+	const [file] = bundle;
+	t.deepEqual(
+		formatCode(file.text),
+		formatCode(`\
+		function something () {}
+		const something$0 = function () {
+			return something;
+		}
+		export {something$0 as something};
+		`)
+	);
+});
+
+test("When bundling UMD containing exports assignments, the SourceFile will be flattened to the body of the UMD wrapper", t => {
+	const bundle = generateTransformerResult([
+		{
+			entry: true,
+			fileName: "index.ts",
+			text: `
+				(function (global, factory) {
+					typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
+					typeof define === 'function' && define.amd ? define(['exports'], factory) :
+					(factory((global.URI = global.URI || {})));
+				}(this, (function (exports) {
+					'use strict';
+					function bar () {return 2;}
+					exports.foo = bar();
+					}
+				))
+			`
+		}
+	]);
+	const [file] = bundle;
+	t.deepEqual(
+		formatCode(file.text),
+		formatCode(`\
+		'use strict';
+		function bar() { return 2; }
+		export const foo = bar();
+		`)
+	);
+});
