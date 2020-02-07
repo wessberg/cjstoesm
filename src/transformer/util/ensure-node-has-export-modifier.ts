@@ -1,5 +1,6 @@
 import {BeforeVisitorContext} from "../before/visitor/before-visitor-context";
 import {TS} from "../../type/type";
+import {shouldDebug} from "./should-debug";
 
 export function ensureNodeHasExportModifier<T extends TS.NamedDeclaration>(node: T, context: BeforeVisitorContext): T {
 	const existingModifierKinds = node.modifiers == null ? [] : node.modifiers.map(m => m.kind);
@@ -78,7 +79,7 @@ export function ensureNodeHasExportModifier<T extends TS.NamedDeclaration>(node:
 	}
 
 	// Only throw if debugging is active
-	else if (context.debug) {
+	else if (shouldDebug(context.debug)) {
 		throw new TypeError(`Could not handle Node of kind: ${typescript.SyntaxKind[node.kind]}`);
 	} else {
 		return node;

@@ -27,7 +27,7 @@ export function cjsToEsmTransformerFactory({
 		fileExists,
 		readFile,
 		onlyExports: false,
-		printer: debug ? typescript.createPrinter() : undefined
+		printer: typescript.createPrinter()
 	}))();
 
 	return beforeTransformer({baseVisitorContext: visitorContext});

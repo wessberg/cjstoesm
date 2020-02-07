@@ -6,6 +6,7 @@ import {isStatement} from "../../../util/is-statement";
 import {generateNameFromModuleSpecifier} from "../../../util/generate-name-from-module-specifier";
 import {getModuleExportsFromRequireDataInContext} from "../../../util/get-module-exports-from-require-data-in-context";
 import {TS} from "../../../../type/type";
+import {shouldDebug} from "../../../util/should-debug";
 
 /**
  * Visits the given CallExpression
@@ -427,7 +428,7 @@ export function visitCallExpression({
 		}
 	}
 
-	if (context.debug) {
+	if (shouldDebug(context.debug)) {
 		throw new TypeError(`Could not handle require() call`);
 	} else {
 		return node;

@@ -11,6 +11,7 @@ import {isExpression} from "../../../util/is-expression";
 import {findNodeUp} from "../../../util/find-node-up";
 import {getLocalsForBindingName} from "../../../util/get-locals-for-binding-name";
 import {TS} from "../../../../type/type";
+import {shouldDebug} from "../../../util/should-debug";
 
 /**
  * Visits the given BinaryExpression
@@ -246,7 +247,7 @@ export function visitBinaryExpression({node, sourceFile, context, continuation}:
 
 				// If no module specifier could be determined, there's nothing we can do
 				if (moduleSpecifier == null) {
-					if (context.debug) {
+					if (shouldDebug(context.debug)) {
 						throw new TypeError(`Could not handle re-export from require() call. The module specifier wasn't statically analyzable`);
 					} else {
 						return undefined;
