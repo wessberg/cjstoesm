@@ -31,6 +31,7 @@ export function transformSourceFile(
 	// Prepare a VisitorContext
 	const visitorContext = ((): BeforeVisitorContext => {
 		const imports: Map<TS.ImportDeclaration, boolean> = new Map();
+		const leadingStatements: TS.Statement[] = [];
 		const trailingStatements: TS.Statement[] = [];
 		const moduleExportsMap: Map<string, ModuleExports> = new Map();
 		const localsMap = (sourceFile as {locals?: Map<string, symbol>}).locals;
@@ -119,6 +120,10 @@ export function transformSourceFile(
 			trailingStatements.push(...statements);
 		};
 
+		const addLeadingStatements = (...statements: TS.Statement[]): void => {
+			leadingStatements.push(...statements);
+		};
+
 		const isIdentifierFree = (identifier: string): boolean =>
 			// It should not be part of locals of the module already
 			!locals.has(identifier) &&
@@ -129,11 +134,11 @@ export function transformSourceFile(
 
 		const ignoreIdentifier = (identifier: string): boolean => locals.delete(identifier);
 
-		const getFreeIdentifier = (candidate: string): string => {
+		const getFreeIdentifier = (candidate: string, force = false): string => {
 			const suffix = "$";
 			let counter = 0;
 
-			if (isIdentifierFree(candidate)) {
+			if (isIdentifierFree(candidate) && !force) {
 				locals.add(candidate);
 				return candidate;
 			}
@@ -165,6 +170,7 @@ export function transformSourceFile(
 			hasLocalForNamespaceImportFromModule,
 			getLocalForNamedImportPropertyNameFromModule,
 			hasLocalForNamedImportPropertyNameFromModule,
+			addLeadingStatements,
 			addTrailingStatements,
 			isIdentifierFree,
 			getFreeIdentifier,
@@ -173,6 +179,9 @@ export function transformSourceFile(
 			addModuleExportsForPath: (path, exports) => moduleExportsMap.set(normalize(path), exports),
 			get imports() {
 				return [...imports.entries()].filter(([, noEmit]) => !noEmit).map(([declaration]) => declaration);
+			},
+			get leadingStatements() {
+				return leadingStatements;
 			},
 			get trailingStatements() {
 				return trailingStatements;
@@ -247,16 +256,19 @@ export function transformSourceFile(
 
 	const allImports: TS.Statement[] = [
 		...visitorContext.imports,
+		...visitorContext.leadingStatements.filter(typescript.isImportDeclaration),
 		...updatedSourceFile.statements.filter(typescript.isImportDeclaration),
 		...visitorContext.trailingStatements.filter(typescript.isImportDeclaration)
 	];
 
 	const allExports: TS.Statement[] = [
+		...visitorContext.leadingStatements.filter(statement => typescript.isExportDeclaration(statement) || typescript.isExportAssignment(statement)),
 		...updatedSourceFile.statements.filter(statement => typescript.isExportDeclaration(statement) || typescript.isExportAssignment(statement)),
 		...visitorContext.trailingStatements.filter(statement => typescript.isExportDeclaration(statement) || typescript.isExportAssignment(statement))
 	];
 
 	const allOtherStatements = [
+		...visitorContext.leadingStatements.filter(statement => !allImports.includes(statement) && !allExports.includes(statement)),
 		...updatedSourceFile.statements.filter(
 			statement => !allImports.includes(statement) && !allExports.includes(statement) && statement.kind !== typescript.SyntaxKind.NotEmittedStatement
 		),

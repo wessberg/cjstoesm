@@ -3,6 +3,7 @@ import {isRequireCall} from "../../../util/is-require-call";
 import {walkThroughFillerNodes} from "../../../util/walk-through-filler-nodes";
 import {getModuleExportsFromRequireDataInContext} from "../../../util/get-module-exports-from-require-data-in-context";
 import {TS} from "../../../../type/type";
+import {willReassignIdentifier} from "../../../util/will-be-reassigned";
 
 /**
  * Visits the given VariableDeclaration
@@ -65,6 +66,9 @@ export function visitVariableDeclaration({
 		// Otherwise, the 'foo = require("bar")' VariableDeclaration can be safely transformed into a simple import such as 'import foo from "bar"' or 'import * as foo from "bar"',
 		// depending on whether or not the module has a default export
 		else {
+			const willReassign = willReassignIdentifier(node.name.text, sourceFile, typescript);
+			const newName = willReassign ? context.getFreeIdentifier(node.name.text, true) : node.name.text;
+
 			context.addImport(
 				typescript.createImportDeclaration(
 					undefined,
@@ -72,12 +76,24 @@ export function visitVariableDeclaration({
 
 					moduleExports == null || moduleExports.hasDefaultExport
 						? // Import the default if it has any (or if we don't know if it has)
-						  typescript.createImportClause(typescript.createIdentifier(node.name.text), undefined)
+						  typescript.createImportClause(typescript.createIdentifier(newName), undefined)
 						: // Otherwise, import the entire namespace
-						  typescript.createImportClause(undefined, typescript.createNamespaceImport(typescript.createIdentifier(node.name.text))),
+						  typescript.createImportClause(undefined, typescript.createNamespaceImport(typescript.createIdentifier(newName))),
 					typescript.createStringLiteral(moduleSpecifier)
 				)
 			);
+			if (willReassign) {
+				// Now, immediately add a local mutable variable with the correct name
+				context.addLeadingStatements(
+					typescript.createVariableStatement(
+						undefined,
+						typescript.createVariableDeclarationList(
+							[typescript.createVariableDeclaration(node.name.text, undefined, typescript.createIdentifier(newName))],
+							typescript.NodeFlags.Let
+						)
+					)
+				);
+			}
 			return undefined;
 		}
 	}
@@ -115,16 +131,55 @@ export function visitVariableDeclaration({
 				return childContinuation(node);
 			}
 		}
-		// If more then 1 import specifier was generated, add an ImportDeclaration and remove this VariableDeclaration
+		// If more than 0 import specifier was generated, add an ImportDeclaration and remove this VariableDeclaration
 		if (importSpecifiers.length > 0) {
-			context.addImport(
-				typescript.createImportDeclaration(
-					undefined,
-					undefined,
-					typescript.createImportClause(undefined, typescript.createNamedImports(importSpecifiers)),
-					typescript.createStringLiteral(moduleSpecifier)
-				)
+			const importSpecifiersThatWillBeReassigned = importSpecifiers.filter(importSpecifier =>
+				willReassignIdentifier(importSpecifier.name.text, sourceFile, typescript)
 			);
+			const otherImportSpecifiers = importSpecifiers.filter(importSpecifier => !importSpecifiersThatWillBeReassigned.includes(importSpecifier));
+
+			// Add an import, but bind the name to free identifier
+			for (const importSpecifier of importSpecifiersThatWillBeReassigned) {
+				const propertyName = importSpecifier.propertyName ?? importSpecifier.name;
+				const newName = context.getFreeIdentifier(importSpecifier.name.text, true);
+
+				context.addImport(
+					typescript.createImportDeclaration(
+						undefined,
+						undefined,
+						typescript.createImportClause(
+							undefined,
+							typescript.createNamedImports([
+								typescript.createImportSpecifier(typescript.createIdentifier(propertyName.text), typescript.createIdentifier(newName))
+							])
+						),
+						typescript.createStringLiteral(moduleSpecifier)
+					)
+				);
+
+				// Now, immediately add a local mutable variable with the correct name
+				context.addLeadingStatements(
+					typescript.createVariableStatement(
+						undefined,
+						typescript.createVariableDeclarationList(
+							[typescript.createVariableDeclaration(importSpecifier.name.text, undefined, typescript.createIdentifier(newName))],
+							typescript.NodeFlags.Let
+						)
+					)
+				);
+			}
+
+			if (otherImportSpecifiers.length > 0) {
+				context.addImport(
+					typescript.createImportDeclaration(
+						undefined,
+						undefined,
+						typescript.createImportClause(undefined, typescript.createNamedImports(otherImportSpecifiers)),
+						typescript.createStringLiteral(moduleSpecifier)
+					)
+				);
+			}
+
 			return undefined;
 		}
 	}

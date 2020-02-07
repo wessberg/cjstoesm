@@ -750,3 +750,90 @@ test("When bundling UMD containing exports assignments, the SourceFile will be f
 		`)
 	);
 });
+
+test("Handles reassignments to imported bindings. #1", t => {
+	const bundle = generateTransformerResult([
+		{
+			entry: true,
+			fileName: "index.ts",
+			text: `
+				let {foo} = require("./foo");
+				foo = 2; 
+			`
+		},
+		{
+			entry: false,
+			fileName: "foo.ts",
+			text: `
+				exports.foo = 10;
+			`
+		}
+	]);
+	const [file] = bundle;
+	t.deepEqual(
+		formatCode(file.text),
+		formatCode(`\
+		import { foo as foo$0 } from "./foo";
+		let foo = foo$0;
+		foo = 2;
+		`)
+	);
+});
+
+test("Handles reassignments to imported bindings. #2", t => {
+	const bundle = generateTransformerResult([
+		{
+			entry: true,
+			fileName: "index.ts",
+			text: `
+				let foo = require("./foo");
+				foo = 2; 
+			`
+		},
+		{
+			entry: false,
+			fileName: "foo.ts",
+			text: `
+				exports = 10;
+			`
+		}
+	]);
+	const [file] = bundle;
+	t.deepEqual(
+		formatCode(file.text),
+		formatCode(`\
+		import foo$0 from "./foo";
+		let foo = foo$0;
+		foo = 2;
+		`)
+	);
+});
+
+test("Handles reassignments to imported bindings. #3", t => {
+	const bundle = generateTransformerResult([
+		{
+			entry: true,
+			fileName: "index.ts",
+			text: `
+				let foo = require("./foo");
+				foo = 2; 
+			`
+		},
+		{
+			entry: false,
+			fileName: "foo.ts",
+			text: `
+				export.foo = 10;
+			`
+		}
+	]);
+	const [file] = bundle;
+	t.deepEqual(
+		formatCode(file.text),
+		formatCode(`\
+		import * as foo$0 from "./foo";
+		let foo = foo$0;
+		foo = 2;
+		`)
+	);
+});

@@ -19,11 +19,13 @@ export interface BeforeVisitorContext extends VisitorContext {
 	hasLocalForNamespaceImportFromModule(moduleSpecifier: string): boolean;
 	getLocalForNamedImportPropertyNameFromModule(propertyName: string, moduleSpecifier: string): string | undefined;
 	hasLocalForNamedImportPropertyNameFromModule(propertyName: string, moduleSpecifier: string): boolean;
+	addLeadingStatements(...statements: TS.Statement[]): void;
 	addTrailingStatements(...statements: TS.Statement[]): void;
-	getFreeIdentifier(candidate: string): string;
+	getFreeIdentifier(candidate: string, force?: boolean): string;
 	ignoreIdentifier(identifier: string): boolean;
 	isIdentifierFree(identifier: string): boolean;
 	readonly imports: TS.ImportDeclaration[];
+	readonly leadingStatements: TS.Statement[];
 	readonly trailingStatements: TS.Statement[];
 	readonly isDefaultExported: boolean;
 	readonly exportedLocals: Set<string>;
