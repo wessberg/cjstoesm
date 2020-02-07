@@ -5,6 +5,7 @@ import nodeResolve from "@rollup/plugin-node-resolve";
 import {cjsToEsm} from "../../src/transformer/cjs-to-esm";
 import {existsSync, readFileSync, statSync} from "fs";
 import {isInDebugMode} from "../util/is-in-debug-mode";
+import {CjsToEsmOptions} from "../../src/transformer/cjs-to-esm-options";
 
 // tslint:disable:no-any
 
@@ -18,11 +19,12 @@ export type TestFile = ITestFile | string;
 
 /**
  * Prepares a test
- * @param {ITestFile[]|TestFile} inputFiles
- * @param {Partial<RollupOptions>} [rollupOptions]
- * @returns {Promise<RollupOutput>}
  */
-export async function generateRollupBundle(inputFiles: TestFile[] | TestFile, rollupOptions: Partial<RollupOptions> = {}): Promise<RollupOutput> {
+export async function generateRollupBundle(
+	inputFiles: TestFile[] | TestFile,
+	rollupOptions: Partial<RollupOptions> = {},
+	debug: CjsToEsmOptions["debug"] = isInDebugMode()
+): Promise<RollupOutput> {
 	const cwd = process.cwd();
 
 	const files: ITestFile[] = (Array.isArray(inputFiles) ? inputFiles : [inputFiles])
@@ -79,7 +81,7 @@ export async function generateRollupBundle(inputFiles: TestFile[] | TestFile, ro
 				},
 				transformers: [
 					cjsToEsm({
-						debug: isInDebugMode(),
+						debug,
 						readFile: fileName => {
 							const normalized = normalize(fileName);
 							const file = files.find(currentFile => currentFile.fileName === normalized);

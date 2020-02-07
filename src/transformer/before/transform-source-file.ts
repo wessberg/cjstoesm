@@ -10,6 +10,7 @@ import {ModuleExports} from "../module-exports/module-exports";
 import {visitImportAndExportDeclarations} from "./visitor/visit/visit-import-and-export-declarations";
 import {normalize} from "path";
 import {TS} from "../../type/type";
+import {shouldDebug} from "../util/should-debug";
 
 export interface BeforeTransformerSourceFileStepResult {
 	sourceFile: TS.SourceFile;
@@ -315,7 +316,7 @@ export function transformSourceFile(
 
 	// Add the relevant module exports for the SourceFile
 	visitorContext.addModuleExportsForPath(normalize(sourceFile.fileName), moduleExports);
-	if (!visitorContext.onlyExports && visitorContext.debug && visitorContext.printer != null) {
+	if (!visitorContext.onlyExports && shouldDebug(visitorContext.debug, sourceFile) && visitorContext.printer != null) {
 		console.log("===", normalize(sourceFile.fileName), "===");
 		console.log(visitorContext.printer.printFile(updatedSourceFile));
 		console.log("EXPORTS:", visitorContext.exportedLocals);

@@ -3,7 +3,7 @@ import {TS} from "../type/type";
 
 export interface CjsToEsmOptions {
 	typescript?: typeof TS;
-	debug?: boolean;
+	debug?: boolean | string | ((file: string) => boolean);
 	readFile?: ResolveOptions["readFile"];
 	fileExists?: ResolveOptions["fileExists"];
 }

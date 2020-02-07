@@ -72,7 +72,8 @@
 		"@rollup/plugin-node-resolve": "^7.1.1",
 		"standard-changelog": "^2.0.21",
 		"ts-node": "^8.6.2",
-		"typescript": "^3.7.5"
+		"typescript": "^3.7.5",
+		"@sentry/node": "^5.12.3"
 	},
 	"dependencies": {
 		"@types/glob": "^7.1.1",

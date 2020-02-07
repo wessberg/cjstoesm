@@ -16,6 +16,7 @@ dependencies:
   tslib: 1.10.0
 devDependencies:
   "@rollup/plugin-node-resolve": 7.1.1_rollup@1.31.0
+  "@sentry/node": 5.12.3
   "@typescript-eslint/eslint-plugin": 2.19.0_25db45452788e415134bad7c0cac009a
   "@typescript-eslint/parser": 2.19.0_eslint@6.8.0+typescript@3.7.5
   "@wessberg/rollup-plugin-ts": 1.2.15_rollup@1.31.0+typescript@3.7.5
@@ -906,6 +907,93 @@ packages:
       node: ">=6"
     resolution:
       integrity: sha512-MI4Xx6LHs4Webyvi6EbspgyAb4D2Q2VtnCQ1blOJcoLS6mVa8lNN2rkIy1CVxfTUpoyIbCTkXES1rLXztFD1lg==
+  /@sentry/apm/5.12.3:
+    dependencies:
+      "@sentry/browser": 5.12.1
+      "@sentry/hub": 5.12.0
+      "@sentry/minimal": 5.12.0
+      "@sentry/types": 5.12.0
+      "@sentry/utils": 5.12.0
+      tslib: 1.10.0
+    dev: true
+    engines:
+      node: ">=6"
+    resolution:
+      integrity: sha512-OSGEeo4b1Gsu/TUcWMx9vmgSnQvR+zM+1Iwq5xFQAK2ET3Y4gBFqZ1iRt2hxlzr8KCQmQTQc1mao1X0tmidFQg==
+  /@sentry/browser/5.12.1:
+    dependencies:
+      "@sentry/core": 5.12.0
+      "@sentry/types": 5.12.0
+      "@sentry/utils": 5.12.0
+      tslib: 1.10.0
+    dev: true
+    engines:
+      node: ">=6"
+    resolution:
+      integrity: sha512-Zl7VdppUxctyaoqMSEhnDJp2rrupx8n8N2n3PSooH74yhB2Z91nt84mouczprBsw3JU1iggGyUw9seRFzDI1hw==
+  /@sentry/core/5.12.0:
+    dependencies:
+      "@sentry/hub": 5.12.0
+      "@sentry/minimal": 5.12.0
+      "@sentry/types": 5.12.0
+      "@sentry/utils": 5.12.0
+      tslib: 1.10.0
+    dev: true
+    engines:
+      node: ">=6"
+    resolution:
+      integrity: sha512-wY4rsoX71QsGpcs9tF+OxKgDPKzIFMRvFiSRcJoPMfhFsTilQ/CBMn/c3bDtWQd9Bnr/ReQIL6NbnIjUsPHA4Q==
+  /@sentry/hub/5.12.0:
+    dependencies:
+      "@sentry/types": 5.12.0
+      "@sentry/utils": 5.12.0
+      tslib: 1.10.0
+    dev: true
+    engines:
+      node: ">=6"
+    resolution:
+      integrity: sha512-3k7yE8BEVJsKx8mR4LcI4IN0O8pngmq44OcJ/fRUUBAPqsT38jsJdP2CaWhdlM1jiNUzUDB1ktBv6/lY+VgcoQ==
+  /@sentry/minimal/5.12.0:
+    dependencies:
+      "@sentry/hub": 5.12.0
+      "@sentry/types": 5.12.0
+      tslib: 1.10.0
+    dev: true
+    engines:
+      node: ">=6"
+    resolution:
+      integrity: sha512-fk73meyz4k4jCg9yzbma+WkggsfEIQWI2e2TWfYsRGcrV3RnlSrXyM4D91/A8Bjx10SNezHPUFHjasjlHXOkyA==
+  /@sentry/node/5.12.3:
+    dependencies:
+      "@sentry/apm": 5.12.3
+      "@sentry/core": 5.12.0
+      "@sentry/hub": 5.12.0
+      "@sentry/types": 5.12.0
+      "@sentry/utils": 5.12.0
+      cookie: 0.3.1
+      https-proxy-agent: 4.0.0
+      lru_map: 0.3.3
+      tslib: 1.10.0
+    dev: true
+    engines:
+      node: ">=6"
+    resolution:
+      integrity: sha512-QwqN+i6IC3/YrNq7kqxH7YiXtZYY8tBuJqFi84WbiMHF7MAqxMSPNQJGfX2GJuMHKHwn6IZdgSE8+FkfN9zGLQ==
+  /@sentry/types/5.12.0:
+    dev: true
+    engines:
+      node: ">=6"
+    resolution:
+      integrity: sha512-aZbBouBLrKB8wXlztriIagZNmsB+wegk1Jkl6eprqRW/w24Sl/47tiwH8c5S4jYTxdAiJk+SAR10AAuYmIN3zg==
+  /@sentry/utils/5.12.0:
+    dependencies:
+      "@sentry/types": 5.12.0
+      tslib: 1.10.0
+    dev: true
+    engines:
+      node: ">=6"
+    resolution:
+      integrity: sha512-fYUadGLbfTCbs4OG5hKCOtv2jrNE4/8LHNABy9DwNJ/t5DVtGqWAZBnxsC+FG6a3nVqCpxjFI9AHlYsJ2wsf7Q==
   /@sindresorhus/is/0.14.0:
     dev: true
     engines:
@@ -1245,6 +1333,12 @@ packages:
     dev: true
     resolution:
       integrity: sha1-anmQQ3ynNtXhKI25K9MmbV9csqo=
+  /agent-base/5.1.1:
+    dev: true
+    engines:
+      node: ">= 6.0.0"
+    resolution:
+      integrity: sha512-TMeqbNl2fMW0nMjTEPOwe3J/PRFP4vqeoNuQMG0HlMrtm5QxKqdvAkZ1pRBQ/ulIyDD5Yq0nJ7YbdD8ey0TO3g==
   /aggregate-error/3.0.1:
     dependencies:
       clean-stack: 2.2.0
@@ -2045,6 +2139,12 @@ packages:
       node: ">= 4"
     resolution:
       integrity: sha1-fj5Iu+bZl7FBfdyihoIEtNPYVxU=
+  /cookie/0.3.1:
+    dev: true
+    engines:
+      node: ">= 0.6"
+    resolution:
+      integrity: sha1-5+Ch+e9DtMi6klxcWpboBtFoc7s=
   /core-js-compat/3.6.4:
     dependencies:
       browserslist: 4.8.6
@@ -3066,6 +3166,15 @@ packages:
     dev: true
     resolution:
       integrity: sha512-TcIMG3qeVLgDr1TEd2XvHaTnMPwYQUQMIBLy+5pLSDKYFc7UIqj39w8EGzZkaxoLv/l2K8HaI0t5AVA+YYgUew==
+  /https-proxy-agent/4.0.0:
+    dependencies:
+      agent-base: 5.1.1
+      debug: 4.1.1
+    dev: true
+    engines:
+      node: ">= 6.0.0"
+    resolution:
+      integrity: sha512-zoDhWrkR3of1l9QAL8/scJZyLu8j/gBkcwcaQOZh7Gyh/+uJQzGVETdgT30akuwkpL8HTRfssqI3BZuV18teDg==
   /human-signals/1.1.1:
     dev: true
     engines:
@@ -3955,6 +4064,10 @@ packages:
     dev: true
     resolution:
       integrity: sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w==
+  /lru_map/0.3.3:
+    dev: true
+    resolution:
+      integrity: sha1-tcg1G5Rky9dQM1p5ZQoOwOVhGN0=
   /magic-string/0.25.6:
     dependencies:
       sourcemap-codec: 1.4.8
@@ -6313,6 +6426,7 @@ packages:
       integrity: sha512-Ux4ygGWsu2c7isFWe8Yu1YluJmqVhxqK2cLXNQA5AcC3QfbGNpM7fu0Y8b/z16pXLnFxZYvWhd3fhBY9DLmC6Q==
 specifiers:
   "@rollup/plugin-node-resolve": ^7.1.1
+  "@sentry/node": ^5.12.3
   "@types/glob": ^7.1.1
   "@types/inquirer": ^6.5.0
   "@types/node": ^13.7.0

@@ -30,7 +30,8 @@ export function getBestBodyInScope({node, context}: BeforeVisitorOptions<TS.Node
 	const expression = walkThroughFillerNodes(firstStatement.expression, typescript);
 
 	if (!TS.isCallExpression(expression)) return node;
-	if (!TS.isFunctionExpression(expression.expression)) return node;
+	const expressionExpression = walkThroughFillerNodes(expression.expression, typescript);
+	if (!TS.isFunctionExpression(expressionExpression)) return node;
 	if (expression.arguments.length < 2) return node;
 	let [, secondArgument] = expression.arguments;
 	secondArgument = walkThroughFillerNodes(secondArgument, typescript);
@@ -40,6 +41,7 @@ export function getBestBodyInScope({node, context}: BeforeVisitorOptions<TS.Node
 	if (!TS.isIdentifier(firstBodyParameter.name)) return node;
 	if (hasExportAssignments(secondArgument.body, firstBodyParameter.name.text, typescript)) {
 		context.exportsName = firstBodyParameter.name.text;
+
 		return TS.updateSourceFileNode(
 			node,
 			[...secondArgument.body.statements, ...node.statements.slice(1)],
