@@ -1,3 +1,9 @@
+## [0.0.16](https://github.com/wessberg/cjs-to-esm-transformer/compare/v0.0.15...v0.0.16) (2020-02-07)
+
+### Bug Fixes
+
+- support cjs. Move to ESLint since TSLint is deprecated ([6e4b269](https://github.com/wessberg/cjs-to-esm-transformer/commit/6e4b26904f5e6381c32d4a62ab07f7602ae0708e))
+
 ## [0.0.15](https://github.com/wessberg/cjs-to-esm-transformer/compare/v0.0.14...v0.0.15) (2019-11-17)
 
 ### Bug Fixes
