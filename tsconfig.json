@@ -1,7 +1,6 @@
 {
 	"extends": "@wessberg/ts-config",
 	"compilerOptions": {
-		"module": "commonjs",
-		"skipLibCheck": false
+		"module": "commonjs"
 	}
 }
