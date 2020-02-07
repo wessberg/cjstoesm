@@ -1,3 +1,13 @@
+## [0.0.17](https://github.com/wessberg/cjs-to-esm-transformer/compare/v0.0.16...v0.0.17) (2020-02-07)
+
+### Bug Fixes
+
+- support transforming code that reassigns required bindings into valid ESM ([11ec60d](https://github.com/wessberg/cjs-to-esm-transformer/commit/11ec60d43d35b421d5f3659d283f0a50c235d5b5))
+
+### Features
+
+- make it possible to pass a specific TypeScript version. Add support for transforming from UMD to ESM ([f6c55de](https://github.com/wessberg/cjs-to-esm-transformer/commit/f6c55de32ac27b4fb914ad5f242aa78c22b5b3d0))
+
 ## [0.0.16](https://github.com/wessberg/cjs-to-esm-transformer/compare/v0.0.15...v0.0.16) (2020-02-07)
 
 ### Bug Fixes

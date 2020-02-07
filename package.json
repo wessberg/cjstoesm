@@ -1,6 +1,6 @@
 {
 	"name": "@wessberg/cjs-to-esm-transformer",
-	"version": "0.0.16",
+	"version": "0.0.17",
 	"description": "A Custom Transformer for Typescript that transforms Node-style CommonJS to tree-shakeable ES Modules",
 	"scripts": {
 		"generate:scaffold": "scaffold all --yes",
