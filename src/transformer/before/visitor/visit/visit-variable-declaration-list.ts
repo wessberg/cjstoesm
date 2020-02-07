@@ -18,8 +18,9 @@ export function visitVariableDeclarationList({
 	const continuationResult = childContinuation(node);
 
 	// If the result isn't a new VariableDeclarationList, return that result
-	if (continuationResult == null || Array.isArray(continuationResult) || !typescript.isVariableDeclarationList(continuationResult))
+	if (continuationResult == null || Array.isArray(continuationResult) || !typescript.isVariableDeclarationList(continuationResult)) {
 		return continuationResult;
+	}
 
 	// Check if there are any VariableDeclarations left to be emitted
 	const remainingDeclarations = continuationResult.declarations.filter(declaration => !isNotEmittedStatement(declaration, typescript));
