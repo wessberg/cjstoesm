@@ -4,18 +4,19 @@ import {prompt} from "inquirer";
 
 /**
  * Prints a 'confirm' prompt in the terminal
- * @param {string} message
- * @param {boolean} [defaultValue]
+ *
+ * @param message
+ * @param [defaultValue]
  */
 export async function confirm(message: string, defaultValue?: boolean): Promise<boolean> {
-	const answer = (await prompt([
+	const answer = await prompt([
 		{
 			type: "confirm",
 			message,
 			name: "confirm",
 			default: defaultValue
 		}
-	])) as {confirm: boolean};
+	]);
 
 	return answer.confirm;
 }

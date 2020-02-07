@@ -3,8 +3,9 @@ import {BeforeVisitorOptions} from "../before-visitor-options";
 
 /**
  * Visits the given ExportAssignment
- * @param {BeforeVisitorOptions<ExportAssignment>} options
- * @returns {VisitResult<ExportAssignment>}
+ *
+ * @param options
+ * @returns
  */
 export function visitExportAssignment({context}: BeforeVisitorOptions<ExportAssignment>): VisitResult<Node> {
 	context.markDefaultAsExported();

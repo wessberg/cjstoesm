@@ -20,9 +20,10 @@ const cache: Map<string, string | null> = new Map();
 
 /**
  * Computes a cache key based on the combination of id and parent
- * @param {string} id
- * @param {string | null | undefined} parent
- * @return {string}
+ *
+ * @param id
+ * @param parent
+ * @return
  */
 function computeCacheKey(id: string, parent: string | null | undefined): string {
 	return isExternalLibrary(id) ? id : `${parent == null ? "" : `${parent}->`}${id}`;
@@ -30,8 +31,9 @@ function computeCacheKey(id: string, parent: string | null | undefined): string 
 
 /**
  * A function that can resolve an import path
- * @param {ResolveOptions} options
- * @returns {string|undefined}
+ *
+ * @param options
+ * @returns
  */
 export function resolvePath({
 	id,

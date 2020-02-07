@@ -3,8 +3,9 @@ import {isNotEmittedStatement} from "../before/visitor/visit/is-not-emitted-stat
 
 /**
  * Returns true if the given Node contains an empty child
- * @param {ts.Node} node
- * @return {boolean}
+ *
+ * @param node
+ * @return
  */
 export function shouldSkipEmit(node: VisitResult<Node>): boolean {
 	if (node == null) return true;

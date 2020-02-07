@@ -3,8 +3,9 @@ import {BeforeVisitorOptions} from "../before-visitor-options";
 
 /**
  * Visits the given ExportDeclaration
- * @param {BeforeVisitorOptions<ExportDeclaration>} options
- * @returns {VisitResult<ExportDeclaration>}
+ *
+ * @param options
+ * @returns
  */
 export function visitExportDeclaration({node, context}: BeforeVisitorOptions<ExportDeclaration>): VisitResult<Node> {
 	if (node.exportClause != null) {

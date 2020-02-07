@@ -2,8 +2,9 @@ import {Expression, isAsExpression, isExpressionWithTypeArguments, isNonNullExpr
 
 /**
  * Returns the given Expression itself if it isn't considered a "filler node"
- * @param {Expression} expression
- * @returns {Expression}
+ *
+ * @param expression
+ * @returns
  */
 export function walkThroughFillerNodes(expression: Expression): Expression {
 	if (

@@ -46,8 +46,9 @@ import {getLocalsForBindingName} from "../../../util/get-locals-for-binding-name
 
 /**
  * Visits the given BinaryExpression
- * @param {BeforeVisitorOptions<BinaryExpression>} options
- * @returns {VisitResult<BinaryExpression>}
+ *
+ * @param options
+ * @returns
  */
 export function visitBinaryExpression({node, sourceFile, context, continuation}: BeforeVisitorOptions<BinaryExpression>): VisitResult<Node> {
 	// Check if the left-hand side contains exports. For example: 'exports = ...' or 'exports.foo = 1' or event 'module.exports = 1'

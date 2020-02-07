@@ -22,8 +22,9 @@ import {getLocalsForBindingName} from "../../../util/get-locals-for-binding-name
 
 /**
  * Visits the given Node
- * @param {BeforeVisitorOptions<T>} options
- * @returns {VisitResult<T>}
+ *
+ * @param options
+ * @returns
  */
 export function visitImportAndExportDeclarations<T extends Node>(options: BeforeVisitorOptions<T>): VisitResult<Node> {
 	if (isImportDeclaration(options.node)) {

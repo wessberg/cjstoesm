@@ -8,7 +8,5 @@ commander.parse(args);
 
 // Show help if no arguments are given
 if (commander.args.length === 0) {
-	commander.help(text => {
-		return `Welcome to the CJS to ESM CLI!\n\n` + text;
-	});
+	commander.help(text => `Welcome to the CJS to ESM CLI!\n\n` + text);
 }

@@ -4,8 +4,9 @@ import {isNotEmittedStatement} from "./is-not-emitted-statement";
 
 /**
  * Visits the given VariableDeclarationList
- * @param {BeforeVisitorOptions<VariableDeclarationList>} options
- * @returns {VisitResult<VariableDeclarationList>}
+ *
+ * @param options
+ * @returns
  */
 export function visitVariableDeclarationList({node, childContinuation, context}: BeforeVisitorOptions<VariableDeclarationList>): VisitResult<Node> {
 	if (context.onlyExports) {

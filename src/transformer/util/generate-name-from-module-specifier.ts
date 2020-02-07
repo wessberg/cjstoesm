@@ -3,8 +3,9 @@ import {parse} from "path";
 
 /**
  * Generates a proper name based on the given module specifier
- * @param {string} moduleSpecifier
- * @return {string}
+ *
+ * @param moduleSpecifier
+ * @return
  */
 export function generateNameFromModuleSpecifier(moduleSpecifier: string): string {
 	const {name} = parse(moduleSpecifier);

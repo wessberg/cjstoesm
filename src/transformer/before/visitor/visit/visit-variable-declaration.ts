@@ -21,8 +21,9 @@ import {getModuleExportsFromRequireDataInContext} from "../../../util/get-module
 
 /**
  * Visits the given VariableDeclaration
- * @param {BeforeVisitorOptions<VariableDeclaration>} options
- * @returns {VisitResult<VariableDeclaration>}
+ *
+ * @param options
+ * @returns
  */
 export function visitVariableDeclaration({
 	node,

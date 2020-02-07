@@ -1,7 +1,7 @@
 import {dirname, isAbsolute, join, normalize} from "path";
 import {rollup, RollupOptions, RollupOutput} from "rollup";
 import typescriptRollupPlugin from "@wessberg/rollup-plugin-ts";
-import nodeResolve from "rollup-plugin-node-resolve";
+import nodeResolve from "@rollup/plugin-node-resolve";
 import {cjsToEsm} from "../../src/transformer/cjs-to-esm";
 import {existsSync, readFileSync, statSync} from "fs";
 import {isInDebugMode} from "../util/is-in-debug-mode";

@@ -4,8 +4,9 @@ import {cjsToEsmTransformerFactory} from "./cjs-to-esm-transformer-factory";
 
 /**
  * CustomTransformer that converts CommonJS to tree-shakeable ESM
- * @param {CjsToEsmOptions} [options]
- * @returns {CustomTransformers}
+ *
+ * @param [options]
+ * @returns
  */
 export function cjsToEsm(options: CjsToEsmOptions = {}): CustomTransformers {
 	return {

@@ -7,8 +7,9 @@ import {normalize} from "path";
 
 /**
  * A TransformerFactory that converts CommonJS to tree-shakeable ESM
- * @param {CjsToEsmOptions} [options]
- * @returns {TransformerFactory<SourceFile>}
+ *
+ * @param [options]
+ * @returns
  */
 export function cjsToEsmTransformerFactory({
 	fileExists = file => existsSync(normalize(file)) && !statSync(normalize(file)).isDirectory(),
@@ -17,16 +18,14 @@ export function cjsToEsmTransformerFactory({
 	...rest
 }: CjsToEsmOptions = {}): TransformerFactory<SourceFile> {
 	// Prepare a VisitorContext
-	const visitorContext = ((): VisitorContext => {
-		return {
-			...rest,
-			debug,
-			printer: debug ? createPrinter() : undefined,
-			fileExists,
-			readFile,
-			onlyExports: false
-		};
-	})();
+	const visitorContext = ((): VisitorContext => ({
+		...rest,
+		debug,
+		printer: debug ? createPrinter() : undefined,
+		fileExists,
+		readFile,
+		onlyExports: false
+	}))();
 
 	return beforeTransformer({baseVisitorContext: visitorContext});
 }

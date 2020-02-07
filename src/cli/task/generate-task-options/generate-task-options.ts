@@ -7,8 +7,9 @@ import {LogLevel} from "../../logger/log-level";
 
 /**
  * Generates the task options that are shared across all commands
- * @param {SanitizedSharedOptions} options
- * @returns {Promise<TaskOptions>}
+ *
+ * @param options
+ * @returns
  */
 export async function generateTaskOptions(options: SanitizedSharedOptions): Promise<TaskOptions> {
 	// Prepare a logger

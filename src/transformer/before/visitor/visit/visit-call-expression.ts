@@ -37,8 +37,9 @@ import {getModuleExportsFromRequireDataInContext} from "../../../util/get-module
 
 /**
  * Visits the given CallExpression
- * @param {BeforeVisitorOptions<CallExpression>} options
- * @returns {VisitResult<CallExpression>}
+ *
+ * @param options
+ * @returns
  */
 export function visitCallExpression({node, childContinuation, sourceFile, context}: BeforeVisitorOptions<CallExpression>): VisitResult<Node> {
 	if (context.onlyExports) {
@@ -286,7 +287,7 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 		// import the default export (if it has any, otherwise import the entire namespace).
 		else if (isObjectBindingPattern(variableDeclarationParent.name)) {
 			const importSpecifiers: ImportSpecifier[] = [];
-			let skippedImportSpecifiers: ImportSpecifier[] = [];
+			const skippedImportSpecifiers: ImportSpecifier[] = [];
 
 			// Check each of the BindingElements
 			for (const element of variableDeclarationParent.name.elements) {

@@ -3,8 +3,9 @@ import {LogLevel} from "../../../logger/log-level";
 
 /**
  * Selects a LogLevel based on the given options
- * @param {SelectLogLevelOptions} options
- * @returns {LogLevel}
+ *
+ * @param options
+ * @returns
  */
 export function selectLogLevel(options: SelectLogLevelOptions): LogLevel {
 	if (options.debug) {

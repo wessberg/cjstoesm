@@ -18,8 +18,9 @@ import {visitVariableDeclarationList} from "./visit-variable-declaration-list";
 
 /**
  * Visits the given Node
- * @param {BeforeVisitorOptions<T>} options
- * @returns {VisitResult<T>}
+ *
+ * @param options
+ * @returns
  */
 export function visitNode<T extends Node>(options: BeforeVisitorOptions<T>): VisitResult<Node> {
 	if (isVariableDeclarationList(options.node)) {

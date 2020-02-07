@@ -3,8 +3,8 @@ import {BeforeTransformerOptions} from "./before-transformer-options";
 import {transformSourceFile} from "./transform-source-file";
 
 /**
- * @param {BeforeTransformerOptions} options
- * @return {TransformerFactory<SourceFile>}
+ * @param options
+ * @return
  */
 export function beforeTransformer(options: BeforeTransformerOptions): TransformerFactory<SourceFile> {
 	return context => sourceFile => transformSourceFile(sourceFile, options, context).sourceFile;

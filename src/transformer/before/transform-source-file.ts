@@ -50,12 +50,12 @@ export function transformSourceFile(
 		const imports: Map<ImportDeclaration, boolean> = new Map();
 		const trailingStatements: Statement[] = [];
 		const moduleExportsMap: Map<string, ModuleExports> = new Map();
-		const localsMap = (sourceFile as {locals?: Map<string, Symbol>}).locals;
+		const localsMap = (sourceFile as {locals?: Map<string, symbol>}).locals;
 		const locals = localsMap == null ? new Set() : new Set(localsMap.keys());
 		const exportedLocals = new Set<string>();
-		let isDefaultExported: boolean = false;
+		let isDefaultExported = false;
 
-		const addImport = (declaration: ImportDeclaration, noEmit: boolean = false): void => {
+		const addImport = (declaration: ImportDeclaration, noEmit = false): void => {
 			imports.set(declaration, noEmit);
 		};
 
@@ -63,22 +63,19 @@ export function transformSourceFile(
 			exportedLocals.add(local);
 		};
 
-		const isLocalExported = (local: string): boolean => {
-			return exportedLocals.has(local);
-		};
+		const isLocalExported = (local: string): boolean => exportedLocals.has(local);
 
 		const markDefaultAsExported = (): void => {
 			isDefaultExported = true;
 		};
 
-		const getImportDeclarationWithModuleSpecifier = (moduleSpecifier: string): ImportDeclaration | undefined => {
-			return [...imports.keys()].find(
+		const getImportDeclarationWithModuleSpecifier = (moduleSpecifier: string): ImportDeclaration | undefined =>
+			[...imports.keys()].find(
 				declaration =>
 					declaration.moduleSpecifier != null &&
 					isStringLiteralLike(declaration.moduleSpecifier) &&
 					declaration.moduleSpecifier.text === moduleSpecifier
 			);
-		};
 
 		const isModuleSpecifierImportedWithoutLocals = (moduleSpecifier: string): boolean => {
 			const matchingDeclaration = getImportDeclarationWithModuleSpecifier(moduleSpecifier);
@@ -96,9 +93,7 @@ export function transformSourceFile(
 			return matchingDeclaration.importClause.name.text;
 		};
 
-		const hasLocalForDefaultImportFromModule = (moduleSpecifier: string): boolean => {
-			return getLocalForDefaultImportFromModule(moduleSpecifier) != null;
-		};
+		const hasLocalForDefaultImportFromModule = (moduleSpecifier: string): boolean => getLocalForDefaultImportFromModule(moduleSpecifier) != null;
 
 		const getLocalForNamespaceImportFromModule = (moduleSpecifier: string): string | undefined => {
 			const matchingDeclaration = getImportDeclarationWithModuleSpecifier(moduleSpecifier);
@@ -115,9 +110,7 @@ export function transformSourceFile(
 			return matchingDeclaration.importClause.namedBindings.name.text;
 		};
 
-		const hasLocalForNamespaceImportFromModule = (moduleSpecifier: string): boolean => {
-			return getLocalForNamespaceImportFromModule(moduleSpecifier) != null;
-		};
+		const hasLocalForNamespaceImportFromModule = (moduleSpecifier: string): boolean => getLocalForNamespaceImportFromModule(moduleSpecifier) != null;
 
 		const getLocalForNamedImportPropertyNameFromModule = (propertyName: string, moduleSpecifier: string): string | undefined => {
 			const matchingDeclaration = getImportDeclarationWithModuleSpecifier(moduleSpecifier);
@@ -136,9 +129,8 @@ export function transformSourceFile(
 			return undefined;
 		};
 
-		const hasLocalForNamedImportPropertyNameFromModule = (propertyName: string, moduleSpecifier: string): boolean => {
-			return getLocalForNamedImportPropertyNameFromModule(propertyName, moduleSpecifier) != null;
-		};
+		const hasLocalForNamedImportPropertyNameFromModule = (propertyName: string, moduleSpecifier: string): boolean =>
+			getLocalForNamedImportPropertyNameFromModule(propertyName, moduleSpecifier) != null;
 
 		const addTrailingStatements = (...statements: Statement[]): void => {
 			trailingStatements.push(...statements);
@@ -164,7 +156,7 @@ export function transformSourceFile(
 			}
 
 			while (true) {
-				let currentCandidate = candidate + suffix + counter;
+				const currentCandidate = candidate + suffix + counter;
 				if (!isIdentifierFree(currentCandidate)) {
 					counter++;
 				} else {
@@ -194,9 +186,7 @@ export function transformSourceFile(
 			getFreeIdentifier,
 			ignoreIdentifier,
 			getModuleExportsForPath: path => moduleExportsMap.get(normalize(path)),
-			addModuleExportsForPath: (path, exports) => {
-				return moduleExportsMap.set(normalize(path), exports);
-			},
+			addModuleExportsForPath: (path, exports) => moduleExportsMap.set(normalize(path), exports),
 			get imports() {
 				return [...imports.entries()].filter(([, noEmit]) => !noEmit).map(([declaration]) => declaration);
 			},
@@ -215,15 +205,14 @@ export function transformSourceFile(
 	const visitorBaseOptions: Pick<BeforeVisitorOptions<Node>, Exclude<keyof BeforeVisitorOptions<Node>, "node" | "sourceFile">> = {
 		context: visitorContext,
 
-		continuation: node => {
-			return visitNode({
+		continuation: node =>
+			visitNode({
 				...visitorBaseOptions,
 				sourceFile,
 				node
-			});
-		},
-		childContinuation: node => {
-			return visitEachChild(
+			}),
+		childContinuation: node =>
+			visitEachChild(
 				node,
 				cbNode => {
 					const visitResult = visitNode({
@@ -237,22 +226,20 @@ export function transformSourceFile(
 					return visitResult;
 				},
 				context
-			);
-		}
+			)
 	};
 
 	const importVisitorBaseOptions: Pick<BeforeVisitorOptions<Node>, Exclude<keyof BeforeVisitorOptions<Node>, "node" | "sourceFile">> = {
 		context: visitorContext,
 
-		continuation: node => {
-			return visitImportAndExportDeclarations({
+		continuation: node =>
+			visitImportAndExportDeclarations({
 				...importVisitorBaseOptions,
 				sourceFile,
 				node
-			});
-		},
-		childContinuation: node => {
-			return visitEachChild(
+			}),
+		childContinuation: node =>
+			visitEachChild(
 				node,
 				cbNode => {
 					const visitResult = visitImportAndExportDeclarations({
@@ -266,8 +253,7 @@ export function transformSourceFile(
 					return visitResult;
 				},
 				context
-			);
-		}
+			)
 	};
 
 	// Visit all imports and exports first

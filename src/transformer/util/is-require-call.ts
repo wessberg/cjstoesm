@@ -30,10 +30,6 @@ export type IsRequireCallResult =
 
 /**
  * Checks if the CallExpression represents a require call (e.g.: 'require(...)')
- * @param {Expression} inputExpression
- * @param {SourceFile} sourceFile
- * @param {VisitorContext} context
- * @return {IsRequireCallResult}
  */
 export function isRequireCall(inputExpression: Expression, sourceFile: SourceFile, context: VisitorContext): IsRequireCallResult {
 	const callExpression = walkThroughFillerNodes(inputExpression);

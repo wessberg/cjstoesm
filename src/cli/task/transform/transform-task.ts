@@ -18,8 +18,6 @@ import {cjsToEsmTransformerFactory} from "../../../transformer/cjs-to-esm-transf
 
 /**
  * Executes the 'generate' task
- * @param {TransformTaskOptions} options
- * @returns {Promise<void>}
  */
 export async function transformTask({logger, input, outDir, root, fs}: TransformTaskOptions): Promise<void> {
 	if (input == null) {
@@ -62,21 +60,39 @@ export async function transformTask({logger, input, outDir, root, fs}: Transform
 
 	// Prepare a noop TransformationContext
 	const context: TransformationContext = {
-		enableEmitNotification: () => {},
+		enableEmitNotification: () => {
+			// This is OK
+		},
 		endLexicalEnvironment: () => [],
-		enableSubstitution: () => {},
+		enableSubstitution: () => {
+			// This is OK
+		},
 		getCompilerOptions: () => options,
-		startLexicalEnvironment: () => {},
-		hoistFunctionDeclaration: () => {},
-		hoistVariableDeclaration: () => {},
+		startLexicalEnvironment: () => {
+			// This is OK
+		},
+		hoistFunctionDeclaration: () => {
+			// This is OK
+		},
+		hoistVariableDeclaration: () => {
+			// This is OK
+		},
 		isEmitNotificationEnabled: () => false,
 		isSubstitutionEnabled: () => false,
-		onEmitNode: () => {},
+		onEmitNode: () => {
+			// This is OK
+		},
 		onSubstituteNode: () => createEmptyStatement(),
 		readEmitHelpers: () => [],
-		requestEmitHelper: () => {},
-		resumeLexicalEnvironment: () => {},
-		suspendLexicalEnvironment: () => {}
+		requestEmitHelper: () => {
+			// This is OK
+		},
+		resumeLexicalEnvironment: () => {
+			// This is OK
+		},
+		suspendLexicalEnvironment: () => {
+			// This is OK
+		}
 	};
 
 	const transformer = cjsToEsmTransformerFactory()(context);
