@@ -55,6 +55,10 @@
 		"@types/prettier": "^1.19.0",
 		"@typescript-eslint/eslint-plugin": "^2.19.0",
 		"@typescript-eslint/parser": "^2.19.0",
+		"@types/glob": "^7.1.1",
+		"@types/node": "^13.7.0",
+		"@types/reserved-words": "^0.1.0",
+		"@types/resolve": "^1.14.0",
 		"@wessberg/rollup-plugin-ts": "^1.2.15",
 		"@wessberg/scaffold": "^1.0.23",
 		"@wessberg/ts-config": "^1.0.7",
@@ -77,10 +81,6 @@
 		"typescript": "^3.7.5"
 	},
 	"dependencies": {
-		"@types/glob": "^7.1.1",
-		"@types/node": "^13.7.0",
-		"@types/reserved-words": "^0.1.0",
-		"@types/resolve": "^1.14.0",
 		"@wessberg/stringutil": "^1.0.19",
 		"chalk": "^3.0.0",
 		"commander": "^4.1.1",
