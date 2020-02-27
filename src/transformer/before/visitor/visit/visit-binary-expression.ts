@@ -66,7 +66,9 @@ export function visitBinaryExpression({node, sourceFile, context, continuation}:
 					const propertyName =
 						property.name == null
 							? undefined
-							: typescript.isLiteralExpression(property.name) || typescript.isIdentifier(property.name)
+							: typescript.isLiteralExpression(property.name) ||
+							  typescript.isIdentifier(property.name) ||
+							  typescript.isPrivateIdentifier(property.name)
 							? property.name.text
 							: typescript.isLiteralExpression(property.name.expression)
 							? property.name.expression.text

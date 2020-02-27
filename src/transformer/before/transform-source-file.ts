@@ -293,7 +293,7 @@ export function transformSourceFile(
 	};
 
 	for (const statement of updatedSourceFile.statements) {
-		if (typescript.isExportDeclaration(statement) && statement.exportClause != null) {
+		if (typescript.isExportDeclaration(statement) && statement.exportClause != null && typescript.isNamedExports(statement.exportClause)) {
 			for (const element of statement.exportClause.elements) {
 				moduleExports.namedExports.add(element.name.text);
 			}
