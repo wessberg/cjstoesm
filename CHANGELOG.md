@@ -1,24 +1,16 @@
-## [0.0.18](https://github.com/wessberg/cjs-to-esm-transformer/compare/v0.0.17...v0.0.18) (2020-02-07)
+## [0.0.19](https://github.com/wessberg/cjs-to-esm-transformer/compare/v0.0.18...v0.0.19) (2020-02-27)
+
+## [0.0.18](https://github.com/wessberg/cjs-to-esm-transformer/compare/v0.0.15...v0.0.18) (2020-02-07)
 
 ### Bug Fixes
 
 - fix UMD bug ([1b579a9](https://github.com/wessberg/cjs-to-esm-transformer/commit/1b579a9d394983d94cf58082816ec8588a7a67e7))
-
-## [0.0.17](https://github.com/wessberg/cjs-to-esm-transformer/compare/v0.0.16...v0.0.17) (2020-02-07)
-
-### Bug Fixes
-
+- support cjs. Move to ESLint since TSLint is deprecated ([6e4b269](https://github.com/wessberg/cjs-to-esm-transformer/commit/6e4b26904f5e6381c32d4a62ab07f7602ae0708e))
 - support transforming code that reassigns required bindings into valid ESM ([11ec60d](https://github.com/wessberg/cjs-to-esm-transformer/commit/11ec60d43d35b421d5f3659d283f0a50c235d5b5))
 
 ### Features
 
 - make it possible to pass a specific TypeScript version. Add support for transforming from UMD to ESM ([f6c55de](https://github.com/wessberg/cjs-to-esm-transformer/commit/f6c55de32ac27b4fb914ad5f242aa78c22b5b3d0))
-
-## [0.0.16](https://github.com/wessberg/cjs-to-esm-transformer/compare/v0.0.15...v0.0.16) (2020-02-07)
-
-### Bug Fixes
-
-- support cjs. Move to ESLint since TSLint is deprecated ([6e4b269](https://github.com/wessberg/cjs-to-esm-transformer/commit/6e4b26904f5e6381c32d4a62ab07f7602ae0708e))
 
 ## [0.0.15](https://github.com/wessberg/cjs-to-esm-transformer/compare/v0.0.14...v0.0.15) (2019-11-17)
 
