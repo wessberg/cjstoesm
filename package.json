@@ -64,7 +64,6 @@
 		"@wessberg/scaffold": "^1.0.23",
 		"@wessberg/ts-config": "^1.0.7",
 		"ava": "^3.4.0",
-		"core-js": "^3.6.4",
 		"eslint": "^6.8.0",
 		"eslint-config-prettier": "^6.10.0",
 		"eslint-plugin-import": "^2.20.1",
