@@ -1,3 +1,4 @@
+/* eslint-disable */
 /**
  * @file This file is auto-generated. Do not change its contents.
  */

@@ -49,6 +49,7 @@ function generateBuiltInModuleInnerContents(): string {
 function generateBuiltInModule(): string {
 	return format(
 		`\
+/* eslint-disable */
 /**
  * @file This file is auto-generated. Do not change its contents.
  */
