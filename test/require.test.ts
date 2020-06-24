@@ -561,22 +561,6 @@ test("Places imports in top of the SourceFile in the order they were parsed in f
 	);
 });
 
-test("Takes deep require() calls and places them in top of the file. #1", t => {
-	const bundle = generateTransformerResult(`
-		(async () => {
-			const foo = require("bar");
-		})();
-	`);
-	const [file] = bundle;
-
-	t.deepEqual(
-		formatCode(file.text),
-		formatCode(`\
-		import foo from "bar";
-		`)
-	);
-});
-
 test("Handles anonymous require calls. #1", t => {
 	const bundle = generateTransformerResult(`
 		myFunction(require("foo"));
@@ -1150,6 +1134,57 @@ test("Won't duplicate imports of the same Named import. #1", t => {
 		import {foo} from "./foo";
 		const bar = {foo}.foo;
 		const baz = {foo}.foo;
+		`)
+	);
+});
+
+test("Takes deep require() calls and places them in top of the file. #1", t => {
+	const bundle = generateTransformerResult(`
+		(async () => {
+			const foo = require("bar");
+		})();
+	`);
+	const [file] = bundle;
+
+	t.deepEqual(
+		formatCode(file.text),
+		formatCode(`\
+		import foo from "bar";
+		(async () => {
+		})();
+		`)
+	);
+});
+
+test("Takes deep require() calls and places them in top of the file. #2", t => {
+	const bundle = generateTransformerResult([
+		{
+			entry: true,
+			fileName: "index.ts",
+			text: `
+				function fooBarBaz () {
+					const {foo} = require("./foo");
+					console.log(foo);
+				}
+			`
+		},
+		{
+			entry: true,
+			fileName: "foo.ts",
+			text: `
+				exports.foo = 2;
+			`
+		}
+	]);
+	const [file] = bundle;
+
+	t.deepEqual(
+		formatCode(file.text),
+		formatCode(`\
+		import {foo} from "./foo";
+		function fooBarBaz () {
+			console.log(foo);
+		}
 		`)
 	);
 });
