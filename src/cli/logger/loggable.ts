@@ -1,4 +1,4 @@
-export interface ILogger {
+export interface Loggable {
 	/**
 	 * Logs info-related messages
 	 * @param {string[]} messages

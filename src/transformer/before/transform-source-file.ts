@@ -56,19 +56,13 @@ export function transformSourceFile(
 
 		const getImportDeclarationWithModuleSpecifier = (moduleSpecifier: string): TS.ImportDeclaration | undefined =>
 			[...imports.keys()].find(
-				declaration =>
-					declaration.moduleSpecifier != null &&
-					typescript.isStringLiteralLike(declaration.moduleSpecifier) &&
-					declaration.moduleSpecifier.text === moduleSpecifier
+				declaration => declaration.moduleSpecifier != null && typescript.isStringLiteralLike(declaration.moduleSpecifier) && declaration.moduleSpecifier.text === moduleSpecifier
 			);
 
 		const isModuleSpecifierImportedWithoutLocals = (moduleSpecifier: string): boolean => {
 			const matchingDeclaration = getImportDeclarationWithModuleSpecifier(moduleSpecifier);
 			if (matchingDeclaration == null) return false;
-			return (
-				matchingDeclaration.importClause == null ||
-				(matchingDeclaration.importClause.name == null && matchingDeclaration.importClause.namedBindings == null)
-			);
+			return matchingDeclaration.importClause == null || (matchingDeclaration.importClause.name == null && matchingDeclaration.importClause.namedBindings == null);
 		};
 
 		const getLocalForDefaultImportFromModule = (moduleSpecifier: string): string | undefined => {

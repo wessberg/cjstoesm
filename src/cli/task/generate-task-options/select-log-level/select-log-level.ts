@@ -1,5 +1,5 @@
 import {SelectLogLevelOptions} from "./select-log-level-options";
-import {LogLevel} from "../../../logger/log-level";
+import {LogLevelKind} from "../../../logger/log-level-kind";
 
 /**
  * Selects a LogLevel based on the given options
@@ -7,14 +7,14 @@ import {LogLevel} from "../../../logger/log-level";
  * @param options
  * @returns
  */
-export function selectLogLevel(options: SelectLogLevelOptions): LogLevel {
+export function selectLogLevel(options: SelectLogLevelOptions): LogLevelKind {
 	if (options.debug) {
-		return LogLevel.DEBUG;
+		return LogLevelKind.DEBUG;
 	} else if (options.verbose) {
-		return LogLevel.VERBOSE;
+		return LogLevelKind.VERBOSE;
 	} else if (options.silent) {
-		return LogLevel.NONE;
+		return LogLevelKind.NONE;
 	} else {
-		return LogLevel.INFO;
+		return LogLevelKind.INFO;
 	}
 }

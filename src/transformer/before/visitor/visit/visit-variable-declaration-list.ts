@@ -5,11 +5,7 @@ import {TS} from "../../../../type/type";
 /**
  * Visits the given VariableDeclarationList
  */
-export function visitVariableDeclarationList({
-	node,
-	childContinuation,
-	context
-}: BeforeVisitorOptions<TS.VariableDeclarationList>): TS.VisitResult<TS.Node> {
+export function visitVariableDeclarationList({node, childContinuation, context}: BeforeVisitorOptions<TS.VariableDeclarationList>): TS.VisitResult<TS.Node> {
 	if (context.onlyExports) {
 		return childContinuation(node);
 	}

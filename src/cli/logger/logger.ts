@@ -1,23 +1,23 @@
-import {LogLevel} from "./log-level";
+import {LogLevelKind} from "./log-level-kind";
 import chalk from "chalk";
-import {ILogger} from "./i-logger";
+import {Loggable} from "./loggable";
 
 /**
  * A logger that can print to the console
  */
-export class Logger implements ILogger {
+export class Logger implements Loggable {
 	private readonly INFO_COLOR = "white";
 	private readonly VERBOSE_COLOR = "gray";
 	private readonly WARNING_COLOR = "yellow";
 	private readonly DEBUG_COLOR = "cyan";
 
-	constructor(private readonly logLevel: LogLevel) {}
+	constructor(private readonly logLevel: LogLevelKind) {}
 
 	/**
 	 * Logs info-related messages
 	 */
 	info(...messages: string[]): void {
-		if (this.logLevel < LogLevel.INFO) return;
+		if (this.logLevel < LogLevelKind.INFO) return;
 		console.log(chalk[this.INFO_COLOR](...messages));
 	}
 
@@ -25,7 +25,7 @@ export class Logger implements ILogger {
 	 * Logs verbose-related messages
 	 */
 	verbose(...messages: string[]): void {
-		if (this.logLevel < LogLevel.VERBOSE) return;
+		if (this.logLevel < LogLevelKind.VERBOSE) return;
 		console.log(chalk[this.VERBOSE_COLOR](...messages));
 	}
 
@@ -33,7 +33,7 @@ export class Logger implements ILogger {
 	 * Logs debug-related messages
 	 */
 	debug(...messages: string[]): void {
-		if (this.logLevel < LogLevel.DEBUG) return;
+		if (this.logLevel < LogLevelKind.DEBUG) return;
 		console.log(chalk[this.DEBUG_COLOR](...messages));
 	}
 

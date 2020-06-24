@@ -18,10 +18,7 @@ export type TestFile = ITestFile | string;
 /**
  * Prepares a test
  */
-export function generateTransformerResult(
-	inputFiles: TestFile[] | TestFile,
-	debug: CjsToEsmOptions["debug"] = isInDebugMode()
-): {fileName: string; text: string}[] {
+export function generateTransformerResult(inputFiles: TestFile[] | TestFile, debug: CjsToEsmOptions["debug"] = isInDebugMode()): {fileName: string; text: string}[] {
 	const cwd = process.cwd();
 
 	const files: ITestFile[] = (Array.isArray(inputFiles) ? inputFiles : [inputFiles])

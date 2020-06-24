@@ -1,5 +1,5 @@
 export const CONSTANT = {
-	INSPECT_OPTIONS: {
+	inspectOptions: {
 		colors: true,
 		depth: Infinity,
 		maxArrayLength: Infinity

@@ -4,5 +4,8 @@
 		"shared-node-browser": true,
 		"node": true
 	},
-	"extends": "./node_modules/@wessberg/ts-config/.eslintrc.json"
+	"extends": "./node_modules/@wessberg/ts-config/.eslintrc.json",
+	"rules": {
+		"@typescript-eslint/camelcase": "off"
+	}
 }

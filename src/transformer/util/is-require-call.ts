@@ -23,10 +23,7 @@ export interface IsRequireCallMatchResultWithResolvedModuleSpecifier {
 	resolvedModuleSpecifierText: string;
 }
 
-export type IsRequireCallResult =
-	| IsRequireCallNoMatchResult
-	| IsRequireCallMatchResultWithNoResolvedModuleSpecifier
-	| IsRequireCallMatchResultWithResolvedModuleSpecifier;
+export type IsRequireCallResult = IsRequireCallNoMatchResult | IsRequireCallMatchResultWithNoResolvedModuleSpecifier | IsRequireCallMatchResultWithResolvedModuleSpecifier;
 
 /**
  * Checks if the CallExpression represents a require call (e.g.: 'require(...)')
@@ -55,8 +52,7 @@ export function isRequireCall(inputExpression: TS.Expression, sourceFile: TS.Sou
 					fileExists: context.fileExists
 			  });
 
-	const resolvedModuleSpecifierText =
-		resolvedModuleSpecifier == null || isBuiltInModule(resolvedModuleSpecifier) ? undefined : context.readFile(resolvedModuleSpecifier);
+	const resolvedModuleSpecifierText = resolvedModuleSpecifier == null || isBuiltInModule(resolvedModuleSpecifier) ? undefined : context.readFile(resolvedModuleSpecifier);
 
 	if (moduleSpecifier == null || resolvedModuleSpecifier == null || resolvedModuleSpecifierText == null) {
 		return {

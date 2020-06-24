@@ -14,12 +14,7 @@ import {shouldDebug} from "../../../util/should-debug";
  * @param options
  * @returns
  */
-export function visitCallExpression({
-	node,
-	childContinuation,
-	sourceFile,
-	context
-}: BeforeVisitorOptions<TS.CallExpression>): TS.VisitResult<TS.Node> {
+export function visitCallExpression({node, childContinuation, sourceFile, context}: BeforeVisitorOptions<TS.CallExpression>): TS.VisitResult<TS.Node> {
 	if (context.onlyExports) {
 		return childContinuation(node);
 	}
@@ -78,12 +73,7 @@ export function visitCallExpression({
 			} else {
 				const identifier = typescript.createIdentifier(context.getFreeIdentifier(generateNameFromModuleSpecifier(moduleSpecifier)));
 				context.addImport(
-					typescript.createImportDeclaration(
-						undefined,
-						undefined,
-						typescript.createImportClause(identifier, undefined),
-						typescript.createStringLiteral(moduleSpecifier)
-					)
+					typescript.createImportDeclaration(undefined, undefined, typescript.createImportClause(identifier, undefined), typescript.createStringLiteral(moduleSpecifier))
 				);
 
 				// Replace the CallExpression by the identifier
@@ -180,9 +170,7 @@ export function visitCallExpression({
 					importBindingName = context.getLocalForNamespaceImportFromModule(moduleSpecifier)!;
 				} else {
 					// If that binding isn't free within the context, import it as another local name
-					importBindingName = context.isIdentifierFree(importBindingPropertyName)
-						? importBindingPropertyName
-						: context.getFreeIdentifier(importBindingPropertyName);
+					importBindingName = context.isIdentifierFree(importBindingPropertyName) ? importBindingPropertyName : context.getFreeIdentifier(importBindingPropertyName);
 
 					context.addImport(
 						typescript.createImportDeclaration(
@@ -195,10 +183,7 @@ export function visitCallExpression({
 										? // If the property name is free within the context, don't alias the import
 										  typescript.createImportSpecifier(undefined, typescript.createIdentifier(importBindingPropertyName))
 										: // Otherwise, import it aliased by another name that is free within the context
-										  typescript.createImportSpecifier(
-												typescript.createIdentifier(importBindingPropertyName),
-												typescript.createIdentifier(importBindingName)
-										  )
+										  typescript.createImportSpecifier(typescript.createIdentifier(importBindingPropertyName), typescript.createIdentifier(importBindingName))
 								])
 							),
 							typescript.createStringLiteral(moduleSpecifier)
@@ -299,9 +284,7 @@ export function visitCallExpression({
 						} else {
 							// Otherwise, import it under an aliased name
 							const alias = context.getFreeIdentifier(element.name.text);
-							importSpecifiers.push(
-								typescript.createImportSpecifier(typescript.createIdentifier(element.name.text), typescript.createIdentifier(alias))
-							);
+							importSpecifiers.push(typescript.createImportSpecifier(typescript.createIdentifier(element.name.text), typescript.createIdentifier(alias)));
 						}
 					}
 				}
@@ -318,9 +301,7 @@ export function visitCallExpression({
 						importSpecifiers.push(typescript.createImportSpecifier(undefined, typescript.createIdentifier(element.propertyName.text)));
 					} else {
 						const alias = context.getFreeIdentifier(element.propertyName.text);
-						importSpecifiers.push(
-							typescript.createImportSpecifier(typescript.createIdentifier(element.propertyName.text), typescript.createIdentifier(alias))
-						);
+						importSpecifiers.push(typescript.createImportSpecifier(typescript.createIdentifier(element.propertyName.text), typescript.createIdentifier(alias)));
 					}
 				}
 			}

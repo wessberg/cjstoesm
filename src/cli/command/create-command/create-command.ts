@@ -9,10 +9,7 @@ import {CommandAction, CommandActionOptions, CommandOptionType, CreateCommandOpt
  * @param type
  * @param value
  */
-function coerceOptionValue(
-	type: CommandOptionType,
-	value: unknown
-): typeof type extends "boolean" ? boolean : typeof type extends "number" ? number : string {
+function coerceOptionValue(type: CommandOptionType, value: unknown): typeof type extends "boolean" ? boolean : typeof type extends "number" ? number : string {
 	switch (type) {
 		case "string":
 			if (value === null) return "null";

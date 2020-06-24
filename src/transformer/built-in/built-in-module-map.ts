@@ -57,6 +57,7 @@ export function isBuiltInModule(moduleName: string): moduleName is BuiltInModule
 }
 
 export const BUILT_IN_MODULE_MAP: BuiltInModuleMap = {
+	/* eslint-disable @typescript-eslint/naming-convention */
 	assert: {
 		namedExports: new Set([]),
 		hasDefaultExport: true
@@ -74,19 +75,7 @@ export const BUILT_IN_MODULE_MAP: BuiltInModuleMap = {
 		hasDefaultExport: true
 	},
 	cluster: {
-		namedExports: new Set([
-			"isWorker",
-			"isMaster",
-			"Worker",
-			"workers",
-			"settings",
-			"SCHED_NONE",
-			"SCHED_RR",
-			"schedulingPolicy",
-			"setupMaster",
-			"fork",
-			"disconnect"
-		]),
+		namedExports: new Set(["isWorker", "isMaster", "Worker", "workers", "settings", "SCHED_NONE", "SCHED_RR", "schedulingPolicy", "setupMaster", "fork", "disconnect"]),
 		hasDefaultExport: true
 	},
 	console: {
@@ -762,17 +751,7 @@ export const BUILT_IN_MODULE_MAP: BuiltInModuleMap = {
 		hasDefaultExport: true
 	},
 	timers: {
-		namedExports: new Set([
-			"setTimeout",
-			"clearTimeout",
-			"setImmediate",
-			"clearImmediate",
-			"setInterval",
-			"clearInterval",
-			"active",
-			"unenroll",
-			"enroll"
-		]),
+		namedExports: new Set(["setTimeout", "clearTimeout", "setImmediate", "clearImmediate", "setInterval", "clearInterval", "active", "unenroll", "enroll"]),
 		hasDefaultExport: true
 	},
 	tls: {
@@ -807,19 +786,7 @@ export const BUILT_IN_MODULE_MAP: BuiltInModuleMap = {
 		hasDefaultExport: true
 	},
 	url: {
-		namedExports: new Set([
-			"Url",
-			"parse",
-			"resolve",
-			"resolveObject",
-			"format",
-			"URL",
-			"URLSearchParams",
-			"domainToASCII",
-			"domainToUnicode",
-			"pathToFileURL",
-			"fileURLToPath"
-		]),
+		namedExports: new Set(["Url", "parse", "resolve", "resolveObject", "format", "URL", "URLSearchParams", "domainToASCII", "domainToUnicode", "pathToFileURL", "fileURLToPath"]),
 		hasDefaultExport: true
 	},
 	util: {
@@ -875,16 +842,7 @@ export const BUILT_IN_MODULE_MAP: BuiltInModuleMap = {
 		hasDefaultExport: true
 	},
 	vm: {
-		namedExports: new Set([
-			"Script",
-			"createContext",
-			"createScript",
-			"runInContext",
-			"runInNewContext",
-			"runInThisContext",
-			"isContext",
-			"compileFunction"
-		]),
+		namedExports: new Set(["Script", "createContext", "createScript", "runInContext", "runInNewContext", "runInThisContext", "isContext", "compileFunction"]),
 		hasDefaultExport: true
 	},
 	worker_threads: {
@@ -946,4 +904,5 @@ export const BUILT_IN_MODULE_MAP: BuiltInModuleMap = {
 		]),
 		hasDefaultExport: true
 	}
+	/* eslint-enable @typescript-eslint/naming-convention */
 };

@@ -8,12 +8,7 @@ import {willReassignIdentifier} from "../../../util/will-be-reassigned";
 /**
  * Visits the given VariableDeclaration
  */
-export function visitVariableDeclaration({
-	node,
-	childContinuation,
-	sourceFile,
-	context
-}: BeforeVisitorOptions<TS.VariableDeclaration>): TS.VisitResult<TS.Node> {
+export function visitVariableDeclaration({node, childContinuation, sourceFile, context}: BeforeVisitorOptions<TS.VariableDeclaration>): TS.VisitResult<TS.Node> {
 	if (context.onlyExports || node.initializer == null) {
 		return childContinuation(node);
 	}
@@ -123,9 +118,7 @@ export function visitVariableDeclaration({
 					return childContinuation(node);
 				}
 
-				importSpecifiers.push(
-					typescript.createImportSpecifier(typescript.createIdentifier(element.propertyName.text), typescript.createIdentifier(element.name.text))
-				);
+				importSpecifiers.push(typescript.createImportSpecifier(typescript.createIdentifier(element.propertyName.text), typescript.createIdentifier(element.name.text)));
 			} else {
 				// Opt out and proceed with the child continuation for more sophisticated handling
 				return childContinuation(node);
@@ -133,9 +126,7 @@ export function visitVariableDeclaration({
 		}
 		// If more than 0 import specifier was generated, add an ImportDeclaration and remove this VariableDeclaration
 		if (importSpecifiers.length > 0) {
-			const importSpecifiersThatWillBeReassigned = importSpecifiers.filter(importSpecifier =>
-				willReassignIdentifier(importSpecifier.name.text, sourceFile, typescript)
-			);
+			const importSpecifiersThatWillBeReassigned = importSpecifiers.filter(importSpecifier => willReassignIdentifier(importSpecifier.name.text, sourceFile, typescript));
 			const otherImportSpecifiers = importSpecifiers.filter(importSpecifier => !importSpecifiersThatWillBeReassigned.includes(importSpecifier));
 
 			// Add an import, but bind the name to free identifier
@@ -149,9 +140,7 @@ export function visitVariableDeclaration({
 						undefined,
 						typescript.createImportClause(
 							undefined,
-							typescript.createNamedImports([
-								typescript.createImportSpecifier(typescript.createIdentifier(propertyName.text), typescript.createIdentifier(newName))
-							])
+							typescript.createNamedImports([typescript.createImportSpecifier(typescript.createIdentifier(propertyName.text), typescript.createIdentifier(newName))])
 						),
 						typescript.createStringLiteral(moduleSpecifier)
 					)

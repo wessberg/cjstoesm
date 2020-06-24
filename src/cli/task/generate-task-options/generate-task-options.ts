@@ -4,7 +4,7 @@ import {selectLogLevel} from "./select-log-level/select-log-level";
 import fs from "fs";
 import * as TSModule from "typescript";
 import {Logger} from "../../logger/logger";
-import {LogLevel} from "../../logger/log-level";
+import {LogLevelKind} from "../../logger/log-level-kind";
 
 /**
  * Generates the task options that are shared across all commands
@@ -18,9 +18,9 @@ export async function generateTaskOptions(options: SanitizedSharedOptions): Prom
 	const logger = new Logger(logLevel);
 
 	// Inform about the log level (if applicable)
-	if (logLevel === LogLevel.VERBOSE) {
+	if (logLevel === LogLevelKind.VERBOSE) {
 		logger.verbose(`Logging mode: VERBOSE`);
-	} else if (logLevel === LogLevel.DEBUG) logger.debug(`Logging mode: DEBUG`);
+	} else if (logLevel === LogLevelKind.DEBUG) logger.debug(`Logging mode: DEBUG`);
 
 	return {
 		fs,

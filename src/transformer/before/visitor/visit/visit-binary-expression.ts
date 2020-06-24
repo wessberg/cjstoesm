@@ -29,9 +29,7 @@ export function visitBinaryExpression({node, sourceFile, context, continuation}:
 		// For example: 'const foo = module.exports = ...'
 		const variableDeclarationParent = findNodeUp(node, typescript.isVariableDeclaration);
 		const variableDeclarationLocal =
-			variableDeclarationParent != null
-				? typescript.createIdentifier(getLocalsForBindingName(variableDeclarationParent.name, typescript)[0])
-				: undefined;
+			variableDeclarationParent != null ? typescript.createIdentifier(getLocalsForBindingName(variableDeclarationParent.name, typescript)[0]) : undefined;
 
 		// This is something like for example 'exports = ...', 'module.exports = ...', 'exports.default', or 'module.exports.default'
 		if (exportsData.property == null || exportsData.property === "default") {
@@ -66,21 +64,14 @@ export function visitBinaryExpression({node, sourceFile, context, continuation}:
 					const propertyName =
 						property.name == null
 							? undefined
-							: typescript.isLiteralExpression(property.name) ||
-							  typescript.isIdentifier(property.name) ||
-							  typescript.isPrivateIdentifier(property.name)
+							: typescript.isLiteralExpression(property.name) || typescript.isIdentifier(property.name) || typescript.isPrivateIdentifier(property.name)
 							? property.name.text
 							: typescript.isLiteralExpression(property.name.expression)
 							? property.name.expression.text
 							: undefined;
 
 					// If no property name could be decided, or if the local is already exported, or if it is a setter, skip this property
-					if (
-						propertyName == null ||
-						typescript.isSetAccessorDeclaration(property) ||
-						typescript.isGetAccessorDeclaration(property) ||
-						context.isLocalExported(propertyName)
-					) {
+					if (propertyName == null || typescript.isSetAccessorDeclaration(property) || typescript.isGetAccessorDeclaration(property) || context.isLocalExported(propertyName)) {
 						elements.push(property);
 						continue;
 					}
@@ -92,13 +83,7 @@ export function visitBinaryExpression({node, sourceFile, context, continuation}:
 
 						elements.push(typescript.createShorthandPropertyAssignment(propertyName, property.objectAssignmentInitializer));
 
-						statements.push(
-							typescript.createExportDeclaration(
-								undefined,
-								undefined,
-								typescript.createNamedExports([typescript.createExportSpecifier(undefined, propertyName)])
-							)
-						);
+						statements.push(typescript.createExportDeclaration(undefined, undefined, typescript.createNamedExports([typescript.createExportSpecifier(undefined, propertyName)])));
 					}
 
 					// If it is a PropertyAssignment that points to an Identifier, we know that it holds a reference to some root-level identifier.
@@ -119,20 +104,13 @@ export function visitBinaryExpression({node, sourceFile, context, continuation}:
 								])
 							)
 						);
-					} else if (
-						context.isIdentifierFree(propertyName) &&
-						typescript.isPropertyAssignment(property) &&
-						!nodeContainsSuper(property.initializer, typescript)
-					) {
+					} else if (context.isIdentifierFree(propertyName) && typescript.isPropertyAssignment(property) && !nodeContainsSuper(property.initializer, typescript)) {
 						elements.push(typescript.createShorthandPropertyAssignment(propertyName));
 
 						statements.push(
 							typescript.createVariableStatement(
 								[typescript.createModifier(typescript.SyntaxKind.ExportKeyword)],
-								typescript.createVariableDeclarationList(
-									[typescript.createVariableDeclaration(propertyName, undefined, property.initializer)],
-									typescript.NodeFlags.Const
-								)
+								typescript.createVariableDeclarationList([typescript.createVariableDeclaration(propertyName, undefined, property.initializer)], typescript.NodeFlags.Const)
 							)
 						);
 					}
@@ -276,9 +254,7 @@ export function visitBinaryExpression({node, sourceFile, context, continuation}:
 
 					// Otherwise, export the entire module (e.g. all named exports)
 					else {
-						context.addTrailingStatements(
-							typescript.createExportDeclaration(undefined, undefined, undefined, typescript.createStringLiteral(moduleSpecifier))
-						);
+						context.addTrailingStatements(typescript.createExportDeclaration(undefined, undefined, undefined, typescript.createStringLiteral(moduleSpecifier)));
 						return undefined;
 					}
 				}
@@ -349,10 +325,7 @@ export function visitBinaryExpression({node, sourceFile, context, continuation}:
 					context.addTrailingStatements(
 						typescript.createVariableStatement(
 							[typescript.createModifier(typescript.SyntaxKind.ExportKeyword)],
-							typescript.createVariableDeclarationList(
-								[typescript.createVariableDeclaration(exportsData.property, undefined, right)],
-								typescript.NodeFlags.Const
-							)
+							typescript.createVariableDeclarationList([typescript.createVariableDeclaration(exportsData.property, undefined, right)], typescript.NodeFlags.Const)
 						)
 					);
 				} else {
@@ -360,10 +333,7 @@ export function visitBinaryExpression({node, sourceFile, context, continuation}:
 					context.addTrailingStatements(
 						typescript.createVariableStatement(
 							undefined,
-							typescript.createVariableDeclarationList(
-								[typescript.createVariableDeclaration(freeIdentifier, undefined, right)],
-								typescript.NodeFlags.Const
-							)
+							typescript.createVariableDeclarationList([typescript.createVariableDeclaration(freeIdentifier, undefined, right)], typescript.NodeFlags.Const)
 						),
 						typescript.createExportDeclaration(
 							undefined,

@@ -47,9 +47,7 @@ export async function generateRollupBundle(
 	const resolveId = (fileName: string, parent: string | undefined): string | null => {
 		const normalizedFileName = normalize(fileName);
 		const normalizedParent = parent == null ? undefined : normalize(parent);
-		const absolute = isAbsolute(normalizedFileName)
-			? normalizedFileName
-			: join(normalizedParent == null ? "" : dirname(normalizedParent), normalizedFileName);
+		const absolute = isAbsolute(normalizedFileName) ? normalizedFileName : join(normalizedParent == null ? "" : dirname(normalizedParent), normalizedFileName);
 		for (const ext of ["", ".ts", ".js", ".mjs"]) {
 			const withExtension = `${absolute}${ext}`;
 			const matchedFile = files.find(file => file.fileName === withExtension);

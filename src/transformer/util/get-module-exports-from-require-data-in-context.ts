@@ -39,13 +39,7 @@ export function getModuleExportsFromRequireDataInContext(data: IsRequireCallResu
 		// If that wasn't possible, generate a new SourceFile and parse it
 		if (moduleExports == null && resolvedModuleSpecifierText != null) {
 			moduleExports = transformSourceFile(
-				typescript.createSourceFile(
-					resolvedModuleSpecifier,
-					resolvedModuleSpecifierText,
-					typescript.ScriptTarget.ESNext,
-					true,
-					typescript.ScriptKind.TS
-				),
+				typescript.createSourceFile(resolvedModuleSpecifier, resolvedModuleSpecifierText, typescript.ScriptTarget.ESNext, true, typescript.ScriptKind.TS),
 				{
 					baseVisitorContext: {
 						...context,
