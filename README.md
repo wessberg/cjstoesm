@@ -194,7 +194,7 @@ $ npx -p typescript -p @wessberg/cjs-to-esm-transformer cjstoesm
 
 ### Peer Dependencies
 
-`@wessberg/cjs-to-esm-transformer` depends on `typescript`, so you need to manually install this as well.
+`@wessberg/cjs-to-esm-transformer` depends on `typescript`, so you need to manually install these as well.
 
 <!-- SHADOW_SECTION_INSTALL_END -->
 

@@ -1,3 +1,12 @@
+## [0.0.20](https://github.com/wessberg/cjs-to-esm-transformer/compare/v0.0.19...v0.0.20) (2020-06-24)
+
+### Bug Fixes
+
+- fix buit-in-module-map ([10281f8](https://github.com/wessberg/cjs-to-esm-transformer/commit/10281f8ce48e7b423672aee305b2f3b8ee975a59))
+- fix buit-in-module-map ([65d897e](https://github.com/wessberg/cjs-to-esm-transformer/commit/65d897ef066f77627f2982ab436a8e1ab46c4e58))
+- moving require calls up from a block scope will remove the surrounding block ([a66d7b5](https://github.com/wessberg/cjs-to-esm-transformer/commit/a66d7b5d5f5e5b232b0a37874f2d5d1678d54a4f))
+- use a proper TransformationContext at all times. Adds TypeScript v3.9.5 support ([1a14d64](https://github.com/wessberg/cjs-to-esm-transformer/commit/1a14d64e5ac26a6d8086dcf31f3e859d587aee3d))
+
 ## [0.0.19](https://github.com/wessberg/cjs-to-esm-transformer/compare/v0.0.18...v0.0.19) (2020-02-27)
 
 ## [0.0.18](https://github.com/wessberg/cjs-to-esm-transformer/compare/v0.0.15...v0.0.18) (2020-02-07)
