@@ -19,6 +19,7 @@ export const BUILT_IN_MODULE = new Set([
 	"domain",
 	"events",
 	"fs",
+	"fs/promises",
 	"http",
 	"http2",
 	"https",
@@ -57,13 +58,12 @@ export function isBuiltInModule(moduleName: string): moduleName is BuiltInModule
 }
 
 export const BUILT_IN_MODULE_MAP: BuiltInModuleMap = {
-	/* eslint-disable @typescript-eslint/naming-convention */
 	assert: {
 		namedExports: new Set([]),
 		hasDefaultExport: true
 	},
 	async_hooks: {
-		namedExports: new Set(["createHook", "executionAsyncId", "triggerAsyncId", "AsyncResource"]),
+		namedExports: new Set(["AsyncLocalStorage", "createHook", "executionAsyncId", "triggerAsyncId", "executionAsyncResource", "AsyncResource"]),
 		hasDefaultExport: true
 	},
 	buffer: {
@@ -351,8 +351,7 @@ export const BUILT_IN_MODULE_MAP: BuiltInModuleMap = {
 			"TLS1_3_VERSION",
 			"POINT_CONVERSION_COMPRESSED",
 			"POINT_CONVERSION_UNCOMPRESSED",
-			"POINT_CONVERSION_HYBRID",
-			"defaultCipherList"
+			"POINT_CONVERSION_HYBRID"
 		]),
 		hasDefaultExport: true
 	},
@@ -370,6 +369,7 @@ export const BUILT_IN_MODULE_MAP: BuiltInModuleMap = {
 			"createSecretKey",
 			"createSign",
 			"createVerify",
+			"diffieHellman",
 			"getCiphers",
 			"getCurves",
 			"getDiffieHellman",
@@ -421,6 +421,7 @@ export const BUILT_IN_MODULE_MAP: BuiltInModuleMap = {
 			"Resolver",
 			"setServers",
 			"ADDRCONFIG",
+			"ALL",
 			"V4MAPPED",
 			"NODATA",
 			"FORMERR",
@@ -524,6 +525,8 @@ export const BUILT_IN_MODULE_MAP: BuiltInModuleMap = {
 			"readdirSync",
 			"read",
 			"readSync",
+			"readv",
+			"readvSync",
 			"readFile",
 			"readFileSync",
 			"readlink",
@@ -569,6 +572,36 @@ export const BUILT_IN_MODULE_MAP: BuiltInModuleMap = {
 		]),
 		hasDefaultExport: true
 	},
+	"fs/promises": {
+		namedExports: new Set([
+			"access",
+			"copyFile",
+			"open",
+			"opendir",
+			"rename",
+			"truncate",
+			"rmdir",
+			"mkdir",
+			"readdir",
+			"readlink",
+			"symlink",
+			"lstat",
+			"stat",
+			"link",
+			"unlink",
+			"chmod",
+			"lchmod",
+			"lchown",
+			"chown",
+			"utimes",
+			"realpath",
+			"mkdtemp",
+			"writeFile",
+			"appendFile",
+			"readFile"
+		]),
+		hasDefaultExport: true
+	},
 	http: {
 		namedExports: new Set([
 			"METHODS",
@@ -580,6 +613,8 @@ export const BUILT_IN_MODULE_MAP: BuiltInModuleMap = {
 			"Server",
 			"ServerResponse",
 			"createServer",
+			"validateHeaderName",
+			"validateHeaderValue",
 			"get",
 			"request",
 			"maxHeaderSize",
@@ -636,7 +671,7 @@ export const BUILT_IN_MODULE_MAP: BuiltInModuleMap = {
 			"type",
 			"userInfo",
 			"uptime",
-			"tmpDir",
+			"version",
 			"constants",
 			"EOL"
 		]),
@@ -739,7 +774,7 @@ export const BUILT_IN_MODULE_MAP: BuiltInModuleMap = {
 		hasDefaultExport: true
 	},
 	repl: {
-		namedExports: new Set(["writer", "REPLServer", "REPL_MODE_SLOPPY", "REPL_MODE_STRICT", "start", "Recoverable"]),
+		namedExports: new Set(["start", "writer", "REPLServer", "REPL_MODE_SLOPPY", "REPL_MODE_STRICT", "Recoverable"]),
 		hasDefaultExport: true
 	},
 	stream: {
@@ -842,7 +877,7 @@ export const BUILT_IN_MODULE_MAP: BuiltInModuleMap = {
 		hasDefaultExport: true
 	},
 	vm: {
-		namedExports: new Set(["Script", "createContext", "createScript", "runInContext", "runInNewContext", "runInThisContext", "isContext", "compileFunction"]),
+		namedExports: new Set(["Script", "createContext", "createScript", "runInContext", "runInNewContext", "runInThisContext", "isContext", "compileFunction", "measureMemory"]),
 		hasDefaultExport: true
 	},
 	worker_threads: {
@@ -904,5 +939,4 @@ export const BUILT_IN_MODULE_MAP: BuiltInModuleMap = {
 		]),
 		hasDefaultExport: true
 	}
-	/* eslint-enable @typescript-eslint/naming-convention */
 };

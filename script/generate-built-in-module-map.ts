@@ -95,9 +95,10 @@ function filterAndFormatModuleKeys(keys: string[]): string {
 }
 
 function generateBuiltInModuleMapContents(moduleName: string): string {
-	const loadedModule = /* tslint:disable:no-var-requires */ require(moduleName); /* tslint:enable:no-var-requires */
+	// eslint-disable-next-line @typescript-eslint/no-require-imports,@typescript-eslint/no-var-requires
+	const loadedModule = require(moduleName);
 	return `\
-		${moduleName}: {
+		${moduleName.includes("/") ? `"${moduleName}"` : moduleName}: {
 			namedExports: new Set(${typeof loadedModule === "function" ? "[]" : filterAndFormatModuleKeys(Object.keys(loadedModule))}),
 			hasDefaultExport: true
 		}`;
