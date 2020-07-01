@@ -159,7 +159,7 @@ As you can see, this transformer will attempt to produce code that generates as 
 - [Backers](#backers)
   - [Patreon](#patreon)
 - [FAQ](#faq)
-  - [Is conditinal require(...) syntax converted into dynamic imports?](#is-conditinal-require-syntax-converted-into-dynamic-imports)
+  - [Is conditional require(...) syntax converted into dynamic imports?](#is-conditional-require-syntax-converted-into-dynamic-imports)
 - [License](#license)
 
 <!-- SHADOW_SECTION_TOC_END -->
