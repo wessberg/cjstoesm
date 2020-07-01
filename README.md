@@ -438,7 +438,7 @@ Do you want to contribute? Awesome! Please follow [these recommendations](./CONT
 
 <!-- SHADOW_SECTION_FAQ_END -->
 
-### Is conditinal require(...) syntax converted into dynamic imports?
+### Is conditional require(...) syntax converted into dynamic imports?
 
 No. For the input:
 
