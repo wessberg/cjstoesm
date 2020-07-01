@@ -1188,3 +1188,88 @@ test("Takes deep require() calls and places them in top of the file. #2", t => {
 		`)
 	);
 });
+
+test("Handles CommonJS-based barrel exports. #1", t => {
+	const bundle = generateTransformerResult([
+		{
+			entry: true,
+			fileName: "index.ts",
+			text: `
+				exports.constants = require("./constants");
+			`
+		},
+		{
+			entry: true,
+			fileName: "constants.ts",
+			text: `
+				exports.foo = 2;
+			`
+		}
+	]);
+	const [file] = bundle;
+
+	t.deepEqual(
+		formatCode(file.text),
+		formatCode(`\
+			import * as constants from "./constants";
+			export { constants };
+		`)
+	);
+});
+
+test("Handles CommonJS-based barrel exports. #2", t => {
+	const bundle = generateTransformerResult([
+		{
+			entry: true,
+			fileName: "index.ts",
+			text: `
+				exports.constants = require("./constants");
+			`
+		},
+		{
+			entry: true,
+			fileName: "constants.ts",
+			text: `
+				exports = 2;
+			`
+		}
+	]);
+	const [file] = bundle;
+
+	t.deepEqual(
+		formatCode(file.text),
+		formatCode(`\
+			import constants from "./constants";
+			export { constants };
+		`)
+	);
+});
+
+test("Handles CommonJS-based barrel exports. #3", t => {
+	const bundle = generateTransformerResult([
+		{
+			entry: true,
+			fileName: "index.ts",
+			text: `
+				const constants = exports.constants = require("./constants");
+			`
+		},
+		{
+			entry: true,
+			fileName: "constants.ts",
+			text: `
+				exports = 2;
+			`
+		}
+	]);
+	const [file] = bundle;
+
+	t.deepEqual(
+		formatCode(file.text),
+		formatCode(`\
+			import constants$0 from "./constants";
+			const constants = constants$0;
+			export { constants };
+		`)
+	);
+});

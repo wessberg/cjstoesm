@@ -25,6 +25,10 @@ export function visitBinaryExpression({node, sourceFile, context, continuation}:
 
 	// If it is an assignment
 	if (node.operatorToken.kind === typescript.SyntaxKind.EqualsToken) {
+		if (shouldDebug(context.debug, sourceFile)) {
+			console.log(`Is assignment inside of a Binary Expression`);
+		}
+
 		// Check if this expression is part of a VariableDeclaration.
 		// For example: 'const foo = module.exports = ...'
 		const variableDeclarationParent = findNodeUp(node, typescript.isVariableDeclaration);
@@ -33,6 +37,9 @@ export function visitBinaryExpression({node, sourceFile, context, continuation}:
 
 		// This is something like for example 'exports = ...', 'module.exports = ...', 'exports.default', or 'module.exports.default'
 		if (exportsData.property == null || exportsData.property === "default") {
+			if (shouldDebug(context.debug, sourceFile)) {
+				console.log(`Is something like for example 'exports = ...', 'module.exports = ...', 'exports.default', or 'module.exports.default'`);
+			}
 			// Take all individual key-value pairs of that ObjectLiteral
 			// and turn them into named exports if possible.
 			// Also generate a default export of the entire exports object
@@ -268,7 +275,11 @@ export function visitBinaryExpression({node, sourceFile, context, continuation}:
 			const local = exportsData.property;
 			const continuationResult = continuation(node.right);
 
-			if (continuationResult == null || Array.isArray(continuationResult) || !isExpression(continuationResult, typescript)) {
+			if (shouldDebug(context.debug, sourceFile)) {
+				console.log(`Is something like const foo = exports.bar = ...`);
+			}
+
+			if (continuationResult == null || Array.isArray(continuationResult) || (!isExpression(continuationResult, typescript) && !typescript.isIdentifier(continuationResult))) {
 				return undefined;
 			}
 
@@ -289,6 +300,10 @@ export function visitBinaryExpression({node, sourceFile, context, continuation}:
 		// If the right-hand side is an identifier, this can safely be converted into an ExportDeclaration
 		// such as 'export {foo}'
 		else if (typescript.isIdentifier(right)) {
+			if (shouldDebug(context.debug, sourceFile)) {
+				console.log(`The right-hand side of the Binary Expression is an identifier, so this can safely be converted into an ExportDeclaration such as export {foo}`);
+			}
+
 			const local = exportsData.property;
 			if (!context.isLocalExported(local)) {
 				context.markLocalAsExported(local);
@@ -309,39 +324,74 @@ export function visitBinaryExpression({node, sourceFile, context, continuation}:
 
 		// Otherwise, this is something like 'exports.foo = function () {}'
 		else if (isNamedDeclaration(right, typescript)) {
+			if (shouldDebug(context.debug, sourceFile)) {
+				console.log(`The right-hand side of the Binary Expression is a Named Declaration, like 'exports.foo = function () {}'`);
+			}
+
 			context.addTrailingStatements((ensureNodeHasExportModifier(right, context) as unknown) as TS.Statement);
 			return undefined;
 		}
 
 		// Otherwise, this can be converted into a VariableStatement
 		else {
+			if (shouldDebug(context.debug, sourceFile)) {
+				console.log(`A new VariableStatement should be generated such as 'export const foo = ...'`);
+			}
+
+			const continuationResult = continuation(node.right);
+
+			if (continuationResult == null || Array.isArray(continuationResult)) {
+				return undefined;
+			}
+
 			if (!context.isLocalExported(exportsData.property)) {
 				context.markLocalAsExported(exportsData.property);
 
-				const freeIdentifier = context.getFreeIdentifier(exportsData.property);
-
-				// If it is free, we can simply add an export modifier in front of the expression
-				if (freeIdentifier === exportsData.property) {
+				if (typescript.isIdentifier(continuationResult)) {
 					context.addTrailingStatements(
-						typescript.createVariableStatement(
-							[typescript.createModifier(typescript.SyntaxKind.ExportKeyword)],
-							typescript.createVariableDeclarationList([typescript.createVariableDeclaration(exportsData.property, undefined, right)], typescript.NodeFlags.Const)
-						)
-					);
-				} else {
-					// If it isn't, we'll need to bind it to a variable with the free name, but then export it under the original one
-					context.addTrailingStatements(
-						typescript.createVariableStatement(
-							undefined,
-							typescript.createVariableDeclarationList([typescript.createVariableDeclaration(freeIdentifier, undefined, right)], typescript.NodeFlags.Const)
-						),
 						typescript.createExportDeclaration(
 							undefined,
 							undefined,
-							typescript.createNamedExports([typescript.createExportSpecifier(freeIdentifier, exportsData.property)]),
+							typescript.createNamedExports([
+								continuationResult.text === exportsData.property
+									? typescript.createExportSpecifier(undefined, typescript.createIdentifier(exportsData.property))
+									: typescript.createExportSpecifier(typescript.createIdentifier(continuationResult.text), typescript.createIdentifier(exportsData.property))
+							]),
 							undefined
 						)
 					);
+				} else {
+					const freeIdentifier = context.getFreeIdentifier(exportsData.property);
+
+					// If it is free, we can simply add an export modifier in front of the expression
+					if (freeIdentifier === exportsData.property) {
+						context.addTrailingStatements(
+							typescript.createVariableStatement(
+								[typescript.createModifier(typescript.SyntaxKind.ExportKeyword)],
+								typescript.createVariableDeclarationList(
+									[typescript.createVariableDeclaration(exportsData.property, undefined, continuationResult as TS.Expression)],
+									typescript.NodeFlags.Const
+								)
+							)
+						);
+					} else {
+						// If it isn't, we'll need to bind it to a variable with the free name, but then export it under the original one
+						context.addTrailingStatements(
+							typescript.createVariableStatement(
+								undefined,
+								typescript.createVariableDeclarationList(
+									[typescript.createVariableDeclaration(freeIdentifier, undefined, continuationResult as TS.Expression)],
+									typescript.NodeFlags.Const
+								)
+							),
+							typescript.createExportDeclaration(
+								undefined,
+								undefined,
+								typescript.createNamedExports([typescript.createExportSpecifier(freeIdentifier, exportsData.property)]),
+								undefined
+							)
+						);
+					}
 				}
 			}
 			return undefined;

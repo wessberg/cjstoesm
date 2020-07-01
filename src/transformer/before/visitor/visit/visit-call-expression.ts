@@ -7,6 +7,7 @@ import {generateNameFromModuleSpecifier} from "../../../util/generate-name-from-
 import {getModuleExportsFromRequireDataInContext} from "../../../util/get-module-exports-from-require-data-in-context";
 import {TS} from "../../../../type/type";
 import {shouldDebug} from "../../../util/should-debug";
+import {walkThroughFillerNodes} from "../../../util/walk-through-filler-nodes";
 
 /**
  * Visits the given CallExpression
@@ -365,6 +366,52 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 					)
 				);
 			}
+		}
+	}
+
+	// Find the first BinaryExpression with an equals token that holds the require(...) call on the right side, and a PropertyAccessExpression or ElementAccessExpression on the left side, if any.
+	// For example, 'exports.foo = require(...)'
+	const binaryExpressionParent = findNodeUp(node, typescript.isBinaryExpression, nextNode => isStatement(nextNode, typescript));
+
+	if (
+		binaryExpressionParent != null &&
+		binaryExpressionParent.operatorToken.kind === typescript.SyntaxKind.EqualsToken &&
+		(typescript.isPropertyAccessExpression(walkThroughFillerNodes(binaryExpressionParent.left, typescript)) ||
+			typescript.isElementAccessExpression(walkThroughFillerNodes(binaryExpressionParent.left, typescript)))
+	) {
+		// Simply add an import for the default export - if it has any (otherwise we'll import the entire namespace), and
+		// replace this CallExpression by an identifier for it
+		// If the default export is already imported, get the local binding name for it and create an identifier for it
+		// rather than generating a new unnecessary import
+		if (moduleExports.hasDefaultExport && context.hasLocalForDefaultImportFromModule(moduleSpecifier)) {
+			const local = context.getLocalForDefaultImportFromModule(moduleSpecifier)!;
+			return typescript.createIdentifier(local);
+		}
+
+		// If the namespace is already imported, get the local binding name for it and create an identifier for it
+		// rather than generating a new unnecessary import
+		else if (!moduleExports.hasDefaultExport && context.hasLocalForNamespaceImportFromModule(moduleSpecifier)) {
+			const local = context.getLocalForNamespaceImportFromModule(moduleSpecifier)!;
+			return typescript.createIdentifier(local);
+		}
+
+		// Otherwise proceed as planned
+		else {
+			const identifier = typescript.createIdentifier(context.getFreeIdentifier(generateNameFromModuleSpecifier(moduleSpecifier)));
+			context.addImport(
+				typescript.createImportDeclaration(
+					undefined,
+					undefined,
+
+					moduleExports.hasDefaultExport
+						? // Import the default if it has any (or if we don't know if it has)
+						  typescript.createImportClause(identifier, undefined)
+						: // Otherwise, import the entire namespace
+						  typescript.createImportClause(undefined, typescript.createNamespaceImport(identifier)),
+					typescript.createStringLiteral(moduleSpecifier)
+				)
+			);
+			return identifier;
 		}
 	}
 
