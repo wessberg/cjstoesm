@@ -1,3 +1,9 @@
+## [0.0.21](https://github.com/wessberg/cjs-to-esm-transformer/compare/v0.0.20...v0.0.21) (2020-07-01)
+
+### Bug Fixes
+
+- add support for CommonJS-based barrel exports ([e6e33c0](https://github.com/wessberg/cjs-to-esm-transformer/commit/e6e33c000cd94c216284af41b16c4f0d41b2f57e))
+
 ## [0.0.20](https://github.com/wessberg/cjs-to-esm-transformer/compare/v0.0.19...v0.0.20) (2020-06-24)
 
 ### Bug Fixes
