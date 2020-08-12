@@ -14,7 +14,7 @@ import {TS} from "../type/type";
  */
 export function cjsToEsmTransformerFactory({
 	fileExists = file => existsSync(normalize(file)) && !statSync(normalize(file)).isDirectory(),
-	readFile = (file: string, encoding?: string) => (existsSync(normalize(file)) ? readFileSync(normalize(file), encoding).toString() : undefined),
+	readFile = (file: string, encoding?: BufferEncoding) => (existsSync(normalize(file)) ? readFileSync(normalize(file), encoding).toString() : undefined),
 	debug = false,
 	typescript = TSModule,
 	...rest

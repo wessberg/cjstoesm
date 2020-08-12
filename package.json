@@ -1,5 +1,5 @@
 {
-	"name": "@wessberg/cjs-to-esm-transformer",
+	"name": "cjstoesm",
 	"version": "0.0.21",
 	"description": "A Custom Transformer for Typescript that transforms Node-style CommonJS to tree-shakeable ES Modules",
 	"scripts": {
@@ -20,7 +20,7 @@
 		"preversion": "pnpm run lint && pnpm run build:built_in_module_map && NODE_ENV=production pnpm run build",
 		"version": "pnpm run generate:all && git add .",
 		"release": "np --no-cleanup --no-yarn",
-		"update": "pnpx npm-check-updates -x np && pnpm update && pnpm install"
+		"update": "pnpx npm-check-updates -u -x np --dep dev,prod && pnpm update && pnpm install"
 	},
 	"keywords": [
 		"typescript",
@@ -53,41 +53,41 @@
 	],
 	"license": "MIT",
 	"devDependencies": {
-		"@rollup/plugin-node-resolve": "^7.1.3",
-		"@types/glob": "^7.1.2",
-		"@types/node": "^13.13.12",
-		"@types/prettier": "^1.19.1",
+		"@rollup/plugin-node-resolve": "^8.4.0",
+		"@types/glob": "^7.1.3",
+		"@types/node": "^14.0.27",
+		"@types/prettier": "^2.0.2",
 		"@types/reserved-words": "^0.1.0",
 		"@types/resolve": "^1.17.1",
-		"@typescript-eslint/eslint-plugin": "^2.34.0",
-		"@typescript-eslint/parser": "^2.34.0",
-		"@wessberg/rollup-plugin-ts": "^1.2.26",
-		"@wessberg/scaffold": "^1.0.29",
-		"@wessberg/ts-config": "^1.0.13",
-		"ava": "^3.9.0",
-		"eslint": "^6.8.0",
+		"@typescript-eslint/eslint-plugin": "^3.7.1",
+		"@typescript-eslint/parser": "^3.7.1",
+		"@wessberg/rollup-plugin-ts": "^1.2.34",
+		"@wessberg/scaffold": "^1.0.30",
+		"@wessberg/ts-config": "^1.0.16",
+		"ava": "^3.11.0",
+		"eslint": "^7.5.0",
 		"eslint-config-prettier": "^6.11.0",
 		"eslint-plugin-import": "^2.22.0",
-		"eslint-plugin-jsdoc": "^21.0.0",
+		"eslint-plugin-jsdoc": "^30.0.3",
 		"husky": "^4.2.5",
 		"np": "5.2.1",
-		"pnpm": "^4.14.4",
-		"prettier": "^1.19.1",
+		"pnpm": "^5.4.8",
+		"prettier": "^2.0.5",
 		"pretty-quick": "^2.0.1",
 		"rimraf": "^3.0.2",
-		"rollup": "^1.32.1",
+		"rollup": "^2.23.0",
 		"standard-changelog": "^2.0.24",
 		"ts-node": "^8.10.2",
-		"typescript": "^3.9.5"
+		"typescript": "^3.9.7"
 	},
 	"dependencies": {
 		"@wessberg/stringutil": "^1.0.19",
-		"chalk": "^3.0.0",
-		"commander": "^4.1.1",
+		"chalk": "^4.1.0",
+		"commander": "^6.0.0",
 		"glob": "^7.1.6",
 		"reserved-words": "^0.1.2",
 		"resolve": "^1.17.0",
-		"tslib": "^1.13.0"
+		"tslib": "^2.0.0"
 	},
 	"peerDependencies": {
 		"typescript": "^3.x"
