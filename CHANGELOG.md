@@ -1,8 +1,14 @@
-## [0.0.22](https://github.com/wessberg/cjstoesm/compare/v0.0.21...v0.0.22) (2020-08-12)
+# [0.1.0](https://github.com/wessberg/cjstoesm/compare/v0.0.22...v0.1.0) (2020-08-12)
 
 ### Features
 
 - **api:** add API support ([ea42c39](https://github.com/wessberg/cjstoesm/commit/ea42c393d8ae1d1d1f7eaec47cb1c0086336b6ba))
+
+## [0.0.22](https://github.com/wessberg/cjstoesm/compare/v0.0.21...v0.0.22) (2020-07-01)
+
+### Bug Fixes
+
+- add support for 'export const foo = require(...)'. Closes [#5](https://github.com/wessberg/cjstoesm/issues/5) ([31d0141](https://github.com/wessberg/cjstoesm/commit/31d01416fb76edeaed23a8417029d0bd96f1452c))
 
 ## [0.0.21](https://github.com/wessberg/cjstoesm/compare/v0.0.20...v0.0.21) (2020-07-01)
 
