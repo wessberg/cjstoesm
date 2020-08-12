@@ -126,7 +126,7 @@ As you can see, this transformer will attempt to produce code that generates as 
 
 <!-- SHADOW_SECTION_FEATURE_IMAGE_START -->
 
-<div><img alt="Feature image" src="https://raw.githubusercontent.com/wessberg/cjstoesm/master/documentation/asset/feature.gif" height="180"   /></div><br>
+<div><img alt="Feature image" src="https://raw.githubusercontent.com/wessberg/cjstoesm/master/documentation/asset/feature.gif" height="500"   /></div><br>
 
 <!-- SHADOW_SECTION_FEATURE_IMAGE_END -->
 

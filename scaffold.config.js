@@ -5,7 +5,7 @@ module.exports = {
 		height: 150
 	},
 	featureImage: {
-		height: 180,
+		height: 500,
 		url: "https://raw.githubusercontent.com/wessberg/cjstoesm/master/documentation/asset/feature.gif"
 	}
 };
