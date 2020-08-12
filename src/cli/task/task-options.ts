@@ -1,10 +1,10 @@
-import {FileSystem} from "../file-system/file-system";
-import {Loggable} from "../logger/loggable";
-import {TS} from "../../type/type";
+import {FileSystem} from "../../shared/file-system/file-system";
+import {Loggable} from "../../shared/logger/loggable";
+import {TS} from "../../type/ts";
 
 export interface TaskOptions {
-	root: string;
+	cwd: string;
 	logger: Loggable;
-	fs: FileSystem;
+	fileSystem: FileSystem;
 	typescript: typeof TS;
 }

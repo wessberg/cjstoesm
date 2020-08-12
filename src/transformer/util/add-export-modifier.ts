@@ -1,4 +1,4 @@
-import {TS} from "../../type/type";
+import {TS} from "../../type/ts";
 
 export function addExportModifier<T extends TS.ModifiersArray>(modifiers: T | undefined, typescript: typeof TS): T extends TS.ModifiersArray ? TS.ModifiersArray : undefined {
 	if (modifiers == null) {

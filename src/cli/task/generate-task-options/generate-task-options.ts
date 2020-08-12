@@ -1,10 +1,10 @@
 import {TaskOptions} from "../task-options";
 import {SanitizedSharedOptions} from "./sanitized-shared-options";
 import {selectLogLevel} from "./select-log-level/select-log-level";
-import fs from "fs";
+import fileSystem from "fs";
 import * as TSModule from "typescript";
-import {Logger} from "../../logger/logger";
-import {LogLevelKind} from "../../logger/log-level-kind";
+import {Logger} from "../../../shared/logger/logger";
+import {LogLevelKind} from "../../../shared/logger/log-level-kind";
 
 /**
  * Generates the task options that are shared across all commands
@@ -23,9 +23,9 @@ export async function generateTaskOptions(options: SanitizedSharedOptions): Prom
 	} else if (logLevel === LogLevelKind.DEBUG) logger.debug(`Logging mode: DEBUG`);
 
 	return {
-		fs,
+		fileSystem,
 		logger,
-		root: process.cwd(),
+		cwd: process.cwd(),
 		typescript: TSModule
 	};
 }

@@ -1,6 +1,6 @@
 import {VisitorContinuation} from "./visitor-continuation";
 import {VisitorContext} from "./visitor-context";
-import {TS} from "../type/type";
+import {TS} from "../type/ts";
 
 export interface VisitorOptions<T extends TS.Node> {
 	node: T;

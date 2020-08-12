@@ -3,7 +3,7 @@ import {resolvePath} from "./resolve-path";
 import {normalize} from "path";
 import {walkThroughFillerNodes} from "./walk-through-filler-nodes";
 import {isBuiltInModule} from "../built-in/built-in-module-map";
-import {TS} from "../../type/type";
+import {TS} from "../../type/ts";
 
 export interface IsRequireCallNoMatchResult {
 	match: false;

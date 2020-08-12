@@ -5,7 +5,7 @@ import {isStatementOrDeclaration} from "../../../util/is-statement-or-declaratio
 import {isStatement} from "../../../util/is-statement";
 import {generateNameFromModuleSpecifier} from "../../../util/generate-name-from-module-specifier";
 import {getModuleExportsFromRequireDataInContext} from "../../../util/get-module-exports-from-require-data-in-context";
-import {TS} from "../../../../type/type";
+import {TS} from "../../../../type/ts";
 import {shouldDebug} from "../../../util/should-debug";
 import {walkThroughFillerNodes} from "../../../util/walk-through-filler-nodes";
 

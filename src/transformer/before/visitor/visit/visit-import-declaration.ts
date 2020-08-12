@@ -1,5 +1,5 @@
 import {BeforeVisitorOptions} from "../before-visitor-options";
-import {TS} from "../../../../type/type";
+import {TS} from "../../../../type/ts";
 
 /**
  * Visits the given ImportDeclaration

@@ -10,7 +10,7 @@ import {getModuleExportsFromRequireDataInContext} from "../../../util/get-module
 import {isExpression} from "../../../util/is-expression";
 import {findNodeUp} from "../../../util/find-node-up";
 import {getLocalsForBindingName} from "../../../util/get-locals-for-binding-name";
-import {TS} from "../../../../type/type";
+import {TS} from "../../../../type/ts";
 import {shouldDebug} from "../../../util/should-debug";
 
 /**

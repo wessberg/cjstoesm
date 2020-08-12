@@ -1,6 +1,6 @@
 <!-- SHADOW_SECTION_LOGO_START -->
 
-<div><img alt="Logo" src="https://raw.githubusercontent.com/wessberg/cjs-to-esm-transformer/master/documentation/asset/logo.png" height="150"   /></div>
+<div><img alt="Logo" src="https://raw.githubusercontent.com/wessberg/cjstoesm/master/documentation/asset/logo.png" height="150"   /></div>
 
 <!-- SHADOW_SECTION_LOGO_END -->
 
@@ -12,10 +12,10 @@
 
 <!-- SHADOW_SECTION_BADGES_START -->
 
-<a href="https://npmcharts.com/compare/%40wessberg%2Fcjs-to-esm-transformer?minimal=true"><img alt="Downloads per month" src="https://img.shields.io/npm/dm/%40wessberg%2Fcjs-to-esm-transformer.svg"    /></a>
-<a href="https://www.npmjs.com/package/%40wessberg%2Fcjs-to-esm-transformer"><img alt="NPM version" src="https://badge.fury.io/js/%40wessberg%2Fcjs-to-esm-transformer.svg"    /></a>
-<a href="https://david-dm.org/wessberg/cjs-to-esm-transformer"><img alt="Dependencies" src="https://img.shields.io/david/wessberg%2Fcjs-to-esm-transformer.svg"    /></a>
-<a href="https://github.com/wessberg/cjs-to-esm-transformer/graphs/contributors"><img alt="Contributors" src="https://img.shields.io/github/contributors/wessberg%2Fcjs-to-esm-transformer.svg"    /></a>
+<a href="https://npmcharts.com/compare/cjstoesm?minimal=true"><img alt="Downloads per month" src="https://img.shields.io/npm/dm/cjstoesm.svg"    /></a>
+<a href="https://www.npmjs.com/package/cjstoesm"><img alt="NPM version" src="https://badge.fury.io/js/cjstoesm.svg"    /></a>
+<a href="https://david-dm.org/wessberg/cjstoesm"><img alt="Dependencies" src="https://img.shields.io/david/wessberg%2Fcjstoesm.svg"    /></a>
+<a href="https://github.com/wessberg/cjstoesm/graphs/contributors"><img alt="Contributors" src="https://img.shields.io/github/contributors/wessberg%2Fcjstoesm.svg"    /></a>
 <a href="https://github.com/prettier/prettier"><img alt="code style: prettier" src="https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square"    /></a>
 <a href="https://opensource.org/licenses/MIT"><img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-yellow.svg"    /></a>
 <a href="https://www.patreon.com/bePatron?u=11315442"><img alt="Support on Patreon" src="https://img.shields.io/badge/patreon-donate-green.svg"    /></a>
@@ -28,19 +28,15 @@
 
 <!-- SHADOW_SECTION_DESCRIPTION_LONG_END -->
 
-This is a [Custom Transformer](https://github.com/Microsoft/TypeScript/pull/13940) for Typescript that converts Node-style [CommonJS modules](https://requirejs.org/docs/commonjs.html) into treeshakeable [ES Modules](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import).
-This allows you to not only bundle CommonJS modules for the browser, but also to bundle them in modern tools such as [Rollup](https://rollupjs.org/).
+This is a tool that converts [CommonJS modules](https://requirejs.org/docs/commonjs.html) into tree-shakeable [ES Modules](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import).
+This allows you to not only bundle CommonJS modules for the browser, but also makes it possible for you to bundle them in modern tools such as [Rollup](https://rollupjs.org/).
+
+`cjstoesm` can be used from the [Command Line](#cli-usage), as [a JavaScript library](#api-usage), and as a [TypeScript Custom Transformer](#usage-with-typescripts-compiler-apis).
 
 Prior art such as [babel-plugin-transform-commonjs](https://github.com/tbranyen/babel-plugin-transform-commonjs) and [rollup-plugin-commonjs](https://github.com/rollup/rollup-plugin-commonjs) exists, but this Custom Transformer aims at producing code that is just as tree-shakeable as equivalent code written
 natively with ES Modules. Additionally, it aims to be as clean as possible, with no _"wrappers"_ around modules as can be seen in other similar solutions.
 
-This has been implemented as a TypeScript Custom Transformer since:
-
-- Typescript is a superset of JavaScript, and as such:
-- This works with both JavaScript and TypeScript
-- This is intentionally so low-level that it can be used as the underlying implementation in anything you want, whether it be directly with Typescript's Compiler APIs, Webpack loaders, Rollup plugins, CLIs, or even linting tools.
-
-For example, here's how this Custom Transformer may rewrite a CommonJS module:
+For example, here's how `cjstoesm` may rewrite a CommonJS module:
 
 **Input**
 
@@ -126,8 +122,11 @@ As you can see, this transformer will attempt to produce code that generates as 
 - No wrappers
 - Low-level implementation that can be used as the foundation for other tools such as Loaders, Plugins, CLIs, and Linters.
 - CLI integration, enabling you to convert a project from CJS to ESM from the command line.
+- API support, enabling you to convert a project from CJS to ESM programmatically.
 
 <!-- SHADOW_SECTION_FEATURE_IMAGE_START -->
+
+<div><img alt="Feature image" src="https://raw.githubusercontent.com/wessberg/cjstoesm/master/documentation/asset/feature.gif" height="180"   /></div><br>
 
 <!-- SHADOW_SECTION_FEATURE_IMAGE_END -->
 
@@ -145,6 +144,9 @@ As you can see, this transformer will attempt to produce code that generates as 
   - [Run once with npx](#run-once-with-npx)
   - [Peer Dependencies](#peer-dependencies)
 - [Usage](#usage)
+  - [CLI usage](#cli-usage)
+  - [API Usage](#api-usage)
+    - [API options](#api-options)
   - [Usage with TypeScript's Compiler APIs](#usage-with-typescripts-compiler-apis)
   - [Usage with Rollup](#usage-with-rollup)
     - [Usage with rollup-plugin-ts](#usage-with-rollup-plugin-ts)
@@ -152,8 +154,7 @@ As you can see, this transformer will attempt to produce code that generates as 
   - [Usage with Webpack](#usage-with-webpack)
     - [Usage with awesome-typescript-loader](#usage-with-awesome-typescript-loader)
     - [Usage with ts-loader](#usage-with-ts-loader)
-- [CLI](#cli)
-- [Options](#options)
+  - [Custom Transformer Options](#custom-transformer-options)
 - [Contributing](#contributing)
 - [Maintainers](#maintainers)
 - [Backers](#backers)
@@ -171,30 +172,30 @@ As you can see, this transformer will attempt to produce code that generates as 
 ### npm
 
 ```
-$ npm install @wessberg/cjs-to-esm-transformer
+$ npm install cjstoesm
 ```
 
 ### Yarn
 
 ```
-$ yarn add @wessberg/cjs-to-esm-transformer
+$ yarn add cjstoesm
 ```
 
 ### pnpm
 
 ```
-$ pnpm add @wessberg/cjs-to-esm-transformer
+$ pnpm add cjstoesm
 ```
 
 ### Run once with npx
 
 ```
-$ npx -p typescript -p @wessberg/cjs-to-esm-transformer cjstoesm
+$ npx -p typescript cjstoesm
 ```
 
 ### Peer Dependencies
 
-`@wessberg/cjs-to-esm-transformer` depends on `typescript`, so you need to manually install these as well.
+`cjstoesm` depends on `typescript`, so you need to manually install this as well.
 
 <!-- SHADOW_SECTION_INSTALL_END -->
 
@@ -204,19 +205,94 @@ $ npx -p typescript -p @wessberg/cjs-to-esm-transformer cjstoesm
 
 <!-- SHADOW_SECTION_USAGE_END -->
 
-Since this is a Custom Transformer, it can be used practically anywhere you use TypeScript.
+`cjstoesm` relies on TypeScript to build up an AST and transform it.
+**It works completely fine on JavaScript files, so long as you enable `allowJs` in your [CompilerOptions](https://www.typescriptlang.org/docs/handbook/compiler-options.html)**.
 
-**This Custom Transformer works completely fine on JavaScript files, so long as you enable `allowJs` in your [CompilerOptions](https://www.typescriptlang.org/docs/handbook/compiler-options.html)**.
+The most direct usage is directly from the CLI:
 
-The most obvious place would be to use it directly with Typescript's compiler APIs:
+### CLI usage
+
+You can use this library as a CLI to convert your project files from using CommonJS to using ESM.
+
+If you install `cjstoesm` globally, you'll have `cjstoesm` in your path. If you install it locally, you can run `npx cjstoesm`.
+If you don't install it globally nor locally, you can also just run it once with the command `npx -p typescript cjstoesm <glob> <outdir>`.
+
+```
+$ cjstoesm --help
+
+Welcome to the CJS to ESM CLI!
+
+Usage: cjstoesm [options] [command]
+
+Options:
+  -h, --help                            output usage information
+
+Commands:
+  transform [options] <input> <outDir>  Transforms CJS to ESM modules based on the input glob
+```
+
+For example, you can run `cjstoesm transform "**/*.*" dist` to transform all files matched by the glob `**/*.*` and emit them to the folder `dist` from the current working directory.
+You can also just run `cjstoesm "**/*.*" dist` which is an alias for the `transform` command.
+
+### API Usage
+
+You can also use this library programmatically:
+
+```typescript
+import {transform} from "cjstoesm";
+import {writeFileSync} from "fs";
+
+const result = await transform({
+	input: "src/**/*.*"
+});
+
+// Write to disk
+for (const {fileName, text} of result.files) {
+	writeFileSync(fileName, text);
+}
+```
+
+#### API options
+
+```typescript
+interface TransformOptions {
+	/**
+	 * The input glob to match against the file system
+	 */
+	input: string;
+
+	/**
+	 * The FileSystem to use. Useful if you want to work with a virtual file system. Defaults to using the "fs" module
+	 */
+	fileSystem?: FileSystem;
+
+	/**
+	 * The TypeScript module to use.
+	 */
+	typescript?: typeof Typescript;
+
+	/**
+	 * The current working directory to use as the base. Defaults to process.cwd()
+	 */
+	cwd?: string;
+
+	/**
+	 * A custom logger to be provide.
+	 */
+	logger?: Loggable;
+}
+```
 
 ### Usage with TypeScript's Compiler APIs
+
+`cjstoesm` also provides its functionality as a [Custom Transformer](https://github.com/Microsoft/TypeScript/pull/13940) for Typescript.
+This makes it possible for you to use it directly with TypeScript's Compiler APIs.
 
 The most simple way of transpiling with Typescript would be with `transpileModule`:
 
 ```typescript
 import {ModuleKind, transpileModule} from "typescript";
-import {cjsToEsm} from "@wessberg/cjs-to-esm-transformer";
+import {cjsToEsm} from "cjstoesm";
 
 const result = transpileModule(`const {join} = require("path");`, {
 	transformers: cjsToEsm(),
@@ -233,7 +309,7 @@ You may use this is conjunction with other Custom Transformers by importing `com
 
 ```typescript
 import {ModuleKind, transpileModule} from "typescript";
-import {cjsToEsmTransformerFactory} from "@wessberg/cjs-to-esm-transformer";
+import {cjsToEsmTransformerFactory} from "cjstoesm";
 
 transpileModule(`const {join} = require("path");`, {
 	transformers: {
@@ -255,7 +331,7 @@ You can also use Custom Transformers with entire Typescript _Programs_:
 
 ```typescript
 import {getDefaultCompilerOptions, createProgram, createCompilerHost} from "typescript";
-import {cjsToEsm} from "@wessberg/cjs-to-esm-transformer";
+import {cjsToEsm} from "cjstoesm";
 
 const options = getDefaultCompilerOptions();
 const program = createProgram({
@@ -277,7 +353,7 @@ There are two popular TypeScript plugins for Rollup that support Custom Transfor
 
 ```typescript
 import ts from "@wessberg/rollup-plugin-ts";
-import {cjsToEsm} from "@wessberg/cjs-to-esm-transformer";
+import {cjsToEsm} from "cjstoesm";
 
 export default {
 	input: "...",
@@ -296,7 +372,7 @@ export default {
 
 ```typescript
 import ts from "rollup-plugin-typescript2";
-import {cjsToEsm} from "@wessberg/cjs-to-esm-transformer";
+import {cjsToEsm} from "cjstoesm";
 
 export default {
 	input: "...",
@@ -321,7 +397,7 @@ There are two popular TypeScript loaders for Webpack that support Custom Transfo
 #### Usage with awesome-typescript-loader
 
 ```typescript
-import {cjsToEsm} from "@wessberg/cjs-to-esm-transformer";
+import {cjsToEsm} from "cjstoesm";
 const config = {
 	// ...
 	module: {
@@ -344,7 +420,7 @@ const config = {
 #### Usage with ts-loader
 
 ```typescript
-import {cjsToEsm} from "@wessberg/cjs-to-esm-transformer";
+import {cjsToEsm} from "cjstoesm";
 const config = {
 	// ...
 	module: {
@@ -364,32 +440,7 @@ const config = {
 };
 ```
 
-## CLI
-
-You can also use this library as a CLI to convert your project files from using CommonJS to using ESM.
-This is still considered somewhat experimental. If you have any issues, please submit an issue.
-
-If you install `@wessberg/cjs-to-esm-transformer` globally, you'll have `cjstoesm` in your path. If you install it locally, you can run `npx cjstoesm`.
-If you don't install it globally nor locally, you can run it with npx with the command `npx -p typescript -p @wessberg/cjs-to-esm-transformer cjstoesm <glob> <outdir>`.
-
-```
-$ cjstoesm --help
-
-Welcome to the CJS to ESM CLI!
-
-Usage: cjstoesm [options] [command]
-
-Options:
-  -h, --help                            output usage information
-
-Commands:
-  transform [options] <input> <outDir>  Transforms CJS to ESM modules based on the input glob
-```
-
-For example, you can run `cjstoesm transform "**/*.*" dist` to transform all files matched by the glob `**/*.*` and emit them to the folder `dist` from the current working directory.
-You can also just run `cjstoesm "**/*.*" dist` which is an alias for the `transform` command.
-
-## Options
+### Custom Transformer Options
 
 You can provide options to the `cjsToEsm` Custom Transformer to configure its behavior:
 
@@ -422,9 +473,9 @@ Do you want to contribute? Awesome! Please follow [these recommendations](./CONT
 
 ## Backers
 
-| <a href="https://usebubbles.com"><img alt="Bubbles" src="https://uploads-ssl.webflow.com/5d682047c28b217055606673/5e5360be16879c1d0dca6514_icon-thin-128x128%402x.png" height="70"   /></a> |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [Bubbles](https://usebubbles.com)<br><strong>Twitter</strong>: [@use_bubbles](https://twitter.com/use_bubbles)                                                                              |
+| <a href="https://usebubbles.com"><img alt="Bubbles" src="https://uploads-ssl.webflow.com/5d682047c28b217055606673/5e5360be16879c1d0dca6514_icon-thin-128x128%402x.png" height="70"   /></a> | <a href="https://github.com/cblanc"><img alt="Christopher Blanchard" src="https://avatars0.githubusercontent.com/u/2160685?s=400&v=4" height="70"   /></a> |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [Bubbles](https://usebubbles.com)<br><strong>Twitter</strong>: [@use_bubbles](https://twitter.com/use_bubbles)                                                                              | [Christopher Blanchard](https://github.com/cblanc)                                                                                                         |
 
 ### Patreon
 

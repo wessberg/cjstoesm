@@ -2,7 +2,7 @@ import {BeforeVisitorOptions} from "../before-visitor-options";
 import {isRequireCall} from "../../../util/is-require-call";
 import {walkThroughFillerNodes} from "../../../util/walk-through-filler-nodes";
 import {getModuleExportsFromRequireDataInContext} from "../../../util/get-module-exports-from-require-data-in-context";
-import {TS} from "../../../../type/type";
+import {TS} from "../../../../type/ts";
 import {willReassignIdentifier} from "../../../util/will-be-reassigned";
 
 /**

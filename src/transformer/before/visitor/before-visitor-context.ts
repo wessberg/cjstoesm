@@ -1,6 +1,6 @@
 import {VisitorContext} from "../../visitor-context";
 import {ModuleExports} from "../../module-exports/module-exports";
-import {TS} from "../../../type/type";
+import {TS} from "../../../type/ts";
 
 export interface BeforeVisitorContext extends VisitorContext {
 	transformationContext: TS.TransformationContext;

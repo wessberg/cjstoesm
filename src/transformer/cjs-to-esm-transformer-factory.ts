@@ -4,7 +4,7 @@ import {VisitorContext} from "./visitor-context";
 import {CjsToEsmOptions} from "./cjs-to-esm-options";
 import {existsSync, readFileSync, statSync} from "fs";
 import {normalize} from "path";
-import {TS} from "../type/type";
+import {TS} from "../type/ts";
 
 /**
  * A TransformerFactory that converts CommonJS to tree-shakeable ESM

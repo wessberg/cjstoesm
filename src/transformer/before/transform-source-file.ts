@@ -9,7 +9,7 @@ import {shouldSkipEmit} from "../util/should-skip-emit";
 import {ModuleExports} from "../module-exports/module-exports";
 import {visitImportAndExportDeclarations} from "./visitor/visit/visit-import-and-export-declarations";
 import {normalize} from "path";
-import {TS} from "../../type/type";
+import {TS} from "../../type/ts";
 import {shouldDebug} from "../util/should-debug";
 
 export interface BeforeTransformerSourceFileStepResult {

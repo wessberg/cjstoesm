@@ -2,7 +2,7 @@ import {getExportsData} from "./get-exports-data";
 import {isExpression} from "./is-expression";
 import {walkThroughFillerNodes} from "./walk-through-filler-nodes";
 import {BeforeVisitorOptions} from "../before/visitor/before-visitor-options";
-import {TS} from "../../type/type";
+import {TS} from "../../type/ts";
 
 function hasExportAssignments(node: TS.Node, exportsName: string, typescript: typeof TS): boolean {
 	const result = typescript.forEachChild<boolean>(node, nextNode => {

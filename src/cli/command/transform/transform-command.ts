@@ -30,6 +30,10 @@ createCommand(
 		const {transformTask} = await import("../../task/transform/transform-task");
 		const taskOptions = await generateTaskOptions(args);
 
+		if (args.outDir == null) {
+			throw new ReferenceError(`Missing required argument: 'outDir'`);
+		}
+
 		// Execute it
 		await transformTask({
 			...taskOptions,

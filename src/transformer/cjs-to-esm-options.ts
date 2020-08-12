@@ -1,5 +1,5 @@
 import {ResolveOptions} from "./util/resolve-path";
-import {TS} from "../type/type";
+import {TS} from "../type/ts";
 
 export interface CjsToEsmOptions {
 	typescript?: typeof TS;

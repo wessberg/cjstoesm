@@ -4,7 +4,7 @@
  * @param expression
  * @returns
  */
-import {TS} from "../../type/type";
+import {TS} from "../../type/ts";
 
 export function walkThroughFillerNodes(expression: TS.Expression, typescript: typeof TS): TS.Expression {
 	if (

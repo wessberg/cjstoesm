@@ -1,5 +1,5 @@
 import {BeforeVisitorContext} from "../before/visitor/before-visitor-context";
-import {TS} from "../../type/type";
+import {TS} from "../../type/ts";
 import {shouldDebug} from "./should-debug";
 
 export function ensureNodeHasExportModifier<T extends TS.NamedDeclaration>(node: T, context: BeforeVisitorContext): T {

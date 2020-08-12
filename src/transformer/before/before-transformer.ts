@@ -1,6 +1,6 @@
 import {BeforeTransformerOptions} from "./before-transformer-options";
 import {transformSourceFile} from "./transform-source-file";
-import {TS} from "../../type/type";
+import {TS} from "../../type/ts";
 
 /**
  * @param options

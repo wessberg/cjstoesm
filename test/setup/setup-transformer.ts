@@ -1,7 +1,7 @@
 import {join, normalize} from "path";
 import {cjsToEsm} from "../../src/transformer/cjs-to-esm";
 import {isInDebugMode} from "../util/is-in-debug-mode";
-import {TS} from "../../src/type/type";
+import {TS} from "../../src/type/ts";
 import * as typescript from "typescript";
 import {CjsToEsmOptions} from "../../src/transformer/cjs-to-esm-options";
 

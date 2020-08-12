@@ -1,4 +1,4 @@
-import {TS} from "../../type/type";
+import {TS} from "../../type/ts";
 
 /**
  * Returns true if the given Node is a Statement

@@ -6,7 +6,7 @@ import {hasExportModifier} from "../../../util/has-export-modifier";
 import {hasDefaultExportModifier} from "../../../util/has-default-export-modifier";
 import {isDeclaration} from "../../../util/is-declaration";
 import {getLocalsForBindingName} from "../../../util/get-locals-for-binding-name";
-import {TS} from "../../../../type/type";
+import {TS} from "../../../../type/ts";
 
 /**
  * Visits the given Node

@@ -3,26 +3,28 @@ import {CONSTANT} from "../../constant/constant";
 import {inspect} from "util";
 import {sync} from "glob";
 import {dirname, isAbsolute, join, relative} from "path";
-import {TS} from "../../../type/type";
+import {TS} from "../../../type/ts";
 import {cjsToEsm} from "../../../transformer/cjs-to-esm";
+import {TransformResult} from "../../../type/transform-result";
 
 /**
  * Executes the 'generate' task
  */
-export async function transformTask({logger, input, outDir, root, fs, typescript}: TransformTaskOptions): Promise<void> {
+export async function transformTask({logger, input, outDir, cwd, fileSystem, typescript}: TransformTaskOptions): Promise<TransformResult> {
 	if (input == null) {
 		throw new ReferenceError(`Missing required argument: 'input'`);
 	}
 
-	if (outDir == null) {
-		throw new ReferenceError(`Missing required argument: 'outDir'`);
-	}
-
-	logger.debug(inspect({input, outDir, root}, CONSTANT.inspectOptions));
+	logger.debug(inspect({input, outDir, cwd}, CONSTANT.inspectOptions));
 
 	// Match files based on the glob
-	const matchedFiles = new Set(sync(input).map(file => (isAbsolute(file) ? file : join(root, file))));
+	const matchedFiles = new Set(sync(input).map(file => (isAbsolute(file) ? file : join(cwd, file))));
 	logger.debug(`Matched files:`, matchedFiles.size < 1 ? "(none)" : [...matchedFiles].map(f => `"${f}"`).join(", "));
+
+	// Prepare the result object
+	const result: TransformResult = {
+		files: []
+	};
 
 	// Prepare CompilerOptions
 	const options: TS.CompilerOptions = {
@@ -32,7 +34,7 @@ export async function transformTask({logger, input, outDir, root, fs, typescript
 		outDir,
 		sourceMap: false,
 		newLine: typescript.sys.newLine === "\n" ? typescript.NewLineKind.LineFeed : typescript.NewLineKind.CarriageReturnLineFeed,
-		rootDir: root
+		rootDir: cwd
 	};
 
 	// Create a TypeScript program based on the glob
@@ -45,14 +47,16 @@ export async function transformTask({logger, input, outDir, root, fs, typescript
 	program.emit(
 		undefined,
 		(fileName, data) => {
-			const destinationFile = join(root, fileName);
+			const destinationFile = join(cwd, fileName);
+			result.files.push({fileName: destinationFile, text: data});
 
-			fs.mkdirSync(dirname(destinationFile), {recursive: true});
-			fs.writeFileSync(destinationFile, data);
-			logger.info(`${relative(root, destinationFile)}`);
+			fileSystem.mkdirSync(dirname(destinationFile), {recursive: true});
+			fileSystem.writeFileSync(destinationFile, data);
+			logger.info(`${relative(cwd, destinationFile)}`);
 		},
 		undefined,
 		false,
 		cjsToEsm()
 	);
+	return result;
 }

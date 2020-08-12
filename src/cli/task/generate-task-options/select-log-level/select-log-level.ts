@@ -1,5 +1,5 @@
 import {SelectLogLevelOptions} from "./select-log-level-options";
-import {LogLevelKind} from "../../../logger/log-level-kind";
+import {LogLevelKind} from "../../../../shared/logger/log-level-kind";
 
 /**
  * Selects a LogLevel based on the given options
