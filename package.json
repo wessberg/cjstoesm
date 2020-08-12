@@ -1,6 +1,6 @@
 {
 	"name": "cjstoesm",
-	"version": "0.0.21",
+	"version": "0.0.22",
 	"description": "A tool that can transform CommonJS to ESM",
 	"scripts": {
 		"generate:scaffold": "scaffold all --yes",

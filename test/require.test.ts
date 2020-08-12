@@ -1273,3 +1273,73 @@ test("Handles CommonJS-based barrel exports. #3", t => {
 		`)
 	);
 });
+
+test("Handles named CommonJS-based barrel exports. #1", t => {
+	const bundle = generateTransformerResult([
+		{
+			entry: true,
+			fileName: "index.ts",
+			text: `
+				export const SomeLib = require('lib-2');
+			`
+		}
+	]);
+	const [file] = bundle;
+
+	t.deepEqual(
+		formatCode(file.text),
+		formatCode(`\
+			export { default as SomeLib } from "lib-2";
+		`)
+	);
+});
+
+test("Handles named CommonJS-based barrel exports. #2", t => {
+	const bundle = generateTransformerResult([
+		{
+			entry: true,
+			fileName: "index.ts",
+			text: `
+				export const SomeLib = require('./foo');
+			`
+		},
+		{
+			entry: false,
+			fileName: "foo.ts",
+			text: `
+				export const foo = 2;
+			`
+		}
+	]);
+	const [file] = bundle;
+
+	t.deepEqual(
+		formatCode(file.text),
+		formatCode(`\
+			export * as SomeLib from "./foo";
+		`)
+	);
+});
+
+test("Handles named CommonJS-based barrel exports. #3", t => {
+	const bundle = generateTransformerResult([
+		{
+			entry: true,
+			fileName: "index.ts",
+			text: `
+				export const SomeLib = require('lib-2');
+    		export const SomeLibVar = require('lib-2').someVar;
+			`
+		}
+	]);
+	const [file] = bundle;
+
+	t.deepEqual(
+		formatCode(file.text),
+		formatCode(`\
+			import lib2 from "lib-2";
+			export const SomeLibVar = lib2.someVar;
+			export { default as SomeLib } from "lib-2";
+		`)
+	);
+});

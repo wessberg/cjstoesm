@@ -6,7 +6,7 @@
 
 <!-- SHADOW_SECTION_DESCRIPTION_SHORT_START -->
 
-> A Custom Transformer for Typescript that transforms Node-style CommonJS to tree-shakeable ES Modules
+> A tool that can transform CommonJS to ESM
 
 <!-- SHADOW_SECTION_DESCRIPTION_SHORT_END -->
 
@@ -160,7 +160,7 @@ As you can see, this transformer will attempt to produce code that generates as 
 - [Backers](#backers)
   - [Patreon](#patreon)
 - [FAQ](#faq)
-  - [Is conditinal require(...) syntax converted into dynamic imports?](#is-conditinal-require-syntax-converted-into-dynamic-imports)
+  - [Is conditional require(...) syntax converted into dynamic imports?](#is-conditional-require-syntax-converted-into-dynamic-imports)
 - [License](#license)
 
 <!-- SHADOW_SECTION_TOC_END -->
@@ -489,7 +489,7 @@ Do you want to contribute? Awesome! Please follow [these recommendations](./CONT
 
 <!-- SHADOW_SECTION_FAQ_END -->
 
-### Is conditinal require(...) syntax converted into dynamic imports?
+### Is conditional require(...) syntax converted into dynamic imports?
 
 No. For the input:
 

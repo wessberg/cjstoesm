@@ -4,6 +4,8 @@ import {walkThroughFillerNodes} from "../../../util/walk-through-filler-nodes";
 import {getModuleExportsFromRequireDataInContext} from "../../../util/get-module-exports-from-require-data-in-context";
 import {TS} from "../../../../type/ts";
 import {willReassignIdentifier} from "../../../util/will-be-reassigned";
+import {hasExportModifier} from "../../../util/has-export-modifier";
+import {findNodeUp} from "../../../util/find-node-up";
 
 /**
  * Visits the given VariableDeclaration
@@ -19,6 +21,7 @@ export function visitVariableDeclaration({node, childContinuation, sourceFile, c
 	// 'foo = require("bar")' or '{foo} = require("bar")' as well as '{foo: bar} = require("bar")' expressions
 
 	const initializer = walkThroughFillerNodes(node.initializer, typescript);
+	const statement = findNodeUp(node, typescript.isVariableStatement, n => typescript.isBlock(n) || typescript.isSourceFile(n));
 
 	if (!typescript.isCallExpression(initializer)) {
 		return childContinuation(node);
@@ -56,6 +59,24 @@ export function visitVariableDeclaration({node, childContinuation, sourceFile, c
 		// proceed from the child continuation for more sophisticated behavior
 		else if (moduleExports != null && !moduleExports.hasDefaultExport && context.hasLocalForNamespaceImportFromModule(moduleSpecifier)) {
 			return childContinuation(node);
+		}
+
+		// Otherwise, the 'foo = require("bar")' VariableDeclaration is part of an Exported VariableStatement such as 'export const foo = require("bar")',
+		// and it should preferably be converted into an ExportDeclaration
+		else if (statement != null && hasExportModifier(statement, typescript)) {
+			context.addTrailingStatements(
+				typescript.createExportDeclaration(
+					undefined,
+					undefined,
+					moduleExports == null || moduleExports.hasDefaultExport
+						? typescript.createNamedExports([
+								typescript.createExportSpecifier(node.name.text === "default" ? undefined : typescript.createIdentifier("default"), typescript.createIdentifier(node.name.text))
+						  ])
+						: typescript.createNamespaceExport(typescript.createIdentifier(node.name.text)),
+					typescript.createStringLiteral(moduleSpecifier)
+				)
+			);
+			return undefined;
 		}
 
 		// Otherwise, the 'foo = require("bar")' VariableDeclaration can be safely transformed into a simple import such as 'import foo from "bar"' or 'import * as foo from "bar"',
