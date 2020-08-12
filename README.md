@@ -205,10 +205,7 @@ $ npx -p typescript cjstoesm
 
 <!-- SHADOW_SECTION_USAGE_END -->
 
-`cjstoesm` relies on TypeScript to build up an AST and transform it.
-**It works completely fine on JavaScript files, so long as you enable `allowJs` in your [CompilerOptions](https://www.typescriptlang.org/docs/handbook/compiler-options.html)**.
-
-The most direct usage is directly from the CLI:
+`cjstoesm` can be used in a variety of ways. The most straightforward usage is directly from the CLI:
 
 ### CLI usage
 
@@ -286,7 +283,7 @@ interface TransformOptions {
 ### Usage with TypeScript's Compiler APIs
 
 `cjstoesm` also provides its functionality as a [Custom Transformer](https://github.com/Microsoft/TypeScript/pull/13940) for Typescript.
-This makes it possible for you to use it directly with TypeScript's Compiler APIs.
+This makes it possible for you to use it directly with TypeScript's Compiler APIs. **It works completely fine on JavaScript files, so long as you enable `allowJs` in your [CompilerOptions](https://www.typescriptlang.org/docs/handbook/compiler-options.html)**.
 
 The most simple way of transpiling with Typescript would be with `transpileModule`:
 
