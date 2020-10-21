@@ -5,7 +5,7 @@ import {TS} from "../../../../type/ts";
 /**
  * Visits the given VariableDeclarationList
  */
-export function visitVariableDeclarationList({node, childContinuation, context}: BeforeVisitorOptions<TS.VariableDeclarationList>): TS.VisitResult<TS.Node> {
+export function visitVariableDeclarationList({node, childContinuation, context, compatFactory}: BeforeVisitorOptions<TS.VariableDeclarationList>): TS.VisitResult<TS.Node> {
 	if (context.onlyExports) {
 		return childContinuation(node);
 	}
@@ -24,5 +24,5 @@ export function visitVariableDeclarationList({node, childContinuation, context}:
 	if (remainingDeclarations.length === 0) return continuationResult;
 
 	// Otherwise, return an updated version of the declaration list, preserving only those declarations that should be emitted
-	return typescript.updateVariableDeclarationList(node, remainingDeclarations);
+	return compatFactory.updateVariableDeclarationList(node, remainingDeclarations);
 }

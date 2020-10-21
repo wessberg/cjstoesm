@@ -1,8 +1,10 @@
 import {BeforeVisitorContext} from "../before/visitor/before-visitor-context";
 import {TS} from "../../type/ts";
 import {shouldDebug} from "./should-debug";
+import {CompatFactory} from "../../type/compat-factory";
+import {isNodeFactory} from "./is-node-factory";
 
-export function ensureNodeHasExportModifier<T extends TS.NamedDeclaration>(node: T, context: BeforeVisitorContext): T {
+export function ensureNodeHasExportModifier<T extends TS.NamedDeclaration>(node: T, context: BeforeVisitorContext, compatFactory: CompatFactory): T {
 	const existingModifierKinds = node.modifiers == null ? [] : node.modifiers.map(m => m.kind);
 	const {typescript} = context;
 	const declarationName = typescript.getNameOfDeclaration(node);
@@ -20,10 +22,10 @@ export function ensureNodeHasExportModifier<T extends TS.NamedDeclaration>(node:
 		return (node as unknown) as T;
 	}
 
-	const newModifiers = [typescript.createModifier(typescript.SyntaxKind.ExportKeyword), ...existingModifierKinds.map(kind => typescript.createModifier(kind) as TS.Modifier)];
+	const newModifiers = [compatFactory.createModifier(typescript.SyntaxKind.ExportKeyword), ...existingModifierKinds.map(kind => compatFactory.createModifier(kind) as TS.Modifier)];
 
 	if (typescript.isFunctionDeclaration(node)) {
-		return (typescript.updateFunctionDeclaration(
+		return (compatFactory.updateFunctionDeclaration(
 			node,
 			node.decorators,
 			newModifiers,
@@ -35,19 +37,21 @@ export function ensureNodeHasExportModifier<T extends TS.NamedDeclaration>(node:
 			node.body
 		) as unknown) as T;
 	} else if (typescript.isFunctionExpression(node)) {
-		return (typescript.updateFunctionExpression(node, newModifiers, node.asteriskToken, node.name, node.typeParameters, node.parameters, node.type, node.body) as unknown) as T;
+		return (compatFactory.updateFunctionExpression(node, newModifiers, node.asteriskToken, node.name, node.typeParameters, node.parameters, node.type, node.body) as unknown) as T;
 	} else if (typescript.isClassDeclaration(node)) {
-		return (typescript.updateClassDeclaration(node, node.decorators, newModifiers, node.name, node.typeParameters, node.heritageClauses, node.members) as unknown) as T;
+		return (compatFactory.updateClassDeclaration(node, node.decorators, newModifiers, node.name, node.typeParameters, node.heritageClauses, node.members) as unknown) as T;
 	} else if (typescript.isClassExpression(node)) {
-		return (typescript.updateClassExpression(node, newModifiers, node.name, node.typeParameters, node.heritageClauses, node.members) as unknown) as T;
+		return ((isNodeFactory(compatFactory)
+			? compatFactory.updateClassExpression(node, node.decorators, newModifiers, node.name, node.typeParameters, node.heritageClauses, node.members)
+			: compatFactory.updateClassExpression(node, newModifiers, node.name, node.typeParameters, node.heritageClauses, node.members)) as unknown) as T;
 	} else if (typescript.isVariableStatement(node)) {
-		return (typescript.updateVariableStatement(node, newModifiers, node.declarationList) as unknown) as T;
+		return (compatFactory.updateVariableStatement(node, newModifiers, node.declarationList) as unknown) as T;
 	} else if (typescript.isEnumDeclaration(node)) {
-		return (typescript.updateEnumDeclaration(node, node.decorators, newModifiers, node.name, node.members) as unknown) as T;
+		return (compatFactory.updateEnumDeclaration(node, node.decorators, newModifiers, node.name, node.members) as unknown) as T;
 	} else if (typescript.isInterfaceDeclaration(node)) {
-		return (typescript.updateInterfaceDeclaration(node, node.decorators, newModifiers, node.name, node.typeParameters, node.heritageClauses, node.members) as unknown) as T;
+		return (compatFactory.updateInterfaceDeclaration(node, node.decorators, newModifiers, node.name, node.typeParameters, node.heritageClauses, node.members) as unknown) as T;
 	} else if (typescript.isTypeAliasDeclaration(node)) {
-		return (typescript.updateTypeAliasDeclaration(node, node.decorators, newModifiers, node.name, node.typeParameters, node.type) as unknown) as T;
+		return (compatFactory.updateTypeAliasDeclaration(node, node.decorators, newModifiers, node.name, node.typeParameters, node.type) as unknown) as T;
 	}
 
 	// Only throw if debugging is active

@@ -6,6 +6,8 @@ import {cjsToEsm} from "../../src/transformer/cjs-to-esm";
 import {existsSync, readFileSync, statSync} from "fs";
 import {isInDebugMode} from "../util/is-in-debug-mode";
 import {CjsToEsmOptions} from "../../src/transformer/cjs-to-esm-options";
+import {TS} from "../../src/type/ts";
+import * as TSModule from "typescript";
 
 // tslint:disable:no-any
 
@@ -17,16 +19,20 @@ export interface ITestFile {
 
 export type TestFile = ITestFile | string;
 
+export interface GenerateRollupBundleOptions {
+	debug: CjsToEsmOptions["debug"];
+	typescript: typeof TS;
+	cwd?: string;
+}
+
 /**
  * Prepares a test
  */
 export async function generateRollupBundle(
 	inputFiles: TestFile[] | TestFile,
 	rollupOptions: Partial<RollupOptions> = {},
-	debug: CjsToEsmOptions["debug"] = isInDebugMode()
+	{debug = isInDebugMode(), typescript = TSModule, cwd = process.cwd()}: Partial<GenerateRollupBundleOptions> = {}
 ): Promise<RollupOutput> {
-	const cwd = process.cwd();
-
 	const files: ITestFile[] = (Array.isArray(inputFiles) ? inputFiles : [inputFiles])
 		.map(file =>
 			typeof file === "string"
@@ -77,9 +83,11 @@ export async function generateRollupBundle(
 					target: "esnext",
 					allowJs: true
 				},
+				typescript,
 				transformers: [
 					cjsToEsm({
 						debug,
+						typescript,
 						readFile: fileName => {
 							const normalized = normalize(fileName);
 							const file = files.find(currentFile => currentFile.fileName === normalized);

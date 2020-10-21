@@ -11,6 +11,7 @@ import {visitImportAndExportDeclarations} from "./visitor/visit/visit-import-and
 import {normalize} from "path";
 import {TS} from "../../type/ts";
 import {shouldDebug} from "../util/should-debug";
+import {isNodeFactory} from "../util/is-node-factory";
 
 export interface BeforeTransformerSourceFileStepResult {
 	sourceFile: TS.SourceFile;
@@ -28,6 +29,7 @@ export function transformSourceFile(
 	}
 
 	const {typescript} = baseVisitorContext;
+	const compatFactory = (context.factory as TS.NodeFactory | undefined) ?? typescript;
 
 	// Prepare a VisitorContext
 	const visitorContext = ((): BeforeVisitorContext => {
@@ -196,6 +198,7 @@ export function transformSourceFile(
 	})();
 
 	const visitorBaseOptions: Pick<BeforeVisitorOptions<TS.Node>, Exclude<keyof BeforeVisitorOptions<TS.Node>, "node" | "sourceFile">> = {
+		compatFactory,
 		context: visitorContext,
 
 		continuation: node =>
@@ -214,7 +217,7 @@ export function transformSourceFile(
 						node: cbNode
 					});
 					if (shouldSkipEmit(visitResult, typescript)) {
-						return typescript.createNotEmittedStatement(cbNode);
+						return compatFactory.createNotEmittedStatement(cbNode);
 					}
 					return visitResult;
 				},
@@ -223,6 +226,7 @@ export function transformSourceFile(
 	};
 
 	const importVisitorBaseOptions: Pick<BeforeVisitorOptions<TS.Node>, Exclude<keyof BeforeVisitorOptions<TS.Node>, "node" | "sourceFile">> = {
+		compatFactory,
 		context: visitorContext,
 
 		continuation: node =>
@@ -241,7 +245,7 @@ export function transformSourceFile(
 						node: cbNode
 					});
 					if (shouldSkipEmit(visitResult, typescript)) {
-						return typescript.createNotEmittedStatement(cbNode);
+						return compatFactory.createNotEmittedStatement(cbNode);
 					}
 					return visitResult;
 				},
@@ -275,7 +279,7 @@ export function transformSourceFile(
 		...visitorContext.trailingStatements.filter(statement => !allImports.includes(statement) && !allExports.includes(statement))
 	];
 
-	updatedSourceFile = typescript.updateSourceFileNode(
+	updatedSourceFile = (isNodeFactory(compatFactory) ? compatFactory.updateSourceFile : compatFactory.updateSourceFileNode)(
 		updatedSourceFile,
 		[...allImports, ...allOtherStatements, ...allExports],
 		sourceFile.isDeclarationFile,

@@ -3,6 +3,7 @@ import {isExpression} from "./is-expression";
 import {walkThroughFillerNodes} from "./walk-through-filler-nodes";
 import {BeforeVisitorOptions} from "../before/visitor/before-visitor-options";
 import {TS} from "../../type/ts";
+import {isNodeFactory} from "./is-node-factory";
 
 function hasExportAssignments(node: TS.Node, exportsName: string, typescript: typeof TS): boolean {
 	const result = typescript.forEachChild<boolean>(node, nextNode => {
@@ -19,30 +20,30 @@ function hasExportAssignments(node: TS.Node, exportsName: string, typescript: ty
 	return result != null ? result : false;
 }
 
-export function getBestBodyInScope({node, context}: BeforeVisitorOptions<TS.Node>): TS.Node | undefined {
+export function getBestBodyInScope({node, context, compatFactory}: BeforeVisitorOptions<TS.Node>): TS.Node | undefined {
 	const {typescript} = context;
-	if (!TS.isSourceFile(node)) {
+	if (!typescript.isSourceFile(node)) {
 		return node;
 	}
 
 	const [firstStatement] = node.statements;
-	if (!TS.isExpressionStatement(firstStatement)) return node;
+	if (!typescript.isExpressionStatement(firstStatement)) return node;
 	const expression = walkThroughFillerNodes(firstStatement.expression, typescript);
 
-	if (!TS.isCallExpression(expression)) return node;
+	if (!typescript.isCallExpression(expression)) return node;
 	const expressionExpression = walkThroughFillerNodes(expression.expression, typescript);
-	if (!TS.isFunctionExpression(expressionExpression)) return node;
+	if (!typescript.isFunctionExpression(expressionExpression)) return node;
 	if (expression.arguments.length < 2) return node;
 	let [, secondArgument] = expression.arguments;
 	secondArgument = walkThroughFillerNodes(secondArgument, typescript);
-	if (!TS.isFunctionExpression(secondArgument)) return node;
+	if (!typescript.isFunctionExpression(secondArgument)) return node;
 	if (secondArgument.parameters.length < 1) return node;
 	const [firstBodyParameter] = secondArgument.parameters;
-	if (!TS.isIdentifier(firstBodyParameter.name)) return node;
+	if (!typescript.isIdentifier(firstBodyParameter.name)) return node;
 	if (hasExportAssignments(secondArgument.body, firstBodyParameter.name.text, typescript)) {
 		context.exportsName = firstBodyParameter.name.text;
 
-		return TS.updateSourceFileNode(
+		return (isNodeFactory(compatFactory) ? compatFactory.updateSourceFile : compatFactory.updateSourceFileNode)(
 			node,
 			[...secondArgument.body.statements, ...node.statements.slice(1)],
 			node.isDeclarationFile,

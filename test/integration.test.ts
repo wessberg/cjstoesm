@@ -1,8 +1,8 @@
-import test from "ava";
+import test from "./util/test-runner";
 import {formatCode} from "./util/format-code";
 import {generateRollupBundle} from "./setup/setup-rollup";
 
-test("Can bundle Commonjs. #1", async t => {
+test("Can bundle Commonjs. #1", async (t, {typescript}) => {
 	const bundle = await generateRollupBundle(
 		[
 			{
@@ -20,7 +20,8 @@ test("Can bundle Commonjs. #1", async t => {
 			`
 			}
 		],
-		{external: () => false}
+		{external: () => false},
+		{typescript}
 	);
 	const [file] = bundle.output;
 	t.deepEqual(
@@ -33,7 +34,7 @@ test("Can bundle Commonjs. #1", async t => {
 	);
 });
 
-test("Can treeshake Commonjs. #1", async t => {
+test("Can treeshake Commonjs. #1", async (t, {typescript}) => {
 	const bundle = await generateRollupBundle(
 		[
 			{
@@ -54,7 +55,8 @@ test("Can treeshake Commonjs. #1", async t => {
 			`
 			}
 		],
-		{external: () => false}
+		{external: () => false},
+		{typescript}
 	);
 	const [file] = bundle.output;
 	t.deepEqual(
@@ -67,7 +69,7 @@ test("Can treeshake Commonjs. #1", async t => {
 	);
 });
 
-test("Can treeshake Commonjs. #2", async t => {
+test("Can treeshake Commonjs. #2", async (t, {typescript}) => {
 	const bundle = await generateRollupBundle(
 		[
 			{
@@ -90,7 +92,8 @@ test("Can treeshake Commonjs. #2", async t => {
 			`
 			}
 		],
-		{external: () => false}
+		{external: () => false},
+		{typescript}
 	);
 	const [file] = bundle.output;
 	t.deepEqual(
@@ -104,7 +107,7 @@ test("Can treeshake Commonjs. #2", async t => {
 	);
 });
 
-test("Can treeshake Commonjs. #3", async t => {
+test("Can treeshake Commonjs. #3", async (t, {typescript}) => {
 	const bundle = await generateRollupBundle(
 		[
 			{
@@ -126,7 +129,8 @@ test("Can treeshake Commonjs. #3", async t => {
 			`
 			}
 		],
-		{external: () => false}
+		{external: () => false},
+		{typescript}
 	);
 	const [file] = bundle.output;
 	t.deepEqual(

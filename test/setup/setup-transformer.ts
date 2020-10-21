@@ -2,7 +2,7 @@ import {join, normalize} from "path";
 import {cjsToEsm} from "../../src/transformer/cjs-to-esm";
 import {isInDebugMode} from "../util/is-in-debug-mode";
 import {TS} from "../../src/type/ts";
-import * as typescript from "typescript";
+import * as TSModule from "typescript";
 import {CjsToEsmOptions} from "../../src/transformer/cjs-to-esm-options";
 
 // tslint:disable:no-any
@@ -15,12 +15,19 @@ export interface ITestFile {
 
 export type TestFile = ITestFile | string;
 
+export interface GenerateTransformerResultOptions {
+	debug: CjsToEsmOptions["debug"];
+	typescript: typeof TS;
+	cwd?: string;
+}
+
 /**
  * Prepares a test
  */
-export function generateTransformerResult(inputFiles: TestFile[] | TestFile, debug: CjsToEsmOptions["debug"] = isInDebugMode()): {fileName: string; text: string}[] {
-	const cwd = process.cwd();
-
+export function generateTransformerResult(
+	inputFiles: TestFile[] | TestFile,
+	{debug = isInDebugMode(), typescript = TSModule, cwd = process.cwd()}: Partial<GenerateTransformerResultOptions> = {}
+): {fileName: string; text: string}[] {
 	const files: ITestFile[] = (Array.isArray(inputFiles) ? inputFiles : [inputFiles])
 		.map(file =>
 			typeof file === "string"
@@ -50,7 +57,7 @@ export function generateTransformerResult(inputFiles: TestFile[] | TestFile, deb
 		return files.some(currentFile => currentFile.fileName === normalized);
 	};
 
-	const transformers = cjsToEsm({readFile, fileExists, debug});
+	const transformers = cjsToEsm({readFile, fileExists, debug, typescript});
 
 	const compilerOptions: TS.CompilerOptions = {
 		module: typescript.ModuleKind.ESNext,

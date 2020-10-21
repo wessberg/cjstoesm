@@ -8,6 +8,7 @@ import {getModuleExportsFromRequireDataInContext} from "../../../util/get-module
 import {TS} from "../../../../type/ts";
 import {shouldDebug} from "../../../util/should-debug";
 import {walkThroughFillerNodes} from "../../../util/walk-through-filler-nodes";
+import {isNodeFactory} from "../../../util/is-node-factory";
 
 /**
  * Visits the given CallExpression
@@ -15,7 +16,7 @@ import {walkThroughFillerNodes} from "../../../util/walk-through-filler-nodes";
  * @param options
  * @returns
  */
-export function visitCallExpression({node, childContinuation, sourceFile, context}: BeforeVisitorOptions<TS.CallExpression>): TS.VisitResult<TS.Node> {
+export function visitCallExpression({node, childContinuation, sourceFile, context, compatFactory}: BeforeVisitorOptions<TS.CallExpression>): TS.VisitResult<TS.Node> {
 	if (context.onlyExports) {
 		return childContinuation(node);
 	}
@@ -57,7 +58,7 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 		if (expressionStatementParent != null) {
 			// Only add the import if there isn't already an import within the SourceFile of the entire module without any bindings
 			if (!context.isModuleSpecifierImportedWithoutLocals(moduleSpecifier)) {
-				context.addImport(typescript.createImportDeclaration(undefined, undefined, undefined, typescript.createStringLiteral(moduleSpecifier)));
+				context.addImport(compatFactory.createImportDeclaration(undefined, undefined, undefined, compatFactory.createStringLiteral(moduleSpecifier)));
 			}
 
 			// Drop this CallExpression
@@ -70,12 +71,15 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 			// rather than generating a new unnecessary import
 			if (context.hasLocalForDefaultImportFromModule(moduleSpecifier)) {
 				const local = context.getLocalForDefaultImportFromModule(moduleSpecifier)!;
-				return typescript.createIdentifier(local);
+				return compatFactory.createIdentifier(local);
 			} else {
-				const identifier = typescript.createIdentifier(context.getFreeIdentifier(generateNameFromModuleSpecifier(moduleSpecifier)));
-				context.addImport(
-					typescript.createImportDeclaration(undefined, undefined, typescript.createImportClause(identifier, undefined), typescript.createStringLiteral(moduleSpecifier))
-				);
+				const identifier = compatFactory.createIdentifier(context.getFreeIdentifier(generateNameFromModuleSpecifier(moduleSpecifier)));
+
+				const importClause = isNodeFactory(compatFactory)
+					? compatFactory.createImportClause(false, identifier, undefined)
+					: compatFactory.createImportClause(identifier, undefined);
+
+				context.addImport(compatFactory.createImportDeclaration(undefined, undefined, importClause, compatFactory.createStringLiteral(moduleSpecifier)));
 
 				// Replace the CallExpression by the identifier
 				return identifier;
@@ -118,36 +122,42 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 				// If the default export is already imported, get the local binding name for it and create an identifier for it
 				// rather than generating a new unnecessary import
 				if (moduleExports.hasDefaultExport && context.hasLocalForDefaultImportFromModule(moduleSpecifier)) {
-					identifier = typescript.createIdentifier(context.getLocalForDefaultImportFromModule(moduleSpecifier)!);
+					identifier = compatFactory.createIdentifier(context.getLocalForDefaultImportFromModule(moduleSpecifier)!);
 				}
 
 				// If the namespace is already imported, get the local binding name for it and create an identifier for it
 				// rather than generating a new unnecessary import
 				else if (!moduleExports.hasDefaultExport && context.hasLocalForNamespaceImportFromModule(moduleSpecifier)) {
-					identifier = typescript.createIdentifier(context.getLocalForNamespaceImportFromModule(moduleSpecifier)!);
+					identifier = compatFactory.createIdentifier(context.getLocalForNamespaceImportFromModule(moduleSpecifier)!);
 				} else {
-					identifier = typescript.createIdentifier(context.getFreeIdentifier(generateNameFromModuleSpecifier(moduleSpecifier)));
+					identifier = compatFactory.createIdentifier(context.getFreeIdentifier(generateNameFromModuleSpecifier(moduleSpecifier)));
+
 					context.addImport(
-						typescript.createImportDeclaration(
+						compatFactory.createImportDeclaration(
 							undefined,
 							undefined,
 
 							moduleExports.hasDefaultExport
 								? // Import the default if it has any (or if we don't know if it has)
-								  typescript.createImportClause(identifier, undefined)
+								  isNodeFactory(compatFactory)
+									? compatFactory.createImportClause(false, identifier, undefined)
+									: compatFactory.createImportClause(identifier, undefined)
 								: // Otherwise, import the entire namespace
-								  typescript.createImportClause(undefined, typescript.createNamespaceImport(identifier)),
-							typescript.createStringLiteral(moduleSpecifier)
+								isNodeFactory(compatFactory)
+								? compatFactory.createImportClause(false, undefined, compatFactory.createNamespaceImport(identifier))
+								: compatFactory.createImportClause(undefined, compatFactory.createNamespaceImport(identifier)),
+							compatFactory.createStringLiteral(moduleSpecifier)
 						)
 					);
 				}
 
 				// Replace the CallExpression by an ObjectLiteral that can be accessed by the wrapping Element- or PropertyAccessExpression
-				return typescript.createObjectLiteral([
+				const objectLiteralProperties = [
 					identifier.text !== rightValue
-						? typescript.createPropertyAssignment(rightValue, typescript.createIdentifier(identifier.text))
-						: typescript.createShorthandPropertyAssignment(typescript.createIdentifier(identifier.text))
-				]);
+						? compatFactory.createPropertyAssignment(rightValue, compatFactory.createIdentifier(identifier.text))
+						: compatFactory.createShorthandPropertyAssignment(compatFactory.createIdentifier(identifier.text))
+				];
+				return isNodeFactory(compatFactory) ? compatFactory.createObjectLiteralExpression(objectLiteralProperties) : compatFactory.createObjectLiteral(objectLiteralProperties);
 			}
 
 			// Otherwise, use the right value as the ImportSpecifier for a new import.
@@ -173,34 +183,31 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 					// If that binding isn't free within the context, import it as another local name
 					importBindingName = context.getFreeIdentifier(importBindingPropertyName);
 
-					context.addImport(
-						typescript.createImportDeclaration(
-							undefined,
-							undefined,
-							typescript.createImportClause(
-								undefined,
-								typescript.createNamedImports([
-									importBindingPropertyName === importBindingName
-										? // If the property name is free within the context, don't alias the import
-										  typescript.createImportSpecifier(undefined, typescript.createIdentifier(importBindingPropertyName))
-										: // Otherwise, import it aliased by another name that is free within the context
-										  typescript.createImportSpecifier(typescript.createIdentifier(importBindingPropertyName), typescript.createIdentifier(importBindingName))
-								])
-							),
-							typescript.createStringLiteral(moduleSpecifier)
-						)
-					);
+					const namedImports = compatFactory.createNamedImports([
+						importBindingPropertyName === importBindingName
+							? // If the property name is free within the context, don't alias the import
+							  compatFactory.createImportSpecifier(undefined, compatFactory.createIdentifier(importBindingPropertyName))
+							: // Otherwise, import it aliased by another name that is free within the context
+							  compatFactory.createImportSpecifier(compatFactory.createIdentifier(importBindingPropertyName), compatFactory.createIdentifier(importBindingName))
+					]);
+
+					const importClause = isNodeFactory(compatFactory)
+						? compatFactory.createImportClause(false, undefined, namedImports)
+						: compatFactory.createImportClause(undefined, namedImports);
+
+					context.addImport(compatFactory.createImportDeclaration(undefined, undefined, importClause, compatFactory.createStringLiteral(moduleSpecifier)));
 				}
 
 				// If the 'require(...)[<something>]' or 'require(...).<something>' expression is part of an ExpressionStatement
 				// and isn't part of another expression such as a BinaryExpression, only preserve the import.
 				// Otherwise leave an ObjectLiteral that can be accessed by the wrapping Element- or PropertyAccessExpression
 				if (expressionStatementParent == null) {
-					return typescript.createObjectLiteral([
+					const objectLiteralProperties = [
 						importBindingName !== rightValue
-							? typescript.createPropertyAssignment(rightValue, typescript.createIdentifier(importBindingName))
-							: typescript.createShorthandPropertyAssignment(typescript.createIdentifier(importBindingName))
-					]);
+							? compatFactory.createPropertyAssignment(rightValue, compatFactory.createIdentifier(importBindingName))
+							: compatFactory.createShorthandPropertyAssignment(compatFactory.createIdentifier(importBindingName))
+					];
+					return isNodeFactory(compatFactory) ? compatFactory.createObjectLiteralExpression(objectLiteralProperties) : compatFactory.createObjectLiteral(objectLiteralProperties);
 				} else {
 					return undefined;
 				}
@@ -224,30 +231,34 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 			// rather than generating a new unnecessary import
 			if (moduleExports.hasDefaultExport && context.hasLocalForDefaultImportFromModule(moduleSpecifier)) {
 				const local = context.getLocalForDefaultImportFromModule(moduleSpecifier)!;
-				return typescript.createIdentifier(local);
+				return compatFactory.createIdentifier(local);
 			}
 
 			// If the namespace is already imported, get the local binding name for it and create an identifier for it
 			// rather than generating a new unnecessary import
 			else if (!moduleExports.hasDefaultExport && context.hasLocalForNamespaceImportFromModule(moduleSpecifier)) {
 				const local = context.getLocalForNamespaceImportFromModule(moduleSpecifier)!;
-				return typescript.createIdentifier(local);
+				return compatFactory.createIdentifier(local);
 			}
 
 			// Otherwise proceed as planned
 			else {
-				const identifier = typescript.createIdentifier(context.getFreeIdentifier(generateNameFromModuleSpecifier(moduleSpecifier)));
+				const identifier = compatFactory.createIdentifier(context.getFreeIdentifier(generateNameFromModuleSpecifier(moduleSpecifier)));
 				context.addImport(
-					typescript.createImportDeclaration(
+					compatFactory.createImportDeclaration(
 						undefined,
 						undefined,
 
 						moduleExports.hasDefaultExport
 							? // Import the default if it has any (or if we don't know if it has)
-							  typescript.createImportClause(identifier, undefined)
+							  isNodeFactory(compatFactory)
+								? compatFactory.createImportClause(false, identifier, undefined)
+								: compatFactory.createImportClause(identifier, undefined)
 							: // Otherwise, import the entire namespace
-							  typescript.createImportClause(undefined, typescript.createNamespaceImport(identifier)),
-						typescript.createStringLiteral(moduleSpecifier)
+							isNodeFactory(compatFactory)
+							? compatFactory.createImportClause(false, undefined, compatFactory.createNamespaceImport(identifier))
+							: compatFactory.createImportClause(undefined, compatFactory.createNamespaceImport(identifier)),
+						compatFactory.createStringLiteral(moduleSpecifier)
 					)
 				);
 				return identifier;
@@ -274,19 +285,19 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 							const local = context.getLocalForNamedImportPropertyNameFromModule(element.name.text, moduleSpecifier)!;
 							skippedImportSpecifiers.push(
 								local === element.name.text
-									? typescript.createImportSpecifier(undefined, typescript.createIdentifier(local))
-									: typescript.createImportSpecifier(typescript.createIdentifier(element.name.text), typescript.createIdentifier(local))
+									? compatFactory.createImportSpecifier(undefined, compatFactory.createIdentifier(local))
+									: compatFactory.createImportSpecifier(compatFactory.createIdentifier(element.name.text), compatFactory.createIdentifier(local))
 							);
 						}
 
 						// If the name is free, just import it as it is
 						else if (context.isIdentifierFree(element.name.text)) {
 							context.addLocal(element.name.text);
-							importSpecifiers.push(typescript.createImportSpecifier(undefined, typescript.createIdentifier(element.name.text)));
+							importSpecifiers.push(compatFactory.createImportSpecifier(undefined, compatFactory.createIdentifier(element.name.text)));
 						} else {
 							// Otherwise, import it under an aliased name
 							const alias = context.getFreeIdentifier(element.name.text);
-							importSpecifiers.push(typescript.createImportSpecifier(typescript.createIdentifier(element.name.text), typescript.createIdentifier(alias)));
+							importSpecifiers.push(compatFactory.createImportSpecifier(compatFactory.createIdentifier(element.name.text), compatFactory.createIdentifier(alias)));
 						}
 					}
 				}
@@ -301,10 +312,10 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 					// If the name is free, just import it as it is
 					if (context.isIdentifierFree(element.propertyName.text)) {
 						context.addLocal(element.propertyName.text);
-						importSpecifiers.push(typescript.createImportSpecifier(undefined, typescript.createIdentifier(element.propertyName.text)));
+						importSpecifiers.push(compatFactory.createImportSpecifier(undefined, compatFactory.createIdentifier(element.propertyName.text)));
 					} else {
 						const alias = context.getFreeIdentifier(element.propertyName.text);
-						importSpecifiers.push(typescript.createImportSpecifier(typescript.createIdentifier(element.propertyName.text), typescript.createIdentifier(alias)));
+						importSpecifiers.push(compatFactory.createImportSpecifier(compatFactory.createIdentifier(element.propertyName.text), compatFactory.createIdentifier(alias)));
 					}
 				}
 			}
@@ -316,30 +327,34 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 				// rather than generating a new unnecessary import
 				if (moduleExports.hasDefaultExport && context.hasLocalForDefaultImportFromModule(moduleSpecifier)) {
 					const local = context.getLocalForDefaultImportFromModule(moduleSpecifier)!;
-					return typescript.createIdentifier(local);
+					return compatFactory.createIdentifier(local);
 				}
 
 				// If the namespace is already imported, get the local binding name for it and create an identifier for it
 				// rather than generating a new unnecessary import
 				else if (!moduleExports.hasDefaultExport && context.hasLocalForNamespaceImportFromModule(moduleSpecifier)) {
 					const local = context.getLocalForNamespaceImportFromModule(moduleSpecifier)!;
-					return typescript.createIdentifier(local);
+					return compatFactory.createIdentifier(local);
 				}
 
 				// Otherwise proceed as planned
 				else {
-					const identifier = typescript.createIdentifier(context.getFreeIdentifier(generateNameFromModuleSpecifier(moduleSpecifier)));
+					const identifier = compatFactory.createIdentifier(context.getFreeIdentifier(generateNameFromModuleSpecifier(moduleSpecifier)));
 					context.addImport(
-						typescript.createImportDeclaration(
+						compatFactory.createImportDeclaration(
 							undefined,
 							undefined,
 
 							moduleExports.hasDefaultExport
 								? // Import the default if it has any (or if we don't know if it has)
-								  typescript.createImportClause(identifier, undefined)
+								  isNodeFactory(compatFactory)
+									? compatFactory.createImportClause(false, identifier, undefined)
+									: compatFactory.createImportClause(identifier, undefined)
 								: // Otherwise, import the entire namespace
-								  typescript.createImportClause(undefined, typescript.createNamespaceImport(identifier)),
-							typescript.createStringLiteral(moduleSpecifier)
+								isNodeFactory(compatFactory)
+								? compatFactory.createImportClause(false, undefined, compatFactory.createNamespaceImport(identifier))
+								: compatFactory.createImportClause(undefined, compatFactory.createNamespaceImport(identifier)),
+							compatFactory.createStringLiteral(moduleSpecifier)
 						)
 					);
 					return identifier;
@@ -351,22 +366,23 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 			else {
 				if (importSpecifiers.length > 0) {
 					context.addImport(
-						typescript.createImportDeclaration(
+						compatFactory.createImportDeclaration(
 							undefined,
 							undefined,
-							typescript.createImportClause(undefined, typescript.createNamedImports(importSpecifiers)),
-							typescript.createStringLiteral(moduleSpecifier)
+							isNodeFactory(compatFactory)
+								? compatFactory.createImportClause(false, undefined, compatFactory.createNamedImports(importSpecifiers))
+								: compatFactory.createImportClause(undefined, compatFactory.createNamedImports(importSpecifiers)),
+							compatFactory.createStringLiteral(moduleSpecifier)
 						)
 					);
 				}
 
-				return typescript.createObjectLiteral(
-					[...importSpecifiers, ...skippedImportSpecifiers].map(specifier =>
-						specifier.propertyName != null
-							? typescript.createPropertyAssignment(specifier.propertyName.text, typescript.createIdentifier(specifier.name.text))
-							: typescript.createShorthandPropertyAssignment(typescript.createIdentifier(specifier.name.text))
-					)
+				const objectLiteralProperties = [...importSpecifiers, ...skippedImportSpecifiers].map(specifier =>
+					specifier.propertyName != null
+						? compatFactory.createPropertyAssignment(specifier.propertyName.text, compatFactory.createIdentifier(specifier.name.text))
+						: compatFactory.createShorthandPropertyAssignment(compatFactory.createIdentifier(specifier.name.text))
 				);
+				return isNodeFactory(compatFactory) ? compatFactory.createObjectLiteralExpression(objectLiteralProperties) : compatFactory.createObjectLiteral(objectLiteralProperties);
 			}
 		}
 	}
@@ -387,30 +403,34 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 		// rather than generating a new unnecessary import
 		if (moduleExports.hasDefaultExport && context.hasLocalForDefaultImportFromModule(moduleSpecifier)) {
 			const local = context.getLocalForDefaultImportFromModule(moduleSpecifier)!;
-			return typescript.createIdentifier(local);
+			return compatFactory.createIdentifier(local);
 		}
 
 		// If the namespace is already imported, get the local binding name for it and create an identifier for it
 		// rather than generating a new unnecessary import
 		else if (!moduleExports.hasDefaultExport && context.hasLocalForNamespaceImportFromModule(moduleSpecifier)) {
 			const local = context.getLocalForNamespaceImportFromModule(moduleSpecifier)!;
-			return typescript.createIdentifier(local);
+			return compatFactory.createIdentifier(local);
 		}
 
 		// Otherwise proceed as planned
 		else {
-			const identifier = typescript.createIdentifier(context.getFreeIdentifier(generateNameFromModuleSpecifier(moduleSpecifier)));
+			const identifier = compatFactory.createIdentifier(context.getFreeIdentifier(generateNameFromModuleSpecifier(moduleSpecifier)));
 			context.addImport(
-				typescript.createImportDeclaration(
+				compatFactory.createImportDeclaration(
 					undefined,
 					undefined,
 
 					moduleExports.hasDefaultExport
 						? // Import the default if it has any (or if we don't know if it has)
-						  typescript.createImportClause(identifier, undefined)
+						  isNodeFactory(compatFactory)
+							? compatFactory.createImportClause(false, identifier, undefined)
+							: compatFactory.createImportClause(identifier, undefined)
 						: // Otherwise, import the entire namespace
-						  typescript.createImportClause(undefined, typescript.createNamespaceImport(identifier)),
-					typescript.createStringLiteral(moduleSpecifier)
+						isNodeFactory(compatFactory)
+						? compatFactory.createImportClause(false, undefined, compatFactory.createNamespaceImport(identifier))
+						: compatFactory.createImportClause(undefined, compatFactory.createNamespaceImport(identifier)),
+					compatFactory.createStringLiteral(moduleSpecifier)
 				)
 			);
 			return identifier;
@@ -428,30 +448,34 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 		// rather than generating a new unnecessary import
 		if (moduleExports.hasDefaultExport && context.hasLocalForDefaultImportFromModule(moduleSpecifier)) {
 			const local = context.getLocalForDefaultImportFromModule(moduleSpecifier)!;
-			return typescript.createIdentifier(local);
+			return compatFactory.createIdentifier(local);
 		}
 
 		// If the namespace is already imported, get the local binding name for it and create an identifier for it
 		// rather than generating a new unnecessary import
 		else if (!moduleExports.hasDefaultExport && context.hasLocalForNamespaceImportFromModule(moduleSpecifier)) {
 			const local = context.getLocalForNamespaceImportFromModule(moduleSpecifier)!;
-			return typescript.createIdentifier(local);
+			return compatFactory.createIdentifier(local);
 		}
 
 		// Otherwise, proceed as planned
 		else {
-			const identifier = typescript.createIdentifier(context.getFreeIdentifier(generateNameFromModuleSpecifier(moduleSpecifier)));
+			const identifier = compatFactory.createIdentifier(context.getFreeIdentifier(generateNameFromModuleSpecifier(moduleSpecifier)));
 			context.addImport(
-				typescript.createImportDeclaration(
+				compatFactory.createImportDeclaration(
 					undefined,
 					undefined,
 
 					moduleExports.hasDefaultExport
 						? // Import the default if it has any (or if we don't know if it has)
-						  typescript.createImportClause(identifier, undefined)
+						  isNodeFactory(compatFactory)
+							? compatFactory.createImportClause(false, identifier, undefined)
+							: compatFactory.createImportClause(identifier, undefined)
 						: // Otherwise, import the entire namespace
-						  typescript.createImportClause(undefined, typescript.createNamespaceImport(identifier)),
-					typescript.createStringLiteral(moduleSpecifier)
+						isNodeFactory(compatFactory)
+						? compatFactory.createImportClause(false, undefined, compatFactory.createNamespaceImport(identifier))
+						: compatFactory.createImportClause(undefined, compatFactory.createNamespaceImport(identifier)),
+					compatFactory.createStringLiteral(moduleSpecifier)
 				)
 			);
 			return identifier;
