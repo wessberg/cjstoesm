@@ -1,3 +1,9 @@
+## [0.1.2](https://github.com/wessberg/cjstoesm/compare/v0.1.1...v0.1.2) (2020-10-21)
+
+### Bug Fixes
+
+- ensure no local bindings may conflict ([7dafcd6](https://github.com/wessberg/cjstoesm/commit/7dafcd6ea440287b69dce512810699e49cfa62f3))
+
 ## [0.1.1](https://github.com/wessberg/cjstoesm/compare/v0.1.0...v0.1.1) (2020-08-12)
 
 # [0.1.0](https://github.com/wessberg/cjstoesm/compare/v0.0.22...v0.1.0) (2020-08-12)

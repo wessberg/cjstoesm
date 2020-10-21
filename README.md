@@ -16,7 +16,7 @@
 <a href="https://www.npmjs.com/package/cjstoesm"><img alt="NPM version" src="https://badge.fury.io/js/cjstoesm.svg"    /></a>
 <a href="https://david-dm.org/wessberg/cjstoesm"><img alt="Dependencies" src="https://img.shields.io/david/wessberg%2Fcjstoesm.svg"    /></a>
 <a href="https://github.com/wessberg/cjstoesm/graphs/contributors"><img alt="Contributors" src="https://img.shields.io/github/contributors/wessberg%2Fcjstoesm.svg"    /></a>
-<a href="https://github.com/prettier/prettier"><img alt="code style: prettier" src="https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square"    /></a>
+<a href="https://github.com/prettier/prettier"><img alt="code style: prettier" src="https://img.shields.io/badge/code_style-prettier-ff69b4.svg"    /></a>
 <a href="https://opensource.org/licenses/MIT"><img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-yellow.svg"    /></a>
 <a href="https://www.patreon.com/bePatron?u=11315442"><img alt="Support on Patreon" src="https://img.shields.io/badge/patreon-donate-green.svg"    /></a>
 
