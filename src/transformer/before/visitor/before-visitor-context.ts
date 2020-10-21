@@ -24,6 +24,7 @@ export interface BeforeVisitorContext extends VisitorContext {
 	getFreeIdentifier(candidate: string, force?: boolean): string;
 	ignoreIdentifier(identifier: string): boolean;
 	isIdentifierFree(identifier: string): boolean;
+	addLocal(identifier: string): void;
 	readonly imports: TS.ImportDeclaration[];
 	readonly leadingStatements: TS.Statement[];
 	readonly trailingStatements: TS.Statement[];

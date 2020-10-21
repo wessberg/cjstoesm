@@ -162,6 +162,7 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 				// If the default export is already imported, get the local binding name for it and create an identifier for it
 				// rather than generating a new unnecessary import
 				if (context.hasLocalForNamedImportPropertyNameFromModule(importBindingPropertyName, moduleSpecifier)) {
+					console.log(165);
 					importBindingName = context.getLocalForNamedImportPropertyNameFromModule(importBindingPropertyName, moduleSpecifier)!;
 				}
 
@@ -171,7 +172,7 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 					importBindingName = context.getLocalForNamespaceImportFromModule(moduleSpecifier)!;
 				} else {
 					// If that binding isn't free within the context, import it as another local name
-					importBindingName = context.isIdentifierFree(importBindingPropertyName) ? importBindingPropertyName : context.getFreeIdentifier(importBindingPropertyName);
+					importBindingName = context.getFreeIdentifier(importBindingPropertyName);
 
 					context.addImport(
 						typescript.createImportDeclaration(
@@ -281,6 +282,7 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 
 						// If the name is free, just import it as it is
 						else if (context.isIdentifierFree(element.name.text)) {
+							context.addLocal(element.name.text);
 							importSpecifiers.push(typescript.createImportSpecifier(undefined, typescript.createIdentifier(element.name.text)));
 						} else {
 							// Otherwise, import it under an aliased name
@@ -299,6 +301,7 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 				else if (element.propertyName != null && typescript.isIdentifier(element.propertyName)) {
 					// If the name is free, just import it as it is
 					if (context.isIdentifierFree(element.propertyName.text)) {
+						context.addLocal(element.propertyName.text);
 						importSpecifiers.push(typescript.createImportSpecifier(undefined, typescript.createIdentifier(element.propertyName.text)));
 					} else {
 						const alias = context.getFreeIdentifier(element.propertyName.text);

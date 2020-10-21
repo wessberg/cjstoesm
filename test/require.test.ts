@@ -1343,3 +1343,41 @@ test("Handles named CommonJS-based barrel exports. #3", t => {
 		`)
 	);
 });
+
+test("Handles named CommonJS-based barrel exports. #4", t => {
+	const bundle = generateTransformerResult([
+		{
+			entry: true,
+			fileName: "index.ts",
+			text: `
+				const foo = require("./a").f;
+				const bar = require("./b").f;
+			`
+		},
+		{
+			entry: true,
+			fileName: "a.ts",
+			text: `
+			exports.f = 2;
+			`
+		},
+		{
+			entry: true,
+			fileName: "b.ts",
+			text: `
+			exports.f = 2;
+			`
+		}
+	]);
+	const [file] = bundle;
+
+	t.deepEqual(
+		formatCode(file.text),
+		formatCode(`\
+			import { f } from "./a";
+			import { f as f$0 } from "./b";
+			const foo = { f }.f;
+			const bar = { f: f$0 }.f;
+		`)
+	);
+});

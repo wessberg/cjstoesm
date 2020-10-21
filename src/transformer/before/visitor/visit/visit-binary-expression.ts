@@ -112,6 +112,7 @@ export function visitBinaryExpression({node, sourceFile, context, continuation}:
 							)
 						);
 					} else if (context.isIdentifierFree(propertyName) && typescript.isPropertyAssignment(property) && !nodeContainsSuper(property.initializer, typescript)) {
+						context.addLocal(propertyName);
 						elements.push(typescript.createShorthandPropertyAssignment(propertyName));
 
 						statements.push(
@@ -129,6 +130,7 @@ export function visitBinaryExpression({node, sourceFile, context, continuation}:
 						typescript.isIdentifier(property.name) &&
 						!nodeContainsSuper(property, typescript)
 					) {
+						context.addLocal(propertyName);
 						elements.push(typescript.createShorthandPropertyAssignment(propertyName));
 
 						statements.push(
@@ -148,6 +150,7 @@ export function visitBinaryExpression({node, sourceFile, context, continuation}:
 					// Otherwise, so long as the identifier of the property is free, generate a VariableStatement that exports
 					// the binding as a named export
 					else if (context.isIdentifierFree(propertyName)) {
+						context.addLocal(propertyName);
 						elements.push(property);
 						if (moduleExportsIdentifierName == null) {
 							moduleExportsIdentifierName = context.getFreeIdentifier("moduleExports");

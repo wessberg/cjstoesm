@@ -54,6 +54,10 @@ export function transformSourceFile(
 			isDefaultExported = true;
 		};
 
+		const addLocal = (local: string): void => {
+			locals.add(local);
+		};
+
 		const getImportDeclarationWithModuleSpecifier = (moduleSpecifier: string): TS.ImportDeclaration | undefined =>
 			[...imports.keys()].find(
 				declaration => declaration.moduleSpecifier != null && typescript.isStringLiteralLike(declaration.moduleSpecifier) && declaration.moduleSpecifier.text === moduleSpecifier
@@ -134,7 +138,7 @@ export function transformSourceFile(
 			let counter = 0;
 
 			if (isIdentifierFree(candidate) && !force) {
-				locals.add(candidate);
+				addLocal(candidate);
 				return candidate;
 			}
 
@@ -143,7 +147,7 @@ export function transformSourceFile(
 				if (!isIdentifierFree(currentCandidate)) {
 					counter++;
 				} else {
-					locals.add(currentCandidate);
+					addLocal(currentCandidate);
 					return currentCandidate;
 				}
 			}
@@ -154,6 +158,7 @@ export function transformSourceFile(
 			transformationContext: context,
 			exportsName: undefined,
 			addImport,
+			addLocal,
 			markLocalAsExported,
 			markDefaultAsExported,
 			isLocalExported,
