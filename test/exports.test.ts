@@ -230,6 +230,29 @@ test("Converts 'exports.<something> into ExportDeclarations. #6", t => {
 	);
 });
 
+test("Converts 'exports.<something>' into ExportDeclarations. #7", t => {
+	const bundle = generateTransformerResult([
+		{
+			entry: true,
+			fileName: "index.ts",
+			text: `
+			module.exports.f = function getOwnPropertyNames() {
+  			return 2;
+			};`
+		}
+	]);
+	const [file] = bundle;
+
+	t.deepEqual(
+		formatCode(file.text),
+		formatCode(`\
+		export const f = function getOwnPropertyNames() {
+  		return 2;
+		}
+		`)
+	);
+});
+
 test("Converts 'exports.default into a default export. #1", t => {
 	const bundle = generateTransformerResult(`
 		exports.default = function foo () {}

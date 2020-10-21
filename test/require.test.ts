@@ -1344,7 +1344,7 @@ test("Handles named CommonJS-based barrel exports. #3", t => {
 	);
 });
 
-test("Handles named CommonJS-based barrel exports. #4", t => {
+test("Deconflicts local bindings. #1", t => {
 	const bundle = generateTransformerResult([
 		{
 			entry: true,

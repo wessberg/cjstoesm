@@ -162,7 +162,6 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 				// If the default export is already imported, get the local binding name for it and create an identifier for it
 				// rather than generating a new unnecessary import
 				if (context.hasLocalForNamedImportPropertyNameFromModule(importBindingPropertyName, moduleSpecifier)) {
-					console.log(165);
 					importBindingName = context.getLocalForNamedImportPropertyNameFromModule(importBindingPropertyName, moduleSpecifier)!;
 				}
 

@@ -325,10 +325,12 @@ export function visitBinaryExpression({node, sourceFile, context, continuation}:
 			return undefined;
 		}
 
-		// Otherwise, this is something like 'exports.foo = function () {}'
-		else if (isNamedDeclaration(right, typescript)) {
+		// Otherwise, this is something like 'exports.foo = function foo () {}'
+		else if (isNamedDeclaration(right, typescript) && right.name != null && typescript.isIdentifier(right.name) && exportsData.property === right.name.text) {
 			if (shouldDebug(context.debug, sourceFile)) {
-				console.log(`The right-hand side of the Binary Expression is a Named Declaration, like 'exports.foo = function () {}'`);
+				console.log(
+					`The right-hand side of the Binary Expression is a Named Declaration where the property on the exports object is identical to the name of the Named Declaration, like 'exports.foo = function foo () {}'`
+				);
 			}
 
 			context.addTrailingStatements((ensureNodeHasExportModifier(right, context) as unknown) as TS.Statement);
