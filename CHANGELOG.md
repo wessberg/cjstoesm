@@ -1,3 +1,13 @@
+## [0.1.3](https://github.com/wessberg/cjstoesm/compare/v0.1.2...v0.1.3) (2020-10-21)
+
+### Bug Fixes
+
+- fix issue where function name could be lost ([6de7830](https://github.com/wessberg/cjstoesm/commit/6de783098a6e3e3e00ea5c1204af620ffbb7bf96))
+
+### Features
+
+- run tests for all TypeScript versions ([0b0261c](https://github.com/wessberg/cjstoesm/commit/0b0261cff040a8e0e4185685c5cf935b723f7029))
+
 ## [0.1.2](https://github.com/wessberg/cjstoesm/compare/v0.1.1...v0.1.2) (2020-10-21)
 
 ### Bug Fixes
