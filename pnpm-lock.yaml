@@ -35,8 +35,6 @@ devDependencies:
   standard-changelog: 2.0.24
   ts-node: 9.0.0_typescript@4.1.0-dev.20201021
   typescript: 4.1.0-dev.20201021
-  typescript-3-0-1: /typescript/3.0.1
-  typescript-3-1-1: /typescript/3.1.1
   typescript-3-2-1: /typescript/3.2.1
   typescript-3-3-1: /typescript/3.3.1
   typescript-3-4-1: /typescript/3.4.1
@@ -6457,20 +6455,6 @@ packages:
     dev: true
     resolution:
       integrity: sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
-  /typescript/3.0.1:
-    dev: true
-    engines:
-      node: ">=4.2.0"
-    hasBin: true
-    resolution:
-      integrity: sha512-zQIMOmC+372pC/CCVLqnQ0zSBiY7HHodU7mpQdjiZddek4GMj31I3dUJ7gAs9o65X7mnRma6OokOkc6f9jjfBg==
-  /typescript/3.1.1:
-    dev: true
-    engines:
-      node: ">=4.2.0"
-    hasBin: true
-    resolution:
-      integrity: sha512-Veu0w4dTc/9wlWNf2jeRInNodKlcdLgemvPsrNpfu5Pq39sgfFjvIIgTsvUHCoLBnMhPoUA+tFxsXjU6VexVRQ==
   /typescript/3.2.1:
     dev: true
     engines:
@@ -6904,8 +6888,6 @@ specifiers:
   ts-node: ^9.0.0
   tslib: ^2.0.3
   typescript: ^4.1.0-dev.20201021
-  typescript-3-0-1: "npm:typescript@3.0.1"
-  typescript-3-1-1: "npm:typescript@3.1.1"
   typescript-3-2-1: "npm:typescript@3.2.1"
   typescript-3-3-1: "npm:typescript@3.3.1"
   typescript-3-4-1: "npm:typescript@3.4.1"
