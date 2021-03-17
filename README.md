@@ -121,7 +121,7 @@ As you can see, this transformer will attempt to produce code that generates as 
 - Transformation of CommonJS to ESM
 - Tree-shaking friendly
 - Clean, idiomatic output
-- ~~Automatic and configurable addition of file extensions to module specifiers~~
+- Automatic and configurable addition of file extensions to module specifiers
 - No wrappers
 - Low-level implementation that can be used as the foundation for other tools such as Loaders, Plugins, CLIs, and Linters.
 - CLI integration, enabling you to convert a project from CJS to ESM from the command line.
