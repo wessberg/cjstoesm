@@ -137,13 +137,13 @@ As you can see, this transformer will attempt to produce code that generates as 
 
 ## Backers
 
-| <a href="https://usebubbles.com"><img alt="Bubbles" src="https://uploads-ssl.webflow.com/5d682047c28b217055606673/5e5360be16879c1d0dca6514_icon-thin-128x128%402x.png" height="70"   /></a> | <a href="https://github.com/cblanc"><img alt="Christopher Blanchard" src="https://avatars0.githubusercontent.com/u/2160685?s=400&v=4" height="70"   /></a> |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [Bubbles](https://usebubbles.com)<br><strong>Twitter</strong>: [@use_bubbles](https://twitter.com/use_bubbles)                                                                              | [Christopher Blanchard](https://github.com/cblanc)                                                                                                         |
+| <a href="https://usebubbles.com"><img alt="Bubbles" src="https://uploads-ssl.webflow.com/5d682047c28b217055606673/5e5360be16879c1d0dca6514_icon-thin-128x128%402x.png" height="70"   /></a> | <a href="https://github.com/cblanc"><img alt="Christopher Blanchard" src="https://avatars0.githubusercontent.com/u/2160685?s=400&v=4" height="70"   /></a> | <a href="https://github.com/ideal-postcodes"><img alt="Ideal Postcodes" src="https://avatars.githubusercontent.com/u/4996310?s=200&v=4" height="70"   /></a> | <a href="https://www.xerox.com"><img alt="Xerox" src="https://avatars.githubusercontent.com/u/9158512?s=200&v=4" height="70"   /></a> |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------- |
+| [Bubbles](https://usebubbles.com)<br><strong>Twitter</strong>: [@usebubbles](https://twitter.com/usebubbles)                                                                                | [Christopher Blanchard](https://github.com/cblanc)                                                                                                         | [Ideal Postcodes](https://github.com/ideal-postcodes)                                                                                                        | [Xerox](https://www.xerox.com)                                                                                                        |
 
 ### Patreon
 
-<a href="https://www.patreon.com/bePatron?u=11315442"><img alt="Patrons on Patreon" src="https://img.shields.io/endpoint.svg?url=https://shieldsio-patreon.herokuapp.com/wessberg"  width="200"  /></a>
+<a href="https://www.patreon.com/bePatron?u=11315442"><img alt="Patrons on Patreon" src="https://img.shields.io/endpoint.svg?url=https%3A%2F%2Fshieldsio-patreon.vercel.app%2Fapi%3Fusername%3Dwessberg%26type%3Dpatrons"  width="200"  /></a>
 
 <!-- SHADOW_SECTION_BACKERS_END -->
 
@@ -153,6 +153,8 @@ As you can see, this transformer will attempt to produce code that generates as 
 
 - [Description](#description)
   - [Features](#features)
+- [Backers](#backers)
+  - [Patreon](#patreon)
 - [Table of Contents](#table-of-contents)
 - [Install](#install)
   - [npm](#npm)
@@ -174,8 +176,6 @@ As you can see, this transformer will attempt to produce code that generates as 
   - [Custom Transformer Options](#custom-transformer-options)
 - [Contributing](#contributing)
 - [Maintainers](#maintainers)
-- [Backers](#backers)
-  - [Patreon](#patreon)
 - [FAQ](#faq)
   - [Is conditional require(...) syntax converted into dynamic imports?](#is-conditional-require-syntax-converted-into-dynamic-imports)
 - [License](#license)
@@ -229,6 +229,7 @@ $ npx -p typescript cjstoesm
 You can use this library as a CLI to convert your project files from using CommonJS to using ESM.
 
 The following command transforms all files matched by the glob `**/*.*` and emits them to the folder `dist` from the current working directory:
+
 ```
 cjstoesm "**/*.*" dist`
 ```
@@ -254,7 +255,7 @@ For example, you can run `cjstoesm transform "**/*.*" dist` to transform all fil
 You can also just run `cjstoesm "**/*.*" dist` which is an alias for the `transform` command.
 
 The default behavior is to add file extensions to module specifiers to align with the implementation in [node.js](https://nodejs.org/dist/latest-v12.x/docs/api/esm.html#esm_mandatory_file_extensions) and across browsers.
-You can customize this with the `--preserve-module-specifiers` command line option. See the [API Options](#api-options) for documentation for the possible values you can pass for it. 
+You can customize this with the `--preserve-module-specifiers` command line option. See the [API Options](#api-options) for documentation for the possible values you can pass for it.
 
 ### API Usage
 
@@ -292,7 +293,7 @@ interface TransformOptions {
 	 * The TypeScript module to use.
 	 */
 	typescript?: typeof Typescript;
-	
+
 	/**
 	 * Determines how module specifiers are treated.
 	 * - external (default): CommonJS module specifiers identifying libraries or built-in modules are preserved (default)
@@ -301,7 +302,7 @@ interface TransformOptions {
 	 * - never: CommonJS module specifiers are always transformed
 	 * It can also take a function that is invoked with a module specifier and returns a boolean determining whether or not it should be preserved
 	 */
-	preserveModuleSpecifiers?: "always"|"never"|"external"|"internal"|((specifier: string) => boolean);
+	preserveModuleSpecifiers?: "always" | "never" | "external" | "internal" | ((specifier: string) => boolean);
 
 	/**
 	 * The current working directory to use as the base. Defaults to process.cwd()
@@ -476,13 +477,13 @@ const config = {
 
 You can provide options to the `cjsToEsm` Custom Transformer to configure its behavior:
 
-| Option                                     | Description                                                                                                                                                                     |
-| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `debug` _(optional)_                       | If `true`, errors will be thrown if unexpected or unhandled cases are encountered. Additionally, debugging information will be printed during transpilation.                    |
-| `fileSystem` _(optional)_                  | If given, the file system to use. Useful if you are using `cjstoesm` inside a virtual file system.                                                                              |
-| `preserveModuleSpecifiers` _(optional)_    | Determines whether or not module specifiers are preserved. Possible values are: "external", "internal", "always", and "never". See [API options](#api-options) for more details |
-| `typescript` _(optional)_                  | If given, the TypeScript version to use internally for all operations.                                                                                                          |
-| `cwd` _(optional)_                         | The directory to use as the current working directory.                                                                                                                          |
+| Option                                  | Description                                                                                                                                                                     |
+| --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `debug` _(optional)_                    | If `true`, errors will be thrown if unexpected or unhandled cases are encountered. Additionally, debugging information will be printed during transpilation.                    |
+| `fileSystem` _(optional)_               | If given, the file system to use. Useful if you are using `cjstoesm` inside a virtual file system.                                                                              |
+| `preserveModuleSpecifiers` _(optional)_ | Determines whether or not module specifiers are preserved. Possible values are: "external", "internal", "always", and "never". See [API options](#api-options) for more details |
+| `typescript` _(optional)_               | If given, the TypeScript version to use internally for all operations.                                                                                                          |
+| `cwd` _(optional)_                      | The directory to use as the current working directory.                                                                                                                          |
 
 <!-- SHADOW_SECTION_CONTRIBUTING_START -->
 
