@@ -17,7 +17,7 @@
 		"prewatch": "pnpm run clean:dist",
 		"watch": "pnpm run rollup -- --watch",
 		"rollup": "rollup -c rollup.config.js",
-		"preversion": "pnpm run lint && pnpm run build:built_in_module_map && NODE_ENV=production pnpm run build",
+		"preversion": "pnpm run lint && pnpm run build:built_in_module_map && pnpm run build",
 		"version": "pnpm run generate:all && git add .",
 		"release": "np --no-cleanup --no-yarn",
 		"update": "pnpx npm-check-updates -u -x np --dep dev,prod && pnpm update && pnpm install"
