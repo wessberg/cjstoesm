@@ -31,6 +31,8 @@
 This is a tool that converts [CommonJS modules](https://requirejs.org/docs/commonjs.html) into tree-shakeable [ES Modules](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import).
 This allows you to not only bundle CommonJS modules for the browser, but also makes it possible for you to bundle them in modern tools such as [Rollup](https://rollupjs.org/).
 
+It can also be used as a tool for migrating a CommonJS-based codebase to one based on ES-modules via a simple [CLI](#cli-usage).
+
 `cjstoesm` can be used from the [Command Line](#cli-usage), as [a JavaScript library](#api-usage), and as a [TypeScript Custom Transformer](#usage-with-typescripts-compiler-apis).
 
 Prior art such as [babel-plugin-transform-commonjs](https://github.com/tbranyen/babel-plugin-transform-commonjs) and [rollup-plugin-commonjs](https://github.com/rollup/rollup-plugin-commonjs) exists, but this Custom Transformer aims at producing code that is just as tree-shakeable as equivalent code written
@@ -86,7 +88,7 @@ const {foo: bar} = require("./my-module");
 **Output:**
 
 ```typescript
-import {foo as bar} from "./my-module";
+import {foo as bar} from "./my-module.js";
 ```
 
 And for complex require calls such as:
@@ -102,7 +104,7 @@ const {
 **Output:**
 
 ```typescript
-import {something} from "./my-module";
+import {something} from "./my-module.js";
 const {
 	foo: {bar: baz}
 } = {something}.something("bar");
@@ -119,6 +121,7 @@ As you can see, this transformer will attempt to produce code that generates as 
 - Transformation of CommonJS to ESM
 - Tree-shaking friendly
 - Clean, idiomatic output
+- Automatic and configurable addition of file extensions to module specifiers
 - No wrappers
 - Low-level implementation that can be used as the foundation for other tools such as Loaders, Plugins, CLIs, and Linters.
 - CLI integration, enabling you to convert a project from CJS to ESM from the command line.
@@ -129,6 +132,20 @@ As you can see, this transformer will attempt to produce code that generates as 
 <div><img alt="Feature image" src="https://raw.githubusercontent.com/wessberg/cjstoesm/master/documentation/asset/feature.gif" height="500"   /></div><br>
 
 <!-- SHADOW_SECTION_FEATURE_IMAGE_END -->
+
+<!-- SHADOW_SECTION_BACKERS_START -->
+
+## Backers
+
+| <a href="https://usebubbles.com"><img alt="Bubbles" src="https://uploads-ssl.webflow.com/5d682047c28b217055606673/5e5360be16879c1d0dca6514_icon-thin-128x128%402x.png" height="70"   /></a> | <a href="https://github.com/cblanc"><img alt="Christopher Blanchard" src="https://avatars0.githubusercontent.com/u/2160685?s=400&v=4" height="70"   /></a> |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [Bubbles](https://usebubbles.com)<br><strong>Twitter</strong>: [@use_bubbles](https://twitter.com/use_bubbles)                                                                              | [Christopher Blanchard](https://github.com/cblanc)                                                                                                         |
+
+### Patreon
+
+<a href="https://www.patreon.com/bePatron?u=11315442"><img alt="Patrons on Patreon" src="https://img.shields.io/endpoint.svg?url=https://shieldsio-patreon.herokuapp.com/wessberg"  width="200"  /></a>
+
+<!-- SHADOW_SECTION_BACKERS_END -->
 
 <!-- SHADOW_SECTION_TOC_START -->
 
@@ -211,25 +228,33 @@ $ npx -p typescript cjstoesm
 
 You can use this library as a CLI to convert your project files from using CommonJS to using ESM.
 
+The following command transforms all files matched by the glob `**/*.*` and emits them to the folder `dist` from the current working directory:
+```
+cjstoesm "**/*.*" dist`
+```
+
 If you install `cjstoesm` globally, you'll have `cjstoesm` in your path. If you install it locally, you can run `npx cjstoesm`.
 If you don't install it globally nor locally, you can also just run it once with the command `npx -p typescript cjstoesm <glob> <outdir>`.
 
 ```
 $ cjstoesm --help
+Usage: cjstoesm transform [options] <input> <outDir>
 
-Welcome to the CJS to ESM CLI!
-
-Usage: cjstoesm [options] [command]
+Transforms CJS to ESM modules based on the input glob
 
 Options:
-  -h, --help                            output usage information
-
-Commands:
-  transform [options] <input> <outDir>  Transforms CJS to ESM modules based on the input glob
+  -d, --debug [arg]                       Whether to print debug information
+  -v, --verbose [arg]                     Whether to print verbose information
+  -s, --silent [arg]                      Whether to not print anything
+  -p, --preserve-module-specifiers [arg]  Determines whether or not module specifiers are preserved. Possible values are: "external", "internal", "always", and "never" (default: "external")
+  -h, --help                              display help for command
 ```
 
 For example, you can run `cjstoesm transform "**/*.*" dist` to transform all files matched by the glob `**/*.*` and emit them to the folder `dist` from the current working directory.
 You can also just run `cjstoesm "**/*.*" dist` which is an alias for the `transform` command.
+
+The default behavior is to add file extensions to module specifiers to align with the implementation in [node.js](https://nodejs.org/dist/latest-v12.x/docs/api/esm.html#esm_mandatory_file_extensions) and across browsers.
+You can customize this with the `--preserve-module-specifiers` command line option. See the [API Options](#api-options) for documentation for the possible values you can pass for it. 
 
 ### API Usage
 
@@ -267,6 +292,16 @@ interface TransformOptions {
 	 * The TypeScript module to use.
 	 */
 	typescript?: typeof Typescript;
+	
+	/**
+	 * Determines how module specifiers are treated.
+	 * - external (default): CommonJS module specifiers identifying libraries or built-in modules are preserved (default)
+	 * - internal: CommonJS module specifiers identifying anything else than libraries or built-in modules are preserved
+	 * - always: CommonJS module specifiers are never transformed.
+	 * - never: CommonJS module specifiers are always transformed
+	 * It can also take a function that is invoked with a module specifier and returns a boolean determining whether or not it should be preserved
+	 */
+	preserveModuleSpecifiers?: "always"|"never"|"external"|"internal"|((specifier: string) => boolean);
 
 	/**
 	 * The current working directory to use as the base. Defaults to process.cwd()
@@ -441,12 +476,13 @@ const config = {
 
 You can provide options to the `cjsToEsm` Custom Transformer to configure its behavior:
 
-| Option                    | Description                                                                                                                                                  |
-| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `debug` _(optional)_      | If `true`, errors will be thrown if unexpected or unhandled cases are encountered. Additionally, debugging information will be printed during transpilation. |
-| `readFile` _(optional)_   | A function that will receive a file name and encoding and must return its string contents if possible, and if not, return `undefined`.                       |
-| `fileExists` _(optional)_ | A function that will receive a file name and must return true if it exists, and false otherwise                                                              |
-| `typescript` _(optional)_ | If given, the TypeScript version to use internally for all operations.                                                                                       |
+| Option                                     | Description                                                                                                                                                                     |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `debug` _(optional)_                       | If `true`, errors will be thrown if unexpected or unhandled cases are encountered. Additionally, debugging information will be printed during transpilation.                    |
+| `fileSystem` _(optional)_                  | If given, the file system to use. Useful if you are using `cjstoesm` inside a virtual file system.                                                                              |
+| `preserveModuleSpecifiers` _(optional)_    | Determines whether or not module specifiers are preserved. Possible values are: "external", "internal", "always", and "never". See [API options](#api-options) for more details |
+| `typescript` _(optional)_                  | If given, the TypeScript version to use internally for all operations.                                                                                                          |
+| `cwd` _(optional)_                         | The directory to use as the current working directory.                                                                                                                          |
 
 <!-- SHADOW_SECTION_CONTRIBUTING_START -->
 
@@ -466,20 +502,6 @@ Do you want to contribute? Awesome! Please follow [these recommendations](./CONT
 
 <!-- SHADOW_SECTION_MAINTAINERS_END -->
 
-<!-- SHADOW_SECTION_BACKERS_START -->
-
-## Backers
-
-| <a href="https://usebubbles.com"><img alt="Bubbles" src="https://uploads-ssl.webflow.com/5d682047c28b217055606673/5e5360be16879c1d0dca6514_icon-thin-128x128%402x.png" height="70"   /></a> | <a href="https://github.com/cblanc"><img alt="Christopher Blanchard" src="https://avatars0.githubusercontent.com/u/2160685?s=400&v=4" height="70"   /></a> |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [Bubbles](https://usebubbles.com)<br><strong>Twitter</strong>: [@use_bubbles](https://twitter.com/use_bubbles)                                                                              | [Christopher Blanchard](https://github.com/cblanc)                                                                                                         |
-
-### Patreon
-
-<a href="https://www.patreon.com/bePatron?u=11315442"><img alt="Patrons on Patreon" src="https://img.shields.io/endpoint.svg?url=https://shieldsio-patreon.herokuapp.com/wessberg"  width="200"  /></a>
-
-<!-- SHADOW_SECTION_BACKERS_END -->
-
 <!-- SHADOW_SECTION_FAQ_START -->
 
 ## FAQ
@@ -497,8 +519,8 @@ const result = true ? require("./foo") : require("./bar");
 The following may be the output, depending on the internal structure of the modules referenced by the `require` calls:
 
 ```typescript
-import foo from "./foo";
-import bar from "./bar";
+import foo from "./foo.js";
+import bar from "./bar.js";
 
 const result = true ? foo : bar;
 ```

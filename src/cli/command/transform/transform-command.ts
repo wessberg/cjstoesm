@@ -37,6 +37,7 @@ createCommand(
 		// Execute it
 		await transformTask({
 			...taskOptions,
+			preserveModuleSpecifiers: args["preserve-module-specifiers"] as "always"|"never"|"external"|"internal"|undefined,
 			input: args.input,
 			outDir: args.outDir
 		});

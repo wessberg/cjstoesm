@@ -1,8 +1,8 @@
 import {FileSystem} from "../shared/file-system/file-system";
-import {TS} from "./ts";
 import {Loggable} from "../shared/logger/loggable";
+import {CjsToEsmOptions} from "../transformer/cjs-to-esm-options";
 
-export interface TransformOptions {
+export interface TransformOptions extends Pick<CjsToEsmOptions, "preserveModuleSpecifiers"|"typescript"> {
 	/**
 	 * The input glob to match against the file system
 	 */
@@ -12,11 +12,6 @@ export interface TransformOptions {
 	 * The FileSystem to use. Useful if you want to work with a virtual file system. Defaults to using the "fs" module
 	 */
 	fileSystem?: FileSystem;
-
-	/**
-	 * The TypeScript module to use.
-	 */
-	typescript?: typeof TS;
 
 	/**
 	 * The current working directory to use as the base. Defaults to process.cwd()

@@ -37,10 +37,10 @@ export function visitVariableDeclaration({node, childContinuation, sourceFile, c
 	}
 
 	// Otherwise, spread out the things we know about the require call
-	const {moduleSpecifier} = requireData;
+	const {moduleSpecifier, transformedModuleSpecifier} = requireData;
 
 	// If no module specifier could be determined, proceed with the child continuation
-	if (moduleSpecifier == null) {
+	if (moduleSpecifier == null || transformedModuleSpecifier == null) {
 		return childContinuation(node);
 	}
 
@@ -65,7 +65,7 @@ export function visitVariableDeclaration({node, childContinuation, sourceFile, c
 		// Otherwise, the 'foo = require("bar")' VariableDeclaration is part of an Exported VariableStatement such as 'export const foo = require("bar")',
 		// and it should preferably be converted into an ExportDeclaration
 		else if (statement != null && hasExportModifier(statement, typescript)) {
-			const moduleSpecifierExpression = compatFactory.createStringLiteral(moduleSpecifier);
+			const moduleSpecifierExpression = compatFactory.createStringLiteral(transformedModuleSpecifier);
 
 			if (moduleExports == null || moduleExports.hasDefaultExport) {
 				const exportClause = compatFactory.createNamedExports([
@@ -133,7 +133,7 @@ export function visitVariableDeclaration({node, childContinuation, sourceFile, c
 						isNodeFactory(compatFactory)
 						? compatFactory.createImportClause(false, undefined, compatFactory.createNamespaceImport(compatFactory.createIdentifier(newName)))
 						: compatFactory.createImportClause(undefined, compatFactory.createNamespaceImport(compatFactory.createIdentifier(newName))),
-					compatFactory.createStringLiteral(moduleSpecifier)
+					compatFactory.createStringLiteral(transformedModuleSpecifier)
 				)
 			);
 			if (willReassign) {
@@ -206,7 +206,7 @@ export function visitVariableDeclaration({node, childContinuation, sourceFile, c
 						undefined,
 						undefined,
 						isNodeFactory(compatFactory) ? compatFactory.createImportClause(false, undefined, namedImports) : compatFactory.createImportClause(undefined, namedImports),
-						compatFactory.createStringLiteral(moduleSpecifier)
+						compatFactory.createStringLiteral(transformedModuleSpecifier)
 					)
 				);
 
@@ -234,7 +234,7 @@ export function visitVariableDeclaration({node, childContinuation, sourceFile, c
 						isNodeFactory(compatFactory)
 							? compatFactory.createImportClause(false, undefined, compatFactory.createNamedImports(otherImportSpecifiers))
 							: compatFactory.createImportClause(undefined, compatFactory.createNamedImports(otherImportSpecifiers)),
-						compatFactory.createStringLiteral(moduleSpecifier)
+						compatFactory.createStringLiteral(transformedModuleSpecifier)
 					)
 				);
 			}

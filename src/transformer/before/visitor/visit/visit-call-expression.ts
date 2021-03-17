@@ -31,12 +31,14 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 	}
 
 	// Otherwise, spread out the things we know about the require call
-	const {moduleSpecifier} = requireData;
+	const {moduleSpecifier, transformedModuleSpecifier} = requireData;
 
 	// If no module specifier could be determined, remove the CallExpression from the SourceFile
-	if (moduleSpecifier == null) {
+	if (moduleSpecifier == null || transformedModuleSpecifier == null) {
 		return undefined;
 	}
+
+
 
 	// If we've been able to resolve a module as well as its contents,
 	// Check it for exports so that we know more about its internals, for example whether or not it has any named exports, etc
@@ -58,7 +60,7 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 		if (expressionStatementParent != null) {
 			// Only add the import if there isn't already an import within the SourceFile of the entire module without any bindings
 			if (!context.isModuleSpecifierImportedWithoutLocals(moduleSpecifier)) {
-				context.addImport(compatFactory.createImportDeclaration(undefined, undefined, undefined, compatFactory.createStringLiteral(moduleSpecifier)));
+				context.addImport(compatFactory.createImportDeclaration(undefined, undefined, undefined, compatFactory.createStringLiteral(transformedModuleSpecifier)));
 			}
 
 			// Drop this CallExpression
@@ -79,7 +81,7 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 					? compatFactory.createImportClause(false, identifier, undefined)
 					: compatFactory.createImportClause(identifier, undefined);
 
-				context.addImport(compatFactory.createImportDeclaration(undefined, undefined, importClause, compatFactory.createStringLiteral(moduleSpecifier)));
+				context.addImport(compatFactory.createImportDeclaration(undefined, undefined, importClause, compatFactory.createStringLiteral(transformedModuleSpecifier)));
 
 				// Replace the CallExpression by the identifier
 				return identifier;
@@ -146,7 +148,7 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 								isNodeFactory(compatFactory)
 								? compatFactory.createImportClause(false, undefined, compatFactory.createNamespaceImport(identifier))
 								: compatFactory.createImportClause(undefined, compatFactory.createNamespaceImport(identifier)),
-							compatFactory.createStringLiteral(moduleSpecifier)
+							compatFactory.createStringLiteral(transformedModuleSpecifier)
 						)
 					);
 				}
@@ -195,7 +197,7 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 						? compatFactory.createImportClause(false, undefined, namedImports)
 						: compatFactory.createImportClause(undefined, namedImports);
 
-					context.addImport(compatFactory.createImportDeclaration(undefined, undefined, importClause, compatFactory.createStringLiteral(moduleSpecifier)));
+					context.addImport(compatFactory.createImportDeclaration(undefined, undefined, importClause, compatFactory.createStringLiteral(transformedModuleSpecifier)));
 				}
 
 				// If the 'require(...)[<something>]' or 'require(...).<something>' expression is part of an ExpressionStatement
@@ -258,7 +260,7 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 							isNodeFactory(compatFactory)
 							? compatFactory.createImportClause(false, undefined, compatFactory.createNamespaceImport(identifier))
 							: compatFactory.createImportClause(undefined, compatFactory.createNamespaceImport(identifier)),
-						compatFactory.createStringLiteral(moduleSpecifier)
+						compatFactory.createStringLiteral(transformedModuleSpecifier)
 					)
 				);
 				return identifier;
@@ -354,7 +356,7 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 								isNodeFactory(compatFactory)
 								? compatFactory.createImportClause(false, undefined, compatFactory.createNamespaceImport(identifier))
 								: compatFactory.createImportClause(undefined, compatFactory.createNamespaceImport(identifier)),
-							compatFactory.createStringLiteral(moduleSpecifier)
+							compatFactory.createStringLiteral(transformedModuleSpecifier)
 						)
 					);
 					return identifier;
@@ -372,7 +374,7 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 							isNodeFactory(compatFactory)
 								? compatFactory.createImportClause(false, undefined, compatFactory.createNamedImports(importSpecifiers))
 								: compatFactory.createImportClause(undefined, compatFactory.createNamedImports(importSpecifiers)),
-							compatFactory.createStringLiteral(moduleSpecifier)
+							compatFactory.createStringLiteral(transformedModuleSpecifier)
 						)
 					);
 				}
@@ -430,7 +432,7 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 						isNodeFactory(compatFactory)
 						? compatFactory.createImportClause(false, undefined, compatFactory.createNamespaceImport(identifier))
 						: compatFactory.createImportClause(undefined, compatFactory.createNamespaceImport(identifier)),
-					compatFactory.createStringLiteral(moduleSpecifier)
+					compatFactory.createStringLiteral(transformedModuleSpecifier)
 				)
 			);
 			return identifier;
@@ -475,7 +477,7 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 						isNodeFactory(compatFactory)
 						? compatFactory.createImportClause(false, undefined, compatFactory.createNamespaceImport(identifier))
 						: compatFactory.createImportClause(undefined, compatFactory.createNamespaceImport(identifier)),
-					compatFactory.createStringLiteral(moduleSpecifier)
+					compatFactory.createStringLiteral(transformedModuleSpecifier)
 				)
 			);
 			return identifier;

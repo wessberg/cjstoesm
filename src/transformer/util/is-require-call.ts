@@ -1,9 +1,9 @@
 import {VisitorContext} from "../visitor-context";
 import {resolvePath} from "./resolve-path";
-import {normalize} from "path";
 import {walkThroughFillerNodes} from "./walk-through-filler-nodes";
 import {isBuiltInModule} from "../built-in/built-in-module-map";
 import {TS} from "../../type/ts";
+import {transformModuleSpecifier} from "./transform-module-specifier";
 
 export interface IsRequireCallNoMatchResult {
 	match: false;
@@ -12,6 +12,7 @@ export interface IsRequireCallNoMatchResult {
 export interface IsRequireCallMatchResultWithNoResolvedModuleSpecifier {
 	match: true;
 	moduleSpecifier: string | undefined;
+	transformedModuleSpecifier: string | undefined;
 	resolvedModuleSpecifier: undefined;
 	resolvedModuleSpecifierText: undefined;
 }
@@ -21,6 +22,7 @@ export interface IsRequireCallMatchResultWithResolvedModuleSpecifier {
 	moduleSpecifier: string;
 	resolvedModuleSpecifier: string;
 	resolvedModuleSpecifierText: string;
+	transformedModuleSpecifier: string;
 }
 
 export type IsRequireCallResult = IsRequireCallNoMatchResult | IsRequireCallMatchResultWithNoResolvedModuleSpecifier | IsRequireCallMatchResultWithResolvedModuleSpecifier;
@@ -46,26 +48,28 @@ export function isRequireCall(inputExpression: TS.Expression, sourceFile: TS.Sou
 		moduleSpecifier == null
 			? undefined
 			: resolvePath({
+					...context,
 					id: moduleSpecifier,
-					parent: normalize(sourceFile.fileName),
-					readFile: context.readFile,
-					fileExists: context.fileExists
+					parent: sourceFile.fileName
 			  });
 
-	const resolvedModuleSpecifierText = resolvedModuleSpecifier == null || isBuiltInModule(resolvedModuleSpecifier) ? undefined : context.readFile(resolvedModuleSpecifier);
+	const resolvedModuleSpecifierText = resolvedModuleSpecifier == null || isBuiltInModule(resolvedModuleSpecifier) ? undefined : context.fileSystem.readFile(resolvedModuleSpecifier);
 
 	if (moduleSpecifier == null || resolvedModuleSpecifier == null || resolvedModuleSpecifierText == null) {
 		return {
 			match: true,
 			moduleSpecifier,
+			transformedModuleSpecifier: moduleSpecifier,
 			resolvedModuleSpecifier: undefined,
 			resolvedModuleSpecifierText: undefined
 		};
 	} else {
+
 		return {
 			match: true,
+			transformedModuleSpecifier: transformModuleSpecifier(moduleSpecifier, {resolvedModuleSpecifier, context, parent: sourceFile.fileName}),
 			moduleSpecifier,
-			resolvedModuleSpecifier: normalize(resolvedModuleSpecifier),
+			resolvedModuleSpecifier,
 			resolvedModuleSpecifierText
 		};
 	}

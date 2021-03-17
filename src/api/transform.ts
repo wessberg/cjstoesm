@@ -1,17 +1,18 @@
 import * as TSModule from "typescript";
-import fs from "fs";
 import {transformTask} from "../cli/task/transform/transform-task";
 import {Logger} from "../shared/logger/logger";
 import {LogLevelKind} from "../shared/logger/log-level-kind";
 import {TransformResult} from "../type/transform-result";
 import {TransformOptions} from "../type/transform-options";
+import {realFileSystem} from "../shared/file-system/file-system";
 
 export async function transform({
-	fileSystem = fs,
+	fileSystem = realFileSystem,
 	typescript = TSModule,
 	cwd = process.cwd(),
 	logger = new Logger(LogLevelKind.NONE),
-	input
+	input,
+	preserveModuleSpecifiers
 }: TransformOptions): Promise<TransformResult> {
 	return transformTask({
 		logger,
@@ -19,6 +20,7 @@ export async function transform({
 		cwd,
 		typescript,
 		input,
+		preserveModuleSpecifiers,
 		outDir: undefined
 	});
 }

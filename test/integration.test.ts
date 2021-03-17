@@ -1,8 +1,9 @@
-import test from "./util/test-runner";
+import test from "ava";
+import {withTypeScript} from "./util/ts-macro";
 import {formatCode} from "./util/format-code";
 import {generateRollupBundle} from "./setup/setup-rollup";
 
-test("Can bundle Commonjs. #1", async (t, {typescript}) => {
+test("Can bundle Commonjs. #1", withTypeScript, async (t, {typescript}) => {
 	const bundle = await generateRollupBundle(
 		[
 			{
@@ -34,7 +35,7 @@ test("Can bundle Commonjs. #1", async (t, {typescript}) => {
 	);
 });
 
-test("Can treeshake Commonjs. #1", async (t, {typescript}) => {
+test("Can treeshake Commonjs. #1", withTypeScript, async (t, {typescript}) => {
 	const bundle = await generateRollupBundle(
 		[
 			{
@@ -69,7 +70,7 @@ test("Can treeshake Commonjs. #1", async (t, {typescript}) => {
 	);
 });
 
-test("Can treeshake Commonjs. #2", async (t, {typescript}) => {
+test("Can treeshake Commonjs. #2", withTypeScript, async (t, {typescript}) => {
 	const bundle = await generateRollupBundle(
 		[
 			{
@@ -96,18 +97,19 @@ test("Can treeshake Commonjs. #2", async (t, {typescript}) => {
 		{typescript}
 	);
 	const [file] = bundle.output;
+
 	t.deepEqual(
 		formatCode(file.code),
 		formatCode(`\
-			const foo = 2;
+			const foo$1 = 2;
 
-			const foo$1 = {foo: foo}.foo;
-			console.log(foo$1);
+			const foo = {foo: foo$1}.foo;
+			console.log(foo);
 		`)
 	);
 });
 
-test("Can treeshake Commonjs. #3", async (t, {typescript}) => {
+test("Can treeshake Commonjs. #3", withTypeScript, async (t, {typescript}) => {
 	const bundle = await generateRollupBundle(
 		[
 			{

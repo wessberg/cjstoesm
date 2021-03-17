@@ -1,29 +1,20 @@
 import {sync} from "resolve";
-import {dirname, isAbsolute, join} from "path";
-import {isExternalLibrary} from "./is-external-library";
+import {isExternalLibrary, normalize, dirname, isAbsolute, join} from "./path-util";
+import {ReadonlyFileSystem} from "../../shared/file-system/file-system";
 
 export interface ResolveOptions {
+	cwd: string;
 	id: string;
 	parent: string | null | undefined;
 	moduleDirectory?: string;
 	prioritizedPackageKeys?: string[];
 	prioritizedExtensions?: string[];
-	readFile(fileName: string, encoding?: string): string | undefined;
-	fileExists(fileName: string): boolean;
+	resolveCache: Map<string, string|null>;
+	fileSystem: ReadonlyFileSystem;
 }
 
 /**
- * A map between id's and their results from previous resolving
- * @type {Map<string, string|undefined>}
- */
-const cache: Map<string, string | null> = new Map();
-
-/**
  * Computes a cache key based on the combination of id and parent
- *
- * @param id
- * @param parent
- * @return
  */
 function computeCacheKey(id: string, parent: string | null | undefined): string {
 	return isExternalLibrary(id) ? id : `${parent == null ? "" : `${parent}->`}${id}`;
@@ -31,23 +22,26 @@ function computeCacheKey(id: string, parent: string | null | undefined): string 
 
 /**
  * A function that can resolve an import path
- *
- * @param options
- * @returns
  */
 export function resolvePath({
 	id,
 	parent,
+	cwd,
 	prioritizedPackageKeys = ["es2015", "esm2015", "module", "jsnext:main", "main", "browser"],
 	prioritizedExtensions = ["", ".js", ".mjs", ".jsx", ".ts", ".tsx", ".json"],
 	moduleDirectory = "node_modules",
-	fileExists,
-	readFile
+	fileSystem,
+	resolveCache
 }: ResolveOptions): string | undefined {
+	id = normalize(id);
+	if (parent != null) {
+		parent = normalize(parent);
+	}
+
 	const cacheKey = computeCacheKey(id, parent);
 
 	// Attempt to take the resolve result from the cache
-	const cacheResult = cache.get(cacheKey);
+	const cacheResult = resolveCache.get(cacheKey);
 
 	// If it is a proper path, return it
 	if (cacheResult != null) return cacheResult;
@@ -61,26 +55,28 @@ export function resolvePath({
 		for (const variant of variants) {
 			for (const ext of prioritizedExtensions) {
 				const withExtension = `${variant}${ext}`;
-				if (fileExists(withExtension)) {
+				if (fileSystem.fileExists(withExtension)) {
 					// Add it to the cache
-					cache.set(cacheKey, withExtension);
+					resolveCache.set(cacheKey, withExtension);
 					return withExtension;
 				}
 			}
 		}
 
 		// Add it to the cache and mark it as unresolvable
-		cache.set(cacheKey, null);
+		resolveCache.set(cacheKey, null);
 		return undefined;
 	}
 
 	// Otherwise, try to resolve it via node module resolution and put it in the cache
 	try {
-		const resolveResult = sync(id, {
+		const resolveResult = normalize(sync(id, {
+			basedir: normalize(cwd),
 			extensions: prioritizedExtensions,
-			moduleDirectory,
-			readFileSync: (file, charset) => readFile(file, charset)!,
-			isFile: file => fileExists(file),
+			moduleDirectory: moduleDirectory,
+			readFileSync: file => fileSystem.readFile(file)!,
+			isFile: fileSystem.fileExists,
+			isDirectory: fileSystem.directoryExists,
 			packageFilter(pkg: Record<string, string>): Record<string, string> {
 				let property: string | undefined | null | void;
 
@@ -98,16 +94,16 @@ export function resolvePath({
 				// Return the package
 				return pkg;
 			}
-		});
+		}));
 
 		// Add it to the cache
-		cache.set(cacheKey, resolveResult);
+		resolveCache.set(cacheKey, resolveResult);
 
 		// Return it
 		return resolveResult;
 	} catch (ex) {
 		// No file could be resolved. Set it in the cache as unresolvable and return void
-		cache.set(cacheKey, null);
+		resolveCache.set(cacheKey, null);
 
 		// Return undefined¬
 		return undefined;

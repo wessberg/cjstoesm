@@ -1,10 +1,10 @@
 import {TaskOptions} from "../task-options";
 import {SanitizedSharedOptions} from "./sanitized-shared-options";
 import {selectLogLevel} from "./select-log-level/select-log-level";
-import fileSystem from "fs";
 import * as TSModule from "typescript";
 import {Logger} from "../../../shared/logger/logger";
 import {LogLevelKind} from "../../../shared/logger/log-level-kind";
+import {realFileSystem} from "../../../shared/file-system/file-system";
 
 /**
  * Generates the task options that are shared across all commands
@@ -12,7 +12,7 @@ import {LogLevelKind} from "../../../shared/logger/log-level-kind";
  * @param options
  * @returns
  */
-export async function generateTaskOptions(options: SanitizedSharedOptions): Promise<TaskOptions> {
+export async function generateTaskOptions (options: SanitizedSharedOptions): Promise<TaskOptions> {
 	// Prepare a logger
 	const logLevel = selectLogLevel(options);
 	const logger = new Logger(logLevel);
@@ -23,7 +23,7 @@ export async function generateTaskOptions(options: SanitizedSharedOptions): Prom
 	} else if (logLevel === LogLevelKind.DEBUG) logger.debug(`Logging mode: DEBUG`);
 
 	return {
-		fileSystem,
+		fileSystem: realFileSystem,
 		logger,
 		cwd: process.cwd(),
 		typescript: TSModule

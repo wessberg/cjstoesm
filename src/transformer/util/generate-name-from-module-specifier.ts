@@ -1,11 +1,8 @@
 import {camelCase} from "@wessberg/stringutil";
-import {parse} from "path";
+import {parse} from "./path-util";
 
 /**
  * Generates a proper name based on the given module specifier
- *
- * @param moduleSpecifier
- * @return
  */
 export function generateNameFromModuleSpecifier(moduleSpecifier: string): string {
 	const {name} = parse(moduleSpecifier);

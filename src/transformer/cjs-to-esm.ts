@@ -4,9 +4,6 @@ import {TS} from "../type/ts";
 
 /**
  * CustomTransformer that converts CommonJS to tree-shakeable ESM
- *
- * @param [options]
- * @returns
  */
 export function cjsToEsm(options: CjsToEsmOptions = {}): TS.CustomTransformers {
 	return {

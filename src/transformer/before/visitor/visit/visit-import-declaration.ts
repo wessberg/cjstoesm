@@ -3,9 +3,6 @@ import {TS} from "../../../../type/ts";
 
 /**
  * Visits the given ImportDeclaration
- *
- * @param options
- * @returns
  */
 export function visitImportDeclaration({node, context}: BeforeVisitorOptions<TS.ImportDeclaration>): TS.VisitResult<TS.Node> {
 	context.addImport(node, true);
