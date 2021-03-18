@@ -19,7 +19,7 @@ const SHARED_OPTIONS = {
 export default [
 	{
 		input: "src/index.ts",
-		preserveEntrySignatures: false,
+		preserveEntrySignatures: true,
 		output: [
 			{
 				file: packageJson.main,
@@ -36,7 +36,7 @@ export default [
 	},
 	{
 		input: "src/cli/index.ts",
-		preserveEntrySignatures: false,
+		preserveEntrySignatures: true,
 		output: [
 			{
 				dir: "./dist/cli",
