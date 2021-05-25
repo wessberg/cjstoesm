@@ -6,41 +6,40 @@ import {Loggable} from "./loggable";
  * A logger that can print to the console
  */
 export class Logger implements Loggable {
-	private readonly INFO_COLOR = "white";
-	private readonly VERBOSE_COLOR = "gray";
+	private readonly VERBOSE_COLOR = "cyan";
 	private readonly WARNING_COLOR = "yellow";
-	private readonly DEBUG_COLOR = "cyan";
+	private readonly DEBUG_COLOR = "magenta";
 
-	constructor(private readonly logLevel: LogLevelKind) {}
+	constructor(readonly logLevel: LogLevelKind) {}
 
 	/**
 	 * Logs info-related messages
 	 */
-	info(...messages: string[]): void {
+	info(...messages: unknown[]): void {
 		if (this.logLevel < LogLevelKind.INFO) return;
-		console.log(chalk[this.INFO_COLOR](...messages));
+		console.log(...messages);
 	}
 
 	/**
 	 * Logs verbose-related messages
 	 */
-	verbose(...messages: string[]): void {
+	verbose(...messages: unknown[]): void {
 		if (this.logLevel < LogLevelKind.VERBOSE) return;
-		console.log(chalk[this.VERBOSE_COLOR](...messages));
+		console.log(chalk[this.VERBOSE_COLOR]("[VERBOSE]"), ...messages);
 	}
 
 	/**
 	 * Logs debug-related messages
 	 */
-	debug(...messages: string[]): void {
+	debug(...messages: unknown[]): void {
 		if (this.logLevel < LogLevelKind.DEBUG) return;
-		console.log(chalk[this.DEBUG_COLOR](...messages));
+		console.log(chalk[this.DEBUG_COLOR]("[DEBUG]"), ...messages);
 	}
 
 	/**
 	 * Logs warning-related messages
 	 */
-	warn(...messages: string[]): void {
+	warn(...messages: unknown[]): void {
 		console.warn(chalk[this.WARNING_COLOR](`(!)`, ...messages));
 	}
 }

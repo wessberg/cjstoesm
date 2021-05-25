@@ -53,7 +53,8 @@ export function isRequireCall(inputExpression: TS.Expression, sourceFile: TS.Sou
 					parent: sourceFile.fileName
 			  });
 
-	const resolvedModuleSpecifierText = resolvedModuleSpecifier == null || isBuiltInModule(resolvedModuleSpecifier) ? undefined : context.fileSystem.readFile(resolvedModuleSpecifier);
+	const resolvedModuleSpecifierText =
+		resolvedModuleSpecifier == null || isBuiltInModule(resolvedModuleSpecifier) ? undefined : context.fileSystem.safeReadFileSync(resolvedModuleSpecifier)?.toString();
 
 	if (moduleSpecifier == null || resolvedModuleSpecifier == null || resolvedModuleSpecifierText == null) {
 		return {
@@ -64,7 +65,6 @@ export function isRequireCall(inputExpression: TS.Expression, sourceFile: TS.Sou
 			resolvedModuleSpecifierText: undefined
 		};
 	} else {
-
 		return {
 			match: true,
 			transformedModuleSpecifier: transformModuleSpecifier(moduleSpecifier, {resolvedModuleSpecifier, context, parent: sourceFile.fileName}),

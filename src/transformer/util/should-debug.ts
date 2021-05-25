@@ -1,7 +1,7 @@
-import {CjsToEsmOptions} from "../cjs-to-esm-options";
 import {TS} from "../../type/ts";
+import {TaskOptions} from "../../shared/task/task-options";
 
-export function shouldDebug(debug: CjsToEsmOptions["debug"], sourceFile?: TS.SourceFile): boolean {
+export function shouldDebug(debug: TaskOptions["debug"], sourceFile?: TS.SourceFile): boolean {
 	if (debug == null) return false;
 	if (typeof debug === "boolean") return debug;
 	if (sourceFile == null) return true;

@@ -1,10 +1,10 @@
 import test from "ava";
 import {withTypeScript} from "./util/ts-macro";
-import {generateTransformerResult} from "./setup/setup-transformer";
+import {executeTransformer} from "./setup/execute-transformer";
 import {formatCode} from "./util/format-code";
 
 test("Adds correct extensions for module specifiers for internal files when preserveModuleSpecifiers = 'external'. #1", withTypeScript, (t, {typescript}) => {
-	const bundle = generateTransformerResult(
+	const bundle = executeTransformer(
 		[
 			{
 				entry: true,
@@ -23,7 +23,7 @@ test("Adds correct extensions for module specifiers for internal files when pres
 		],
 		{typescript, preserveModuleSpecifiers: "external"}
 	);
-	const [file] = bundle;
+	const [file] = bundle.files;
 
 	t.deepEqual(
 		formatCode(file.text),
@@ -34,7 +34,7 @@ test("Adds correct extensions for module specifiers for internal files when pres
 });
 
 test("Converts directory-imports to filenames for files with .js extensions when preserveModuleSpecifiers = 'external'. #1", withTypeScript, (t, {typescript}) => {
-	const bundle = generateTransformerResult(
+	const bundle = executeTransformer(
 		[
 			{
 				entry: true,
@@ -53,7 +53,7 @@ test("Converts directory-imports to filenames for files with .js extensions when
 		],
 		{typescript, preserveModuleSpecifiers: "external"}
 	);
-	const [, file] = bundle;
+	const [, file] = bundle.files;
 
 	t.deepEqual(
 		formatCode(file.text),
@@ -64,7 +64,7 @@ test("Converts directory-imports to filenames for files with .js extensions when
 });
 
 test("Converts directory-imports to absolute filenames for files with .js extensions when preserveModuleSpecifiers = 'never'. #1", withTypeScript, (t, {typescript}) => {
-	const bundle = generateTransformerResult(
+	const bundle = executeTransformer(
 		[
 			{
 				entry: true,
@@ -83,7 +83,7 @@ test("Converts directory-imports to absolute filenames for files with .js extens
 		],
 		{typescript, preserveModuleSpecifiers: "never"}
 	);
-	const [, file] = bundle;
+	const [, file] = bundle.files;
 
 	t.deepEqual(
 		formatCode(file.text),
@@ -94,7 +94,7 @@ test("Converts directory-imports to absolute filenames for files with .js extens
 });
 
 test("Preserves module specifiers pointing to internal files when preserveModuleSpecifiers = 'internal' #1", withTypeScript, (t, {typescript}) => {
-	const bundle = generateTransformerResult(
+	const bundle = executeTransformer(
 		[
 			{
 				entry: true,
@@ -113,7 +113,7 @@ test("Preserves module specifiers pointing to internal files when preserveModule
 		],
 		{typescript, preserveModuleSpecifiers: "internal"}
 	);
-	const [, file] = bundle;
+	const [, file] = bundle.files;
 
 	t.deepEqual(
 		formatCode(file.text),
@@ -124,7 +124,7 @@ test("Preserves module specifiers pointing to internal files when preserveModule
 });
 
 test("Drops module specifiers pointing to external files when preserveModuleSpecifiers = 'internal' #1", withTypeScript, (t, {typescript}) => {
-	const bundle = generateTransformerResult(
+	const bundle = executeTransformer(
 		[
 			{
 				entry: true,
@@ -153,7 +153,7 @@ test("Drops module specifiers pointing to external files when preserveModuleSpec
 		],
 		{typescript, preserveModuleSpecifiers: "internal"}
 	);
-	const [file] = bundle;
+	const [file] = bundle.files;
 
 	t.deepEqual(
 		formatCode(file.text),

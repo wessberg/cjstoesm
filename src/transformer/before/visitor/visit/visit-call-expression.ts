@@ -38,8 +38,6 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 		return undefined;
 	}
 
-
-
 	// If we've been able to resolve a module as well as its contents,
 	// Check it for exports so that we know more about its internals, for example whether or not it has any named exports, etc
 	const moduleExports = getModuleExportsFromRequireDataInContext(requireData, context);

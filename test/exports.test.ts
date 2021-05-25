@@ -1,17 +1,17 @@
 import test from "ava";
 import {withTypeScript} from "./util/ts-macro";
-import {generateTransformerResult} from "./setup/setup-transformer";
+import {executeTransformer} from "./setup/execute-transformer";
 import {formatCode} from "./util/format-code";
 
 test("Converts 'exports = ...' syntax into an ExportAssignment. #1", withTypeScript, (t, {typescript}) => {
-	const bundle = generateTransformerResult(
+	const bundle = executeTransformer(
 		`
 		function foo () {}
 		exports = foo;
 	`,
 		{typescript}
 	);
-	const [file] = bundle;
+	const [file] = bundle.files;
 	t.deepEqual(
 		formatCode(file.text),
 		formatCode(`\
@@ -22,14 +22,14 @@ test("Converts 'exports = ...' syntax into an ExportAssignment. #1", withTypeScr
 });
 
 test("Converts 'exports = ...' syntax into an ExportAssignment. #2", withTypeScript, (t, {typescript}) => {
-	const bundle = generateTransformerResult(
+	const bundle = executeTransformer(
 		`
 		function foo () {}
 		module.exports = foo;
 	`,
 		{typescript}
 	);
-	const [file] = bundle;
+	const [file] = bundle.files;
 	t.deepEqual(
 		formatCode(file.text),
 		formatCode(`\
@@ -40,13 +40,13 @@ test("Converts 'exports = ...' syntax into an ExportAssignment. #2", withTypeScr
 });
 
 test("Converts 'exports = ...' syntax into an ExportAssignment. #3", withTypeScript, (t, {typescript}) => {
-	const bundle = generateTransformerResult(
+	const bundle = executeTransformer(
 		`
 		exports = function foo () {};
 	`,
 		{typescript}
 	);
-	const [file] = bundle;
+	const [file] = bundle.files;
 	t.deepEqual(
 		formatCode(file.text),
 		formatCode(`\
@@ -56,7 +56,7 @@ test("Converts 'exports = ...' syntax into an ExportAssignment. #3", withTypeScr
 });
 
 test("Converts 'exports = ...' syntax into an ExportAssignment. #4", withTypeScript, (t, {typescript}) => {
-	const bundle = generateTransformerResult(
+	const bundle = executeTransformer(
 		`
 		class Baz {}
 
@@ -69,7 +69,7 @@ test("Converts 'exports = ...' syntax into an ExportAssignment. #4", withTypeScr
 	`,
 		{typescript}
 	);
-	const [file] = bundle;
+	const [file] = bundle.files;
 	t.deepEqual(
 		formatCode(file.text),
 		formatCode(`\
@@ -89,7 +89,7 @@ test("Converts 'exports = ...' syntax into an ExportAssignment. #4", withTypeScr
 });
 
 test("Converts 'exports = ...' syntax into an ExportAssignment. #5", withTypeScript, (t, {typescript}) => {
-	const bundle = generateTransformerResult(
+	const bundle = executeTransformer(
 		`
 
 		module.exports = {
@@ -100,7 +100,7 @@ test("Converts 'exports = ...' syntax into an ExportAssignment. #5", withTypeScr
 	`,
 		{typescript}
 	);
-	const [file] = bundle;
+	const [file] = bundle.files;
 	t.deepEqual(
 		formatCode(file.text),
 		formatCode(`\
@@ -115,7 +115,7 @@ test("Converts 'exports = ...' syntax into an ExportAssignment. #5", withTypeScr
 });
 
 test("Converts 'exports = ...' syntax into an ExportAssignment. #6", withTypeScript, (t, {typescript}) => {
-	const bundle = generateTransformerResult(
+	const bundle = executeTransformer(
 		`
 		const foo = "bar";
 		module.exports = {
@@ -126,7 +126,7 @@ test("Converts 'exports = ...' syntax into an ExportAssignment. #6", withTypeScr
 	`,
 		{typescript}
 	);
-	const [file] = bundle;
+	const [file] = bundle.files;
 	t.deepEqual(
 		formatCode(file.text),
 		formatCode(`\
@@ -141,13 +141,13 @@ test("Converts 'exports = ...' syntax into an ExportAssignment. #6", withTypeScr
 });
 
 test("Converts 'exports = ...' syntax into an ExportAssignment. #7", withTypeScript, (t, {typescript}) => {
-	const bundle = generateTransformerResult(
+	const bundle = executeTransformer(
 		`
 		module.exports = {};
 	`,
 		{typescript}
 	);
-	const [file] = bundle;
+	const [file] = bundle.files;
 	t.deepEqual(
 		formatCode(file.text),
 		formatCode(`\
@@ -157,13 +157,13 @@ test("Converts 'exports = ...' syntax into an ExportAssignment. #7", withTypeScr
 });
 
 test("Converts 'exports = ...' syntax into an ExportAssignment. #8", withTypeScript, (t, {typescript}) => {
-	const bundle = generateTransformerResult(
+	const bundle = executeTransformer(
 		`
 		(module.exports = {});
 	`,
 		{typescript}
 	);
-	const [file] = bundle;
+	const [file] = bundle.files;
 	t.deepEqual(
 		formatCode(file.text),
 		formatCode(`\
@@ -173,13 +173,13 @@ test("Converts 'exports = ...' syntax into an ExportAssignment. #8", withTypeScr
 });
 
 test("Converts 'exports.<something> into ExportDeclarations. #1", withTypeScript, (t, {typescript}) => {
-	const bundle = generateTransformerResult(
+	const bundle = executeTransformer(
 		`
 		exports.foo = 1;
 	`,
 		{typescript}
 	);
-	const [file] = bundle;
+	const [file] = bundle.files;
 
 	t.deepEqual(
 		formatCode(file.text),
@@ -190,14 +190,14 @@ test("Converts 'exports.<something> into ExportDeclarations. #1", withTypeScript
 });
 
 test("Converts 'exports.<something> into ExportDeclarations. #2", withTypeScript, (t, {typescript}) => {
-	const bundle = generateTransformerResult(
+	const bundle = executeTransformer(
 		`
 		function foo () {}
 		exports.foo = foo;
 	`,
 		{typescript}
 	);
-	const [file] = bundle;
+	const [file] = bundle.files;
 	t.deepEqual(
 		formatCode(file.text),
 		formatCode(`\
@@ -208,13 +208,13 @@ test("Converts 'exports.<something> into ExportDeclarations. #2", withTypeScript
 });
 
 test("Converts 'exports.<something> into ExportDeclarations. #3", withTypeScript, (t, {typescript}) => {
-	const bundle = generateTransformerResult(
+	const bundle = executeTransformer(
 		`
 		exports.foo = function foo () {};
 	`,
 		{typescript}
 	);
-	const [file] = bundle;
+	const [file] = bundle.files;
 	t.deepEqual(
 		formatCode(file.text),
 		formatCode(`\
@@ -224,13 +224,13 @@ test("Converts 'exports.<something> into ExportDeclarations. #3", withTypeScript
 });
 
 test("Converts 'exports.<something> into ExportDeclarations. #4", withTypeScript, (t, {typescript}) => {
-	const bundle = generateTransformerResult(
+	const bundle = executeTransformer(
 		`
 		exports.foo = () => {}
 	`,
 		{typescript}
 	);
-	const [file] = bundle;
+	const [file] = bundle.files;
 	t.deepEqual(
 		formatCode(file.text),
 		formatCode(`\
@@ -240,13 +240,13 @@ test("Converts 'exports.<something> into ExportDeclarations. #4", withTypeScript
 });
 
 test("Converts 'exports.<something> into ExportDeclarations. #5", withTypeScript, (t, {typescript}) => {
-	const bundle = generateTransformerResult(
+	const bundle = executeTransformer(
 		`
 		exports.f = Object.getOwnPropertySymbols;
 	`,
 		{typescript}
 	);
-	const [file] = bundle;
+	const [file] = bundle.files;
 	t.deepEqual(
 		formatCode(file.text),
 		formatCode(`\
@@ -256,14 +256,14 @@ test("Converts 'exports.<something> into ExportDeclarations. #5", withTypeScript
 });
 
 test("Converts 'exports.<something> into ExportDeclarations. #6", withTypeScript, (t, {typescript}) => {
-	const bundle = generateTransformerResult(
+	const bundle = executeTransformer(
 		`
 		function foo () {}
 		exports.bar = foo;
 	`,
 		{typescript}
 	);
-	const [file] = bundle;
+	const [file] = bundle.files;
 	t.deepEqual(
 		formatCode(file.text),
 		formatCode(`\
@@ -274,7 +274,7 @@ test("Converts 'exports.<something> into ExportDeclarations. #6", withTypeScript
 });
 
 test("Converts 'exports.<something>' into ExportDeclarations. #7", withTypeScript, (t, {typescript}) => {
-	const bundle = generateTransformerResult(
+	const bundle = executeTransformer(
 		[
 			{
 				entry: true,
@@ -287,7 +287,7 @@ test("Converts 'exports.<something>' into ExportDeclarations. #7", withTypeScrip
 		],
 		{typescript}
 	);
-	const [file] = bundle;
+	const [file] = bundle.files;
 
 	t.deepEqual(
 		formatCode(file.text),
@@ -300,13 +300,13 @@ test("Converts 'exports.<something>' into ExportDeclarations. #7", withTypeScrip
 });
 
 test("Converts 'exports.default into a default export. #1", withTypeScript, (t, {typescript}) => {
-	const bundle = generateTransformerResult(
+	const bundle = executeTransformer(
 		`
 		exports.default = function foo () {}
 	`,
 		{typescript}
 	);
-	const [file] = bundle;
+	const [file] = bundle.files;
 	t.deepEqual(
 		formatCode(file.text),
 		formatCode(`\
@@ -316,13 +316,13 @@ test("Converts 'exports.default into a default export. #1", withTypeScript, (t, 
 });
 
 test("Converts 'exports.default into a default export. #2", withTypeScript, (t, {typescript}) => {
-	const bundle = generateTransformerResult(
+	const bundle = executeTransformer(
 		`
 		module.exports.default = function foo () {}
 	`,
 		{typescript}
 	);
-	const [file] = bundle;
+	const [file] = bundle.files;
 	t.deepEqual(
 		formatCode(file.text),
 		formatCode(`\
@@ -332,7 +332,7 @@ test("Converts 'exports.default into a default export. #2", withTypeScript, (t, 
 });
 
 test("Won't generate duplicate ExportAssignments. #1", withTypeScript, (t, {typescript}) => {
-	const bundle = generateTransformerResult(
+	const bundle = executeTransformer(
 		`
 		function foo () {}
 		exports.default = foo;
@@ -341,7 +341,7 @@ test("Won't generate duplicate ExportAssignments. #1", withTypeScript, (t, {type
 	`,
 		{typescript}
 	);
-	const [file] = bundle;
+	const [file] = bundle.files;
 	t.deepEqual(
 		formatCode(file.text),
 		formatCode(`\
@@ -352,7 +352,7 @@ test("Won't generate duplicate ExportAssignments. #1", withTypeScript, (t, {type
 });
 
 test("Won't generate duplicate ExportDeclarations. #1", withTypeScript, (t, {typescript}) => {
-	const bundle = generateTransformerResult(
+	const bundle = executeTransformer(
 		`
 		function foo () {}
 		exports.foo = foo;
@@ -362,7 +362,7 @@ test("Won't generate duplicate ExportDeclarations. #1", withTypeScript, (t, {typ
 	`,
 		{typescript}
 	);
-	const [file] = bundle;
+	const [file] = bundle.files;
 	t.deepEqual(
 		formatCode(file.text),
 		formatCode(`\
@@ -375,7 +375,7 @@ test("Won't generate duplicate ExportDeclarations. #1", withTypeScript, (t, {typ
 });
 
 test("Generates named exports for members of an ObjectLiteral that is assigned to 'exports = ...' if possible. #1", withTypeScript, (t, {typescript}) => {
-	const bundle = generateTransformerResult(
+	const bundle = executeTransformer(
 		`
 		module.exports = {
 			foo: true
@@ -383,7 +383,7 @@ test("Generates named exports for members of an ObjectLiteral that is assigned t
 	`,
 		{typescript}
 	);
-	const [file] = bundle;
+	const [file] = bundle.files;
 	t.deepEqual(
 		formatCode(file.text),
 		formatCode(`\
@@ -396,7 +396,7 @@ test("Generates named exports for members of an ObjectLiteral that is assigned t
 });
 
 test("Generates named exports for members of an ObjectLiteral that is assigned to 'exports = ...' if possible. #2", withTypeScript, (t, {typescript}) => {
-	const bundle = generateTransformerResult(
+	const bundle = executeTransformer(
 		`
 		module.exports = {
 			foo: false
@@ -404,7 +404,7 @@ test("Generates named exports for members of an ObjectLiteral that is assigned t
 	`,
 		{typescript}
 	);
-	const [file] = bundle;
+	const [file] = bundle.files;
 	t.deepEqual(
 		formatCode(file.text),
 		formatCode(`\
@@ -417,7 +417,7 @@ test("Generates named exports for members of an ObjectLiteral that is assigned t
 });
 
 test("Generates named exports for members of an ObjectLiteral that is assigned to 'exports = ...' if possible. #3", withTypeScript, (t, {typescript}) => {
-	const bundle = generateTransformerResult(
+	const bundle = executeTransformer(
 		`
 		module.exports = {
 			foo: 2
@@ -425,7 +425,7 @@ test("Generates named exports for members of an ObjectLiteral that is assigned t
 	`,
 		{typescript}
 	);
-	const [file] = bundle;
+	const [file] = bundle.files;
 	t.deepEqual(
 		formatCode(file.text),
 		formatCode(`\
@@ -438,7 +438,7 @@ test("Generates named exports for members of an ObjectLiteral that is assigned t
 });
 
 test("Generates named exports for members of an ObjectLiteral that is assigned to 'exports = ...' if possible. #4", withTypeScript, (t, {typescript}) => {
-	const bundle = generateTransformerResult(
+	const bundle = executeTransformer(
 		`
 		module.exports = {
 			foo: 2n
@@ -446,7 +446,7 @@ test("Generates named exports for members of an ObjectLiteral that is assigned t
 	`,
 		{typescript}
 	);
-	const [file] = bundle;
+	const [file] = bundle.files;
 	t.deepEqual(
 		formatCode(file.text),
 		formatCode(`\
@@ -459,7 +459,7 @@ test("Generates named exports for members of an ObjectLiteral that is assigned t
 });
 
 test("Generates named exports for members of an ObjectLiteral that is assigned to 'exports = ...' if possible. #5", withTypeScript, (t, {typescript}) => {
-	const bundle = generateTransformerResult(
+	const bundle = executeTransformer(
 		`
 		module.exports = {
 			foo: /foo/
@@ -467,7 +467,7 @@ test("Generates named exports for members of an ObjectLiteral that is assigned t
 	`,
 		{typescript}
 	);
-	const [file] = bundle;
+	const [file] = bundle.files;
 	t.deepEqual(
 		formatCode(file.text),
 		formatCode(`\
@@ -480,7 +480,7 @@ test("Generates named exports for members of an ObjectLiteral that is assigned t
 });
 
 test("Generates named exports for members of an ObjectLiteral that is assigned to 'exports = ...' if possible. #6", withTypeScript, (t, {typescript}) => {
-	const bundle = generateTransformerResult(
+	const bundle = executeTransformer(
 		`
 		module.exports = {
 			foo: {
@@ -491,7 +491,7 @@ test("Generates named exports for members of an ObjectLiteral that is assigned t
 	`,
 		{typescript}
 	);
-	const [file] = bundle;
+	const [file] = bundle.files;
 	t.deepEqual(
 		formatCode(file.text),
 		formatCode(`\
@@ -507,7 +507,7 @@ test("Generates named exports for members of an ObjectLiteral that is assigned t
 });
 
 test("Generates named exports for members of an ObjectLiteral that is assigned to 'exports = ...' if possible. #7", withTypeScript, (t, {typescript}) => {
-	const bundle = generateTransformerResult(
+	const bundle = executeTransformer(
 		`
 		module.exports = {
 			foo () {
@@ -517,7 +517,7 @@ test("Generates named exports for members of an ObjectLiteral that is assigned t
 	`,
 		{typescript}
 	);
-	const [file] = bundle;
+	const [file] = bundle.files;
 	t.deepEqual(
 		formatCode(file.text),
 		formatCode(`\
@@ -532,7 +532,7 @@ test("Generates named exports for members of an ObjectLiteral that is assigned t
 });
 
 test("Generates named exports for members of an ObjectLiteral that is assigned to 'exports = ...' if possible. #8", withTypeScript, (t, {typescript}) => {
-	const bundle = generateTransformerResult(
+	const bundle = executeTransformer(
 		`
 		const obj = {
 			foo: 1,
@@ -545,7 +545,7 @@ test("Generates named exports for members of an ObjectLiteral that is assigned t
 	`,
 		{typescript}
 	);
-	const [file] = bundle;
+	const [file] = bundle.files;
 	t.deepEqual(
 		formatCode(file.text),
 		formatCode(`\
@@ -563,7 +563,7 @@ test("Generates named exports for members of an ObjectLiteral that is assigned t
 });
 
 test("Converts 'exports = require(...)' syntax into namespace re-exports if the required module has named exports. #1", withTypeScript, (t, {typescript}) => {
-	const bundle = generateTransformerResult(
+	const bundle = executeTransformer(
 		[
 			{
 				entry: true,
@@ -582,7 +582,7 @@ test("Converts 'exports = require(...)' syntax into namespace re-exports if the 
 		],
 		{typescript}
 	);
-	const [file] = bundle;
+	const [file] = bundle.files;
 	t.deepEqual(
 		formatCode(file.text),
 		formatCode(`\
@@ -591,38 +591,42 @@ test("Converts 'exports = require(...)' syntax into namespace re-exports if the 
 	);
 });
 
-test("Converts 'exports = require(...)()' syntax into namespace import along with a default export if the required module has named exports. #1", withTypeScript, (t, {typescript}) => {
-	const bundle = generateTransformerResult(
-		[
-			{
-				entry: true,
-				fileName: "index.ts",
-				text: `
+test(
+	"Converts 'exports = require(...)()' syntax into namespace import along with a default export if the required module has named exports. #1",
+	withTypeScript,
+	(t, {typescript}) => {
+		const bundle = executeTransformer(
+			[
+				{
+					entry: true,
+					fileName: "index.ts",
+					text: `
 				module.exports = require("./foo")();
 			`
-			},
-			{
-				entry: true,
-				fileName: "foo.ts",
-				text: `
+				},
+				{
+					entry: true,
+					fileName: "foo.ts",
+					text: `
 				exports.readFileSync = () => {};
 			`
-			}
-		],
-		{typescript}
-	);
-	const [file] = bundle;
-	t.deepEqual(
-		formatCode(file.text),
-		formatCode(`\
+				}
+			],
+			{typescript}
+		);
+		const [file] = bundle.files;
+		t.deepEqual(
+			formatCode(file.text),
+			formatCode(`\
 		import * as foo from "./foo";
 		export default foo();
 		`)
-	);
-});
+		);
+	}
+);
 
 test("Converts 'exports = require(...)' syntax into a default export if the required module has one. #1", withTypeScript, (t, {typescript}) => {
-	const bundle = generateTransformerResult(
+	const bundle = executeTransformer(
 		[
 			{
 				entry: true,
@@ -641,7 +645,7 @@ test("Converts 'exports = require(...)' syntax into a default export if the requ
 		],
 		{typescript}
 	);
-	const [file] = bundle;
+	const [file] = bundle.files;
 	t.deepEqual(
 		formatCode(file.text),
 		formatCode(`\
@@ -651,7 +655,7 @@ test("Converts 'exports = require(...)' syntax into a default export if the requ
 });
 
 test("Converts 'exports = require(...)' syntax into a default export if the required module is unknown. #1", withTypeScript, (t, {typescript}) => {
-	const bundle = generateTransformerResult(
+	const bundle = executeTransformer(
 		[
 			{
 				entry: true,
@@ -663,7 +667,7 @@ test("Converts 'exports = require(...)' syntax into a default export if the requ
 		],
 		{typescript}
 	);
-	const [file] = bundle;
+	const [file] = bundle.files;
 	t.deepEqual(
 		formatCode(file.text),
 		formatCode(`\
@@ -673,7 +677,7 @@ test("Converts 'exports = require(...)' syntax into a default export if the requ
 });
 
 test("Converts 'exports = require(...)()' syntax into a default export if the required module is unknown. #2", withTypeScript, (t, {typescript}) => {
-	const bundle = generateTransformerResult(
+	const bundle = executeTransformer(
 		[
 			{
 				entry: true,
@@ -685,7 +689,7 @@ test("Converts 'exports = require(...)()' syntax into a default export if the re
 		],
 		{typescript}
 	);
-	const [file] = bundle;
+	const [file] = bundle.files;
 	t.deepEqual(
 		formatCode(file.text),
 		formatCode(`\
@@ -696,7 +700,7 @@ test("Converts 'exports = require(...)()' syntax into a default export if the re
 });
 
 test("Converts 'const foo = module.exports = ...' syntax into a VariableStatement followed by an ExportAssignment. #1", withTypeScript, (t, {typescript}) => {
-	const bundle = generateTransformerResult(
+	const bundle = executeTransformer(
 		[
 			{
 				entry: true,
@@ -708,7 +712,7 @@ test("Converts 'const foo = module.exports = ...' syntax into a VariableStatemen
 		],
 		{typescript}
 	);
-	const [file] = bundle;
+	const [file] = bundle.files;
 	t.deepEqual(
 		formatCode(file.text),
 		formatCode(`\
@@ -719,7 +723,7 @@ test("Converts 'const foo = module.exports = ...' syntax into a VariableStatemen
 });
 
 test("Converts 'const foo = module.exports = ...' syntax into a VariableStatement followed by an ExportAssignment. #2", withTypeScript, (t, {typescript}) => {
-	const bundle = generateTransformerResult(
+	const bundle = executeTransformer(
 		[
 			{
 				entry: true,
@@ -731,7 +735,7 @@ test("Converts 'const foo = module.exports = ...' syntax into a VariableStatemen
 		],
 		{typescript}
 	);
-	const [file] = bundle;
+	const [file] = bundle.files;
 	t.deepEqual(
 		formatCode(file.text),
 		formatCode(`\
@@ -742,7 +746,7 @@ test("Converts 'const foo = module.exports = ...' syntax into a VariableStatemen
 });
 
 test("Converts 'const foo = module.exports = ...' syntax into a VariableStatement followed by an ExportAssignment. #3", withTypeScript, (t, {typescript}) => {
-	const bundle = generateTransformerResult(
+	const bundle = executeTransformer(
 		[
 			{
 				entry: true,
@@ -754,7 +758,7 @@ test("Converts 'const foo = module.exports = ...' syntax into a VariableStatemen
 		],
 		{typescript}
 	);
-	const [file] = bundle;
+	const [file] = bundle.files;
 	t.deepEqual(
 		formatCode(file.text),
 		formatCode(`\
@@ -765,7 +769,7 @@ test("Converts 'const foo = module.exports = ...' syntax into a VariableStatemen
 });
 
 test("Converts 'const foo = exports.foo = ...' syntax into a VariableStatement followed by an ExportDeclaration. #4", withTypeScript, (t, {typescript}) => {
-	const bundle = generateTransformerResult(
+	const bundle = executeTransformer(
 		[
 			{
 				entry: true,
@@ -777,7 +781,7 @@ test("Converts 'const foo = exports.foo = ...' syntax into a VariableStatement f
 		],
 		{typescript}
 	);
-	const [file] = bundle;
+	const [file] = bundle.files;
 	t.deepEqual(
 		formatCode(file.text),
 		formatCode(`\
@@ -788,7 +792,7 @@ test("Converts 'const foo = exports.foo = ...' syntax into a VariableStatement f
 });
 
 test("Converts 'const foo = exports.foo = ...' syntax into a VariableStatement followed by an ExportDeclaration. #5", withTypeScript, (t, {typescript}) => {
-	const bundle = generateTransformerResult(
+	const bundle = executeTransformer(
 		[
 			{
 				entry: true,
@@ -800,7 +804,7 @@ test("Converts 'const foo = exports.foo = ...' syntax into a VariableStatement f
 		],
 		{typescript}
 	);
-	const [file] = bundle;
+	const [file] = bundle.files;
 	t.deepEqual(
 		formatCode(file.text),
 		formatCode(`\
@@ -811,7 +815,7 @@ test("Converts 'const foo = exports.foo = ...' syntax into a VariableStatement f
 });
 
 test("Converts 'const foo = exports.foo = ...' syntax into a VariableStatement followed by an ExportDeclaration. #6", withTypeScript, (t, {typescript}) => {
-	const bundle = generateTransformerResult(
+	const bundle = executeTransformer(
 		[
 			{
 				entry: true,
@@ -823,7 +827,7 @@ test("Converts 'const foo = exports.foo = ...' syntax into a VariableStatement f
 		],
 		{typescript}
 	);
-	const [file] = bundle;
+	const [file] = bundle.files;
 	t.deepEqual(
 		formatCode(file.text),
 		formatCode(`\
@@ -834,7 +838,7 @@ test("Converts 'const foo = exports.foo = ...' syntax into a VariableStatement f
 });
 
 test("When rewriting 'exports.something = function () {...}', no error will occur if a local binding already exists for 'something'", withTypeScript, (t, {typescript}) => {
-	const bundle = generateTransformerResult(
+	const bundle = executeTransformer(
 		[
 			{
 				entry: true,
@@ -849,7 +853,7 @@ test("When rewriting 'exports.something = function () {...}', no error will occu
 		],
 		{typescript}
 	);
-	const [file] = bundle;
+	const [file] = bundle.files;
 	t.deepEqual(
 		formatCode(file.text),
 		formatCode(`\
@@ -863,7 +867,7 @@ test("When rewriting 'exports.something = function () {...}', no error will occu
 });
 
 test("When bundling UMD containing exports assignments, the SourceFile will be flattened to the body of the UMD wrapper", withTypeScript, (t, {typescript}) => {
-	const bundle = generateTransformerResult(
+	const bundle = executeTransformer(
 		[
 			{
 				entry: true,
@@ -884,7 +888,7 @@ test("When bundling UMD containing exports assignments, the SourceFile will be f
 		],
 		{typescript}
 	);
-	const [file] = bundle;
+	const [file] = bundle.files;
 	t.deepEqual(
 		formatCode(file.text),
 		formatCode(`\
@@ -896,7 +900,7 @@ test("When bundling UMD containing exports assignments, the SourceFile will be f
 });
 
 test("Handles reassignments to imported bindings. #1", withTypeScript, (t, {typescript}) => {
-	const bundle = generateTransformerResult(
+	const bundle = executeTransformer(
 		[
 			{
 				entry: true,
@@ -916,7 +920,7 @@ test("Handles reassignments to imported bindings. #1", withTypeScript, (t, {type
 		],
 		{typescript}
 	);
-	const [file] = bundle;
+	const [file] = bundle.files;
 	t.deepEqual(
 		formatCode(file.text),
 		formatCode(`\
@@ -928,7 +932,7 @@ test("Handles reassignments to imported bindings. #1", withTypeScript, (t, {type
 });
 
 test("Handles reassignments to imported bindings. #2", withTypeScript, (t, {typescript}) => {
-	const bundle = generateTransformerResult(
+	const bundle = executeTransformer(
 		[
 			{
 				entry: true,
@@ -948,7 +952,7 @@ test("Handles reassignments to imported bindings. #2", withTypeScript, (t, {type
 		],
 		{typescript}
 	);
-	const [file] = bundle;
+	const [file] = bundle.files;
 	t.deepEqual(
 		formatCode(file.text),
 		formatCode(`\
@@ -960,7 +964,7 @@ test("Handles reassignments to imported bindings. #2", withTypeScript, (t, {type
 });
 
 test("Handles reassignments to imported bindings. #3", withTypeScript, (t, {typescript}) => {
-	const bundle = generateTransformerResult(
+	const bundle = executeTransformer(
 		[
 			{
 				entry: true,
@@ -980,7 +984,7 @@ test("Handles reassignments to imported bindings. #3", withTypeScript, (t, {type
 		],
 		{typescript}
 	);
-	const [file] = bundle;
+	const [file] = bundle.files;
 	t.deepEqual(
 		formatCode(file.text),
 		formatCode(`\

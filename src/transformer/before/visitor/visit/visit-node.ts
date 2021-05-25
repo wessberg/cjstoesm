@@ -17,13 +17,13 @@ export function visitNode<T extends TS.Node>(options: BeforeVisitorOptions<T>): 
 	}
 
 	if (typescript.isVariableDeclarationList(options.node)) {
-		return visitVariableDeclarationList((options as unknown) as BeforeVisitorOptions<TS.VariableDeclarationList>);
+		return visitVariableDeclarationList(options as unknown as BeforeVisitorOptions<TS.VariableDeclarationList>);
 	} else if (typescript.isVariableDeclaration(options.node)) {
-		return visitVariableDeclaration((options as unknown) as BeforeVisitorOptions<TS.VariableDeclaration>);
+		return visitVariableDeclaration(options as unknown as BeforeVisitorOptions<TS.VariableDeclaration>);
 	} else if (typescript.isBinaryExpression(options.node)) {
-		return visitBinaryExpression((options as unknown) as BeforeVisitorOptions<TS.BinaryExpression>);
+		return visitBinaryExpression(options as unknown as BeforeVisitorOptions<TS.BinaryExpression>);
 	} else if (typescript.isCallExpression(options.node)) {
-		return visitCallExpression((options as unknown) as BeforeVisitorOptions<TS.CallExpression>);
+		return visitCallExpression(options as unknown as BeforeVisitorOptions<TS.CallExpression>);
 	}
 
 	return options.childContinuation(options.node);

@@ -206,8 +206,16 @@ $ pnpm add cjstoesm
 
 ### Run once with npx
 
+First, add the peer dependency `typescript` as a dependency to the package(s) from which you're going to run `cjstoesm`. Alternatively, if you want to run it from _anywhere_, you can also install it globally: `npm i -g typescript`. Now, you can simply run:
+
 ```
-$ npx -p typescript cjstoesm
+$ npx cjstoesm
+```
+
+You can also run `cjstoesm` along with its peer dependencies in one combined command:
+
+```
+$ npx -p typescript -p cjstoesm cjstoesm
 ```
 
 ### Peer Dependencies
@@ -247,7 +255,9 @@ Options:
   -d, --debug [arg]                       Whether to print debug information
   -v, --verbose [arg]                     Whether to print verbose information
   -s, --silent [arg]                      Whether to not print anything
+  -c, --cwd [arg]                         Optionally which directory to use as the current working directory
   -p, --preserve-module-specifiers [arg]  Determines whether or not module specifiers are preserved. Possible values are: "external", "internal", "always", and "never" (default: "external")
+  -m, --dry [arg]                         If true, no files will be written to disk
   -h, --help                              display help for command
 ```
 
@@ -261,12 +271,26 @@ You can customize this with the `--preserve-module-specifiers` command line opti
 
 You can also use this library programmatically:
 
-```typescript
+```ts
+import {transform} from "cjstoesm";
+
+await transform({
+	input: "src/**/*.*",
+	outDir: "dist"
+});
+```
+
+Alternatively, if you don't want the transform function to automatically write files to disk, you can pass `write: false` as an option and handle
+it yourself:
+
+```ts
 import {transform} from "cjstoesm";
 import {writeFileSync} from "fs";
 
 const result = await transform({
-	input: "src/**/*.*"
+	input: "src/**/*.*",
+	outDir: "dist",
+	write: false
 });
 
 // Write to disk
@@ -280,20 +304,29 @@ for (const {fileName, text} of result.files) {
 ```typescript
 interface TransformOptions {
 	/**
-	 * The input glob to match against the file system
+	 * The input glob(s) to match against the file system
 	 */
-	input: string;
-
+	input: string[] | string;
+	/**
+	 * The output directory to use
+	 */
+	outDir: string;
+	/**
+	 * If write is false, no files will be written to disk
+	 */
+	write: boolean;
 	/**
 	 * The FileSystem to use. Useful if you want to work with a virtual file system. Defaults to using the "fs" module
 	 */
-	fileSystem?: FileSystem;
-
+	fileSystem: FileSystem;
 	/**
-	 * The TypeScript module to use.
+	 * A logger that can print messages of varying severity depending on the log level
 	 */
-	typescript?: typeof Typescript;
-
+	logger: Loggable;
+	/**
+	 * The base directory (defaults to process.cwd())
+	 */
+	cwd: string;
 	/**
 	 * Determines how module specifiers are treated.
 	 * - external (default): CommonJS module specifiers identifying libraries or built-in modules are preserved (default)
@@ -302,17 +335,16 @@ interface TransformOptions {
 	 * - never: CommonJS module specifiers are always transformed
 	 * It can also take a function that is invoked with a module specifier and returns a boolean determining whether or not it should be preserved
 	 */
-	preserveModuleSpecifiers?: "always" | "never" | "external" | "internal" | ((specifier: string) => boolean);
-
+	preserveModuleSpecifiers: "always" | "never" | "external" | "internal" | ((specifier: string) => boolean);
 	/**
-	 * The current working directory to use as the base. Defaults to process.cwd()
+	 * If given, a specific TypeScript version to use
 	 */
-	cwd?: string;
-
+	typescript: typeof TS;
 	/**
-	 * A custom logger to be provide.
+	 * If true, debug information will be printed. If a function is provided, it will be invoked for each file name. Returning true from the function
+	 * determines that debug information will be printed related to that file
 	 */
-	logger?: Loggable;
+	debug: boolean | string | ((file: string) => boolean);
 }
 ```
 
@@ -321,7 +353,7 @@ interface TransformOptions {
 `cjstoesm` also provides its functionality as a [Custom Transformer](https://github.com/Microsoft/TypeScript/pull/13940) for Typescript.
 This makes it possible for you to use it directly with TypeScript's Compiler APIs. **It works completely fine on JavaScript files, so long as you enable `allowJs` in your [CompilerOptions](https://www.typescriptlang.org/docs/handbook/compiler-options.html)**.
 
-The most simple way of transpiling with Typescript would be with `transpileModule`:
+The simplest way of transpiling with Typescript would be with `transpileModule`:
 
 ```typescript
 import {ModuleKind, transpileModule} from "typescript";

@@ -17,11 +17,11 @@ import {TS} from "../../../../type/ts";
 export function visitImportAndExportDeclarations<T extends TS.Node>(options: BeforeVisitorOptions<T>): TS.VisitResult<TS.Node> {
 	const {typescript} = options.context;
 	if (typescript.isImportDeclaration(options.node)) {
-		return visitImportDeclaration((options as unknown) as BeforeVisitorOptions<TS.ImportDeclaration>);
+		return visitImportDeclaration(options as unknown as BeforeVisitorOptions<TS.ImportDeclaration>);
 	} else if (typescript.isExportDeclaration(options.node)) {
-		return visitExportDeclaration((options as unknown) as BeforeVisitorOptions<TS.ExportDeclaration>);
+		return visitExportDeclaration(options as unknown as BeforeVisitorOptions<TS.ExportDeclaration>);
 	} else if (typescript.isExportAssignment(options.node)) {
-		return visitExportAssignment((options as unknown) as BeforeVisitorOptions<TS.ExportAssignment>);
+		return visitExportAssignment(options as unknown as BeforeVisitorOptions<TS.ExportAssignment>);
 	} else if (hasDefaultExportModifier(options.node, typescript)) {
 		options.context.markDefaultAsExported();
 	} else if (hasExportModifier(options.node, typescript)) {

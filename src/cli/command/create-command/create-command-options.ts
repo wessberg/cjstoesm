@@ -1,3 +1,5 @@
+import commander from "commander";
+
 export type CommandOptionType = "string" | "number" | "boolean";
 export type CommandArgType = "string" | "string[]";
 
@@ -28,6 +30,8 @@ export interface CreateCommandOptions {
 	options: CommandOptions;
 	isDefault: boolean;
 }
+
+export type CliProgram = commander.Command;
 
 export type CommandActionOptions<T extends CreateCommandOptions, U extends T["options"] = T["options"], J extends T["args"] = T["args"]> = {
 	[Key in keyof U]: U[Key]["type"] extends "number" ? number : U[Key]["type"] extends "boolean" ? boolean : string;

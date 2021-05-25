@@ -1,10 +1,10 @@
 import test from "ava";
 import {withTypeScript} from "./util/ts-macro";
 import {formatCode} from "./util/format-code";
-import {generateRollupBundle} from "./setup/setup-rollup";
+import {executeRollup} from "./setup/execute-rollup";
 
 test("Can bundle Commonjs. #1", withTypeScript, async (t, {typescript}) => {
-	const bundle = await generateRollupBundle(
+	const bundle = await executeRollup(
 		[
 			{
 				entry: false,
@@ -21,8 +21,12 @@ test("Can bundle Commonjs. #1", withTypeScript, async (t, {typescript}) => {
 			`
 			}
 		],
-		{external: () => false},
-		{typescript}
+		{
+			typescript,
+			rollupOptions: {
+				external: () => false
+			}
+		}
 	);
 	const [file] = bundle.output;
 	t.deepEqual(
@@ -36,7 +40,7 @@ test("Can bundle Commonjs. #1", withTypeScript, async (t, {typescript}) => {
 });
 
 test("Can treeshake Commonjs. #1", withTypeScript, async (t, {typescript}) => {
-	const bundle = await generateRollupBundle(
+	const bundle = await executeRollup(
 		[
 			{
 				entry: false,
@@ -56,8 +60,12 @@ test("Can treeshake Commonjs. #1", withTypeScript, async (t, {typescript}) => {
 			`
 			}
 		],
-		{external: () => false},
-		{typescript}
+		{
+			typescript,
+			rollupOptions: {
+				external: () => false
+			}
+		}
 	);
 	const [file] = bundle.output;
 	t.deepEqual(
@@ -71,7 +79,7 @@ test("Can treeshake Commonjs. #1", withTypeScript, async (t, {typescript}) => {
 });
 
 test("Can treeshake Commonjs. #2", withTypeScript, async (t, {typescript}) => {
-	const bundle = await generateRollupBundle(
+	const bundle = await executeRollup(
 		[
 			{
 				entry: false,
@@ -93,8 +101,10 @@ test("Can treeshake Commonjs. #2", withTypeScript, async (t, {typescript}) => {
 			`
 			}
 		],
-		{external: () => false},
-		{typescript}
+		{
+			typescript,
+			rollupOptions: {external: () => false}
+		}
 	);
 	const [file] = bundle.output;
 
@@ -110,7 +120,7 @@ test("Can treeshake Commonjs. #2", withTypeScript, async (t, {typescript}) => {
 });
 
 test("Can treeshake Commonjs. #3", withTypeScript, async (t, {typescript}) => {
-	const bundle = await generateRollupBundle(
+	const bundle = await executeRollup(
 		[
 			{
 				entry: false,
@@ -131,8 +141,12 @@ test("Can treeshake Commonjs. #3", withTypeScript, async (t, {typescript}) => {
 			`
 			}
 		],
-		{external: () => false},
-		{typescript}
+		{
+			typescript,
+			rollupOptions: {
+				external: () => false
+			}
+		}
 	);
 	const [file] = bundle.output;
 	t.deepEqual(

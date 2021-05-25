@@ -9,7 +9,7 @@ export function addExportModifier<T extends TS.ModifiersArray>(
 	if (modifiers == null) {
 		modifiers = compatFactory.createNodeArray() as T;
 	} else if (modifiers.some(m => m.kind === typescript.SyntaxKind.ExportKeyword)) {
-		return (modifiers as unknown) as T extends TS.ModifiersArray ? TS.ModifiersArray : undefined;
+		return modifiers as unknown as T extends TS.ModifiersArray ? TS.ModifiersArray : undefined;
 	}
 
 	return compatFactory.createNodeArray([

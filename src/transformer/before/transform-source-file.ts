@@ -320,9 +320,9 @@ export function transformSourceFile(
 	// Add the relevant module exports for the SourceFile
 	visitorContext.addModuleExportsForPath(normalize(sourceFile.fileName), moduleExports);
 	if (!visitorContext.onlyExports && shouldDebug(visitorContext.debug, sourceFile) && visitorContext.printer != null) {
-		console.log("===", nativeNormalize(sourceFile.fileName), "===");
-		console.log(visitorContext.printer.printFile(updatedSourceFile));
-		console.log("EXPORTS:", visitorContext.exportedLocals);
+		visitorContext.logger.debug("===", nativeNormalize(sourceFile.fileName), "===");
+		visitorContext.logger.debug(visitorContext.printer.printFile(updatedSourceFile));
+		visitorContext.logger.debug("EXPORTS:", visitorContext.exportedLocals);
 	}
 
 	return {

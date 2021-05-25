@@ -6,7 +6,7 @@ import {TS} from "../../type/ts";
  */
 export function isExpression(node: TS.Node, typescript: typeof TS): node is TS.Expression {
 	try {
-		return ((typescript as unknown) as {isExpressionNode(node: TS.Node): boolean}).isExpressionNode(node) || typescript.isIdentifier(node);
+		return (typescript as unknown as {isExpressionNode(node: TS.Node): boolean}).isExpressionNode(node) || typescript.isIdentifier(node);
 	} catch {
 		return false;
 	}

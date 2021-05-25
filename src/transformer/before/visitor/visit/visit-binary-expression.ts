@@ -26,10 +26,6 @@ export function visitBinaryExpression({node, sourceFile, context, continuation, 
 
 	// If it is an assignment
 	if (node.operatorToken.kind === typescript.SyntaxKind.EqualsToken) {
-		if (shouldDebug(context.debug, sourceFile)) {
-			console.log(`Is assignment inside of a Binary Expression`);
-		}
-
 		// Check if this expression is part of a VariableDeclaration.
 		// For example: 'const foo = module.exports = ...'
 		const variableDeclarationParent = findNodeUp(node, typescript.isVariableDeclaration);
@@ -38,9 +34,6 @@ export function visitBinaryExpression({node, sourceFile, context, continuation, 
 
 		// This is something like for example 'exports = ...', 'module.exports = ...', 'exports.default', or 'module.exports.default'
 		if (exportsData.property == null || exportsData.property === "default") {
-			if (shouldDebug(context.debug, sourceFile)) {
-				console.log(`Is something like for example 'exports = ...', 'module.exports = ...', 'exports.default', or 'module.exports.default'`);
-			}
 			// Take all individual key-value pairs of that ObjectLiteral
 			// and turn them into named exports if possible.
 			// Also generate a default export of the entire exports object
@@ -308,10 +301,6 @@ export function visitBinaryExpression({node, sourceFile, context, continuation, 
 			const local = exportsData.property;
 			const continuationResult = continuation(node.right);
 
-			if (shouldDebug(context.debug, sourceFile)) {
-				console.log(`Is something like const foo = exports.bar = ...`);
-			}
-
 			if (continuationResult == null || Array.isArray(continuationResult) || (!isExpression(continuationResult, typescript) && !typescript.isIdentifier(continuationResult))) {
 				return undefined;
 			}
@@ -333,10 +322,6 @@ export function visitBinaryExpression({node, sourceFile, context, continuation, 
 		// If the right-hand side is an identifier, this can safely be converted into an ExportDeclaration
 		// such as 'export {foo}'
 		else if (typescript.isIdentifier(right)) {
-			if (shouldDebug(context.debug, sourceFile)) {
-				console.log(`The right-hand side of the Binary Expression is an identifier, so this can safely be converted into an ExportDeclaration such as export {foo}`);
-			}
-
 			const local = exportsData.property;
 			if (!context.isLocalExported(local)) {
 				const namedExports = compatFactory.createNamedExports([
@@ -356,22 +341,12 @@ export function visitBinaryExpression({node, sourceFile, context, continuation, 
 
 		// Otherwise, this is something like 'exports.foo = function foo () {}'
 		else if (isNamedDeclaration(right, typescript) && right.name != null && typescript.isIdentifier(right.name) && exportsData.property === right.name.text) {
-			if (shouldDebug(context.debug, sourceFile)) {
-				console.log(
-					`The right-hand side of the Binary Expression is a Named Declaration where the property on the exports object is identical to the name of the Named Declaration, like 'exports.foo = function foo () {}'`
-				);
-			}
-
-			context.addTrailingStatements((ensureNodeHasExportModifier(right, context, compatFactory) as unknown) as TS.Statement);
+			context.addTrailingStatements(ensureNodeHasExportModifier(right, context, compatFactory) as unknown as TS.Statement);
 			return undefined;
 		}
 
 		// Otherwise, this can be converted into a VariableStatement
 		else {
-			if (shouldDebug(context.debug, sourceFile)) {
-				console.log(`A new VariableStatement should be generated such as 'export const foo = ...'`);
-			}
-
 			const continuationResult = continuation(node.right);
 
 			if (continuationResult == null || Array.isArray(continuationResult)) {

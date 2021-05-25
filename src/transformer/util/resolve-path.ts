@@ -1,6 +1,6 @@
 import {sync} from "resolve";
-import {isExternalLibrary, normalize, dirname, isAbsolute, join} from "./path-util";
-import {ReadonlyFileSystem} from "../../shared/file-system/file-system";
+import {dirname, isAbsolute, isExternalLibrary, join, normalize} from "./path-util";
+import {SafeReadonlyFileSystem} from "../../shared/file-system/file-system";
 
 export interface ResolveOptions {
 	cwd: string;
@@ -9,8 +9,8 @@ export interface ResolveOptions {
 	moduleDirectory?: string;
 	prioritizedPackageKeys?: string[];
 	prioritizedExtensions?: string[];
-	resolveCache: Map<string, string|null>;
-	fileSystem: ReadonlyFileSystem;
+	resolveCache: Map<string, string | null>;
+	fileSystem: SafeReadonlyFileSystem;
 }
 
 /**
@@ -55,7 +55,7 @@ export function resolvePath({
 		for (const variant of variants) {
 			for (const ext of prioritizedExtensions) {
 				const withExtension = `${variant}${ext}`;
-				if (fileSystem.fileExists(withExtension)) {
+				if (fileSystem.safeStatSync(withExtension)?.isFile() ?? false) {
 					// Add it to the cache
 					resolveCache.set(cacheKey, withExtension);
 					return withExtension;
@@ -70,31 +70,33 @@ export function resolvePath({
 
 	// Otherwise, try to resolve it via node module resolution and put it in the cache
 	try {
-		const resolveResult = normalize(sync(id, {
-			basedir: normalize(cwd),
-			extensions: prioritizedExtensions,
-			moduleDirectory: moduleDirectory,
-			readFileSync: file => fileSystem.readFile(file)!,
-			isFile: fileSystem.fileExists,
-			isDirectory: fileSystem.directoryExists,
-			packageFilter(pkg: Record<string, string>): Record<string, string> {
-				let property: string | undefined | null | void;
+		const resolveResult = normalize(
+			sync(id, {
+				basedir: normalize(cwd),
+				extensions: prioritizedExtensions,
+				moduleDirectory: moduleDirectory,
+				readFileSync: path => fileSystem.readFileSync(path).toString(),
+				isFile: path => fileSystem.safeStatSync(path)?.isFile() ?? false,
+				isDirectory: path => fileSystem.safeStatSync(path)?.isDirectory() ?? false,
+				packageFilter(pkg: Record<string, string>): Record<string, string> {
+					let property: string | undefined | null | void;
 
-				//  Otherwise, or if no key was selected, use the prioritized list of fields and take the first matched one
-				if (property == null) {
-					const packageKeys = Object.keys(pkg);
-					property = prioritizedPackageKeys.find(key => packageKeys.includes(key));
+					//  Otherwise, or if no key was selected, use the prioritized list of fields and take the first matched one
+					if (property == null) {
+						const packageKeys = Object.keys(pkg);
+						property = prioritizedPackageKeys.find(key => packageKeys.includes(key));
+					}
+
+					// If a property was resolved, set the 'main' property to it (resolve will use the main property no matter what)
+					if (property != null) {
+						pkg.main = pkg[property];
+					}
+
+					// Return the package
+					return pkg;
 				}
-
-				// If a property was resolved, set the 'main' property to it (resolve will use the main property no matter what)
-				if (property != null) {
-					pkg.main = pkg[property];
-				}
-
-				// Return the package
-				return pkg;
-			}
-		}));
+			})
+		);
 
 		// Add it to the cache
 		resolveCache.set(cacheKey, resolveResult);

@@ -5,5 +5,5 @@ import {TS} from "../../type/ts";
  * Uses an internal non-exposed Typescript helper to decide whether or not the Node is an Expression
  */
 export function isStatement(node: TS.Node, typescript: typeof TS): node is TS.Statement {
-	return ((typescript as unknown) as {isStatementButNotDeclaration(node: TS.Node): boolean}).isStatementButNotDeclaration(node);
+	return (typescript as unknown as {isStatementButNotDeclaration(node: TS.Node): boolean}).isStatementButNotDeclaration(node);
 }

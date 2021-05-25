@@ -1,25 +1,28 @@
+import {LogLevelKind} from "./log-level-kind";
+
 export interface Loggable {
 	/**
-	 * Logs info-related messages
-	 * @param {string[]} messages
+	 * The current log level
 	 */
-	info(...messages: string[]): void;
+	readonly logLevel: LogLevelKind;
+
+	/**
+	 * Logs info-related messages
+	 */
+	info(...messages: unknown[]): void;
 
 	/**
 	 * Logs verbose-related messages
-	 * @param {string[]} messages
 	 */
-	verbose(...messages: string[]): void;
+	verbose(...messages: unknown[]): void;
 
 	/**
 	 * Logs debug-related messages
-	 * @param {string[]} messages
 	 */
-	debug(...messages: string[]): void;
+	debug(...messages: unknown[]): void;
 
 	/**
 	 * Logs warning-related messages
-	 * @param {string[]} messages
 	 */
-	warn(...messages: string[]): void;
+	warn(...messages: unknown[]): void;
 }
