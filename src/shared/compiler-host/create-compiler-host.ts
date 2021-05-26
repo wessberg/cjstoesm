@@ -1,6 +1,6 @@
 import {FileSystem} from "../file-system/file-system";
-import {nativeNormalize, normalize} from "../../transformer/util/path-util";
 import {TS} from "../../type/ts";
+import path from "crosspath";
 
 export interface CreateCompilerHostOptions {
 	cwd: string;
@@ -37,7 +37,7 @@ export function createCompilerHost({cwd, fileSystem, typescript}: CreateCompiler
 		},
 
 		getSourceFile(fileName: string, languageVersion: TS.ScriptTarget): TS.SourceFile | undefined {
-			const normalized = normalize(fileName);
+			const normalized = path.normalize(fileName);
 			const sourceText = this.readFile(fileName);
 
 			if (sourceText == null) return undefined;
@@ -46,11 +46,11 @@ export function createCompilerHost({cwd, fileSystem, typescript}: CreateCompiler
 		},
 
 		getCurrentDirectory() {
-			return nativeNormalize(cwd);
+			return path.native.normalize(cwd);
 		},
 
 		getDirectories(directoryName: string) {
-			return typescript.sys.getDirectories(directoryName).map(nativeNormalize);
+			return typescript.sys.getDirectories(directoryName).map(path.native.normalize);
 		},
 
 		getDefaultLibFileName(compilerOpts: TS.CompilerOptions): string {
@@ -69,8 +69,8 @@ export function createCompilerHost({cwd, fileSystem, typescript}: CreateCompiler
 			return typescript.sys.useCaseSensitiveFileNames;
 		},
 
-		realpath(path: string): string {
-			return nativeNormalize(path);
+		realpath(p: string): string {
+			return path.native.normalize(p);
 		}
 	};
 }
@@ -78,16 +78,16 @@ export function createCompilerHost({cwd, fileSystem, typescript}: CreateCompiler
 /**
  * Gets a ScriptKind from the given path
  */
-const getScriptKindFromPath = (path: string, typescript: typeof TS): TS.ScriptKind => {
-	if (path.endsWith(".js")) {
+const getScriptKindFromPath = (p: string, typescript: typeof TS): TS.ScriptKind => {
+	if (p.endsWith(".js")) {
 		return typescript.ScriptKind.JS;
-	} else if (path.endsWith(".ts")) {
+	} else if (p.endsWith(".ts")) {
 		return typescript.ScriptKind.TS;
-	} else if (path.endsWith(".tsx")) {
+	} else if (p.endsWith(".tsx")) {
 		return typescript.ScriptKind.TSX;
-	} else if (path.endsWith(".jsx")) {
+	} else if (p.endsWith(".jsx")) {
 		return typescript.ScriptKind.JSX;
-	} else if (path.endsWith(".json")) {
+	} else if (p.endsWith(".json")) {
 		return typescript.ScriptKind.JSON;
 	} else {
 		return typescript.ScriptKind.Unknown;

@@ -3,11 +3,11 @@ import {inspect} from "util";
 import {sync} from "fast-glob";
 import {TS} from "../../../type/ts";
 import {cjsToEsm} from "../../../transformer/cjs-to-esm";
-import {isAbsolute, join, nativeDirname, nativeNormalize, nativeRelative, normalize} from "../../../transformer/util/path-util";
 import {createCompilerHost} from "../../../shared/compiler-host/create-compiler-host";
 import {TransformResult} from "../../../shared/task/transform-result";
 import chalk from "chalk";
 import {ensureArray} from "../../../shared/util/util";
+import path from "crosspath";
 
 /**
  * Executes the 'generate' task
@@ -28,9 +28,11 @@ export async function transformTask(options: TransformTaskOptions): Promise<Tran
 	);
 
 	// Match files based on the glob(s)
-	const matchedFiles = new Set(ensureArray(input).flatMap(glob => sync(normalize(glob), {fs: fileSystem}).map(file => (isAbsolute(file) ? normalize(file) : join(cwd, file)))));
+	const matchedFiles = new Set(
+		ensureArray(input).flatMap(glob => sync(path.normalize(glob), {fs: fileSystem}).map(file => (path.isAbsolute(file) ? path.normalize(file) : path.join(cwd, file))))
+	);
 
-	logger.debug(`Matched files:`, matchedFiles.size < 1 ? "(none)" : [...matchedFiles].map(f => `"${nativeNormalize(f)}"`).join(", "));
+	logger.debug(`Matched files:`, matchedFiles.size < 1 ? "(none)" : [...matchedFiles].map(f => `"${path.native.normalize(f)}"`).join(", "));
 
 	// Prepare the result object
 	const result: TransformResult = {
@@ -63,7 +65,7 @@ export async function transformTask(options: TransformTaskOptions): Promise<Tran
 	program.emit(
 		undefined,
 		(fileName, text) => {
-			const nativeNormalizedFileName = nativeNormalize(fileName);
+			const nativeNormalizedFileName = path.native.normalize(fileName);
 
 			// If a hook was provided, call it
 			if (hooks.writeFile != null) {
@@ -78,10 +80,10 @@ export async function transformTask(options: TransformTaskOptions): Promise<Tran
 
 			// Only write files to disk if requested
 			if (write) {
-				fileSystem.mkdirSync(nativeDirname(nativeNormalizedFileName), {recursive: true});
+				fileSystem.mkdirSync(path.native.dirname(nativeNormalizedFileName), {recursive: true});
 				fileSystem.writeFileSync(nativeNormalizedFileName, text);
 			}
-			logger.info(`${chalk.green("✔")} ${nativeRelative(cwd, nativeNormalizedFileName)}`);
+			logger.info(`${chalk.green("✔")} ${path.native.relative(cwd, nativeNormalizedFileName)}`);
 		},
 		undefined,
 		false,

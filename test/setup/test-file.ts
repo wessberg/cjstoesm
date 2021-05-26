@@ -1,4 +1,4 @@
-import {join} from "../../src/transformer/util/path-util";
+import path from "crosspath";
 import {TestContext} from "./test-context";
 import {ensureArray, generateRandomPath} from "../../src/shared/util/util";
 import {MaybeArray} from "helpertypes";
@@ -28,9 +28,9 @@ export interface TestFileStructure {
 }
 
 export function createTestFileStructure(input: MaybeArray<TestFile>, context: TestContext): TestFileStructure {
-	const root = join(context.cwd, VIRTUAL_ROOT);
-	const src = join(root, VIRTUAL_SRC);
-	const dist = join(root, VIRTUAL_DIST);
+	const root = path.join(context.cwd, VIRTUAL_ROOT);
+	const src = path.join(root, VIRTUAL_SRC);
+	const dist = path.join(root, VIRTUAL_DIST);
 	const files: TestFileRecord[] = ensureArray(input)
 		.map(file =>
 			typeof file === "string"
@@ -41,7 +41,7 @@ export function createTestFileStructure(input: MaybeArray<TestFile>, context: Te
 				  }
 				: file
 		)
-		.map(file => ({...file, fileName: join(src, file.fileName)}));
+		.map(file => ({...file, fileName: path.join(src, file.fileName)}));
 
 	const entry = files.find(file => file.entry);
 

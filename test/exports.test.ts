@@ -562,7 +562,7 @@ test("Generates named exports for members of an ObjectLiteral that is assigned t
 	);
 });
 
-test("Converts 'exports = require(...)' syntax into namespace re-exports if the required module has named exports. #1", withTypeScript, (t, {typescript}) => {
+test.only("Converts 'exports = require(...)' syntax into namespace re-exports if the required module has named exports. #1", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{

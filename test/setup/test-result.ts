@@ -1,6 +1,6 @@
 import {TransformedFile} from "../../src/shared/task/transform-result";
-import {join, normalize, relative} from "../../src/transformer/util/path-util";
 import {TestFileDirectories} from "./test-file";
+import path from "crosspath";
 
 export interface TestResult {
 	files: TransformedFile[];
@@ -9,8 +9,8 @@ export interface TestResult {
 
 export function createTestResult(dir: TestFileDirectories, files: TransformedFile[] = []): TestResult {
 	const findFile = (fileName: string): TransformedFile | undefined => {
-		const distFile = join(dir.dist, relative(dir.root, join(dir.src, fileName)));
-		return files.find(file => normalize(file.fileName) === normalize(fileName) || normalize(file.fileName) === distFile);
+		const distFile = path.join(dir.dist, path.relative(dir.root, path.join(dir.src, fileName)));
+		return files.find(file => path.normalize(file.fileName) === path.normalize(fileName) || path.normalize(file.fileName) === distFile);
 	};
 
 	return {

@@ -1,11 +1,11 @@
 import {cjsToEsm} from "../../src/transformer/cjs-to-esm";
 import {TS} from "../../src/type/ts";
-import {normalize} from "../../src/transformer/util/path-util";
 import {createTestResult, TestResult} from "./test-result";
 import {TestFile} from "./test-file";
 import {TestContext} from "./test-context";
 import {createTestSetup} from "./test-setup";
 import {MaybeArray} from "helpertypes";
+import path from "crosspath";
 
 /**
  * Prepares a test
@@ -34,7 +34,7 @@ export function executeTransformer(inputFiles: MaybeArray<TestFile>, options?: P
 	};
 
 	const program = typescript.createProgram({
-		rootNames: files.map(file => normalize(file.fileName)),
+		rootNames: files.map(file => path.normalize(file.fileName)),
 		options: compilerOptions,
 		host: compilerHost
 	});

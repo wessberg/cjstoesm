@@ -3,9 +3,9 @@ import {TestContext} from "./test-context";
 import {createTestSetup} from "./test-setup";
 import {configureCommands} from "../../src/cli/configure-commands";
 import {shouldDebug} from "../../src/transformer/util/should-debug";
-import {join, relative} from "../../src/transformer/util/path-util";
 import {createTestResult, TestResult} from "./test-result";
 import {MaybeArray} from "helpertypes";
+import path from "crosspath";
 
 export interface CliTestContext extends TestContext {
 	args: string[];
@@ -23,7 +23,7 @@ export async function executeCli(options: Partial<CliTestContext> = {}): Promise
 		fileStructure: {dir}
 	} = createTestSetup(options.files ?? [], options);
 
-	const args = options.args == null || options.args.length < 1 ? [] : [relative(dir.root, join(dir.src, options.args[0])), ...options.args.slice(1)];
+	const args = options.args == null || options.args.length < 1 ? [] : [path.relative(dir.root, path.join(dir.src, options.args[0])), ...options.args.slice(1)];
 	const result = createTestResult(dir);
 
 	configureCommands({
@@ -34,7 +34,7 @@ export async function executeCli(options: Partial<CliTestContext> = {}): Promise
 			`/usr/local/bin/node`,
 			"cjstoesm",
 			...args,
-			...(options.noForcedOutDir ?? false ? [] : [relative(dir.root, dir.dist)]),
+			...(options.noForcedOutDir ?? false ? [] : [path.relative(dir.root, dir.dist)]),
 			"--dry",
 			`--cwd=${dir.root}`,
 			...(shouldDebug(options.debug ?? false) ? ["--debug"] : [])

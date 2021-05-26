@@ -1,6 +1,7 @@
 import {sync} from "resolve";
-import {dirname, isAbsolute, isExternalLibrary, join, normalize} from "./path-util";
 import {SafeReadonlyFileSystem} from "../../shared/file-system/file-system";
+import path from "crosspath";
+import {isExternalLibrary} from "./path-util";
 
 export interface ResolveOptions {
 	cwd: string;
@@ -33,9 +34,9 @@ export function resolvePath({
 	fileSystem,
 	resolveCache
 }: ResolveOptions): string | undefined {
-	id = normalize(id);
+	id = path.normalize(id);
 	if (parent != null) {
-		parent = normalize(parent);
+		parent = path.normalize(parent);
 	}
 
 	const cacheKey = computeCacheKey(id, parent);
@@ -50,8 +51,8 @@ export function resolvePath({
 	if (cacheResult === null) return;
 
 	if (!isExternalLibrary(id)) {
-		const absolute = isAbsolute(id) ? id : join(parent == null ? "" : dirname(parent), id);
-		const variants = [absolute, join(absolute, "index")];
+		const absolute = path.isAbsolute(id) ? path.normalize(id) : path.join(parent == null ? "" : path.dirname(parent), id);
+		const variants = [absolute, path.join(absolute, "index")];
 		for (const variant of variants) {
 			for (const ext of prioritizedExtensions) {
 				const withExtension = `${variant}${ext}`;
@@ -70,14 +71,14 @@ export function resolvePath({
 
 	// Otherwise, try to resolve it via node module resolution and put it in the cache
 	try {
-		const resolveResult = normalize(
+		const resolveResult = path.normalize(
 			sync(id, {
-				basedir: normalize(cwd),
+				basedir: path.normalize(cwd),
 				extensions: prioritizedExtensions,
 				moduleDirectory: moduleDirectory,
-				readFileSync: path => fileSystem.readFileSync(path).toString(),
-				isFile: path => fileSystem.safeStatSync(path)?.isFile() ?? false,
-				isDirectory: path => fileSystem.safeStatSync(path)?.isDirectory() ?? false,
+				readFileSync: p => fileSystem.readFileSync(p).toString(),
+				isFile: p => fileSystem.safeStatSync(p)?.isFile() ?? false,
+				isDirectory: p => fileSystem.safeStatSync(p)?.isDirectory() ?? false,
 				packageFilter(pkg: Record<string, string>): Record<string, string> {
 					let property: string | undefined | null | void;
 

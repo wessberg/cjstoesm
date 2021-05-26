@@ -11,7 +11,7 @@ import {visitImportAndExportDeclarations} from "./visitor/visit/visit-import-and
 import {TS} from "../../type/ts";
 import {shouldDebug} from "../util/should-debug";
 import {isNodeFactory} from "../util/is-node-factory";
-import {nativeNormalize, normalize} from "../util/path-util";
+import path from "crosspath";
 
 export interface BeforeTransformerSourceFileStepResult {
 	sourceFile: TS.SourceFile;
@@ -177,8 +177,8 @@ export function transformSourceFile(
 			isIdentifierFree,
 			getFreeIdentifier,
 			ignoreIdentifier,
-			getModuleExportsForPath: path => moduleExportsMap.get(normalize(path)),
-			addModuleExportsForPath: (path, exports) => moduleExportsMap.set(normalize(path), exports),
+			getModuleExportsForPath: p => moduleExportsMap.get(path.normalize(p)),
+			addModuleExportsForPath: (p, exports) => moduleExportsMap.set(path.normalize(p), exports),
 			get imports() {
 				return [...imports.entries()].filter(([, noEmit]) => !noEmit).map(([declaration]) => declaration);
 			},
@@ -318,9 +318,9 @@ export function transformSourceFile(
 	}
 
 	// Add the relevant module exports for the SourceFile
-	visitorContext.addModuleExportsForPath(normalize(sourceFile.fileName), moduleExports);
+	visitorContext.addModuleExportsForPath(path.normalize(sourceFile.fileName), moduleExports);
 	if (!visitorContext.onlyExports && shouldDebug(visitorContext.debug, sourceFile) && visitorContext.printer != null) {
-		visitorContext.logger.debug("===", nativeNormalize(sourceFile.fileName), "===");
+		visitorContext.logger.debug("===", path.native.normalize(sourceFile.fileName), "===");
 		visitorContext.logger.debug(visitorContext.printer.printFile(updatedSourceFile));
 		visitorContext.logger.debug("EXPORTS:", visitorContext.exportedLocals);
 	}

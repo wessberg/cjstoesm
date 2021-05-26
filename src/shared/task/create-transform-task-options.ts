@@ -1,7 +1,7 @@
 import {realFileSystem} from "../file-system/file-system";
 import {TransformTaskOptions} from "./transform-task-options";
 import {createTaskOptions} from "./create-task-options";
-import {isAbsolute, join} from "../../transformer/util/path-util";
+import path from "crosspath";
 import {ensureArray} from "../util/util";
 import {PartialExcept} from "helpertypes";
 
@@ -27,7 +27,7 @@ export function createTransformTaskOptions({
 		write,
 		fileSystem,
 		hooks,
-		input: ensureArray(input).map(file => (isAbsolute(file) ? file : join(taskOptions.cwd, file))),
-		outDir: isAbsolute(outDir) ? outDir : join(taskOptions.cwd, outDir)
+		input: ensureArray(input).map(file => path.normalize(path.isAbsolute(file) ? file : path.join(taskOptions.cwd, file))),
+		outDir: path.normalize(path.isAbsolute(outDir) ? outDir : path.join(taskOptions.cwd, outDir))
 	};
 }

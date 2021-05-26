@@ -1,5 +1,6 @@
-import {dirname, ensureHasLeadingDotAndPosix, extname, isExternalLibrary, relative, setExtension} from "./path-util";
+import {ensureHasLeadingDotAndPosix, isExternalLibrary, setExtension} from "./path-util";
 import {VisitorContext} from "../visitor-context";
+import path from "crosspath";
 
 export interface TransformModuleSpecifierOptions {
 	context: VisitorContext;
@@ -28,7 +29,7 @@ function determineNewExtension(currentExtension: string): string {
  */
 export function transformModuleSpecifier(moduleSpecifier: string, {context, parent, resolvedModuleSpecifier}: TransformModuleSpecifierOptions): string {
 	// If the module specifier already contains an extension, do nothing else
-	if (extname(moduleSpecifier) !== "" || resolvedModuleSpecifier == null) {
+	if (path.extname(moduleSpecifier) !== "" || resolvedModuleSpecifier == null) {
 		return moduleSpecifier;
 	}
 
@@ -53,5 +54,5 @@ export function transformModuleSpecifier(moduleSpecifier: string, {context, pare
 			}
 	}
 
-	return setExtension(ensureHasLeadingDotAndPosix(relative(dirname(parent), resolvedModuleSpecifier)), determineNewExtension(extname(resolvedModuleSpecifier)));
+	return setExtension(ensureHasLeadingDotAndPosix(path.relative(path.dirname(parent), resolvedModuleSpecifier)), determineNewExtension(path.extname(resolvedModuleSpecifier)));
 }
