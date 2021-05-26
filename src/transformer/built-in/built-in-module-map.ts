@@ -32,6 +32,8 @@ export const BUILT_IN_MODULE = new Set([
 	"net",
 	"os",
 	"path",
+	"path/posix",
+	"path/win32",
 	"perf_hooks",
 	"process",
 	"punycode",
@@ -48,6 +50,7 @@ export const BUILT_IN_MODULE = new Set([
 	"tty",
 	"url",
 	"util",
+	"util/types",
 	"v8",
 	"vm",
 	"worker_threads",
@@ -77,7 +80,7 @@ export const BUILT_IN_MODULE_MAP: BuiltInModuleMap = {
 		hasDefaultExport: true
 	},
 	buffer: {
-		namedExports: new Set(["Buffer", "SlowBuffer", "transcode", "kMaxLength", "kStringMaxLength", "constants", "INSPECT_MAX_BYTES"]),
+		namedExports: new Set(["Blob", "Buffer", "SlowBuffer", "transcode", "kMaxLength", "kStringMaxLength", "btoa", "atob", "constants", "INSPECT_MAX_BYTES"]),
 		hasDefaultExport: true
 	},
 	child_process: {
@@ -372,6 +375,8 @@ export const BUILT_IN_MODULE_MAP: BuiltInModuleMap = {
 	},
 	crypto: {
 		namedExports: new Set([
+			"checkPrime",
+			"checkPrimeSync",
 			"createCipheriv",
 			"createDecipheriv",
 			"createDiffieHellman",
@@ -385,6 +390,8 @@ export const BUILT_IN_MODULE_MAP: BuiltInModuleMap = {
 			"createSign",
 			"createVerify",
 			"diffieHellman",
+			"generatePrime",
+			"generatePrimeSync",
 			"getCiphers",
 			"getCipherInfo",
 			"getCurves",
@@ -406,6 +413,7 @@ export const BUILT_IN_MODULE_MAP: BuiltInModuleMap = {
 			"randomFill",
 			"randomFillSync",
 			"randomInt",
+			"randomUUID",
 			"scrypt",
 			"scryptSync",
 			"sign",
@@ -427,6 +435,8 @@ export const BUILT_IN_MODULE_MAP: BuiltInModuleMap = {
 			"KeyObject",
 			"Sign",
 			"Verify",
+			"X509Certificate",
+			"secureHeapUsed",
 			"constants",
 			"webcrypto"
 		]),
@@ -655,7 +665,8 @@ export const BUILT_IN_MODULE_MAP: BuiltInModuleMap = {
 			"mkdtemp",
 			"writeFile",
 			"appendFile",
-			"readFile"
+			"readFile",
+			"watch"
 		]),
 		hasDefaultExport: true
 	},
@@ -707,7 +718,7 @@ export const BUILT_IN_MODULE_MAP: BuiltInModuleMap = {
 		hasDefaultExport: true
 	},
 	net: {
-		namedExports: new Set(["BlockList", "connect", "createConnection", "createServer", "isIP", "isIPv4", "isIPv6", "Server", "Socket", "Stream"]),
+		namedExports: new Set(["BlockList", "SocketAddress", "connect", "createConnection", "createServer", "isIP", "isIPv4", "isIPv6", "Server", "Socket", "Stream"]),
 		hasDefaultExport: true
 	},
 	os: {
@@ -755,8 +766,48 @@ export const BUILT_IN_MODULE_MAP: BuiltInModuleMap = {
 		]),
 		hasDefaultExport: true
 	},
+	"path/posix": {
+		namedExports: new Set([
+			"resolve",
+			"normalize",
+			"isAbsolute",
+			"join",
+			"relative",
+			"toNamespacedPath",
+			"dirname",
+			"basename",
+			"extname",
+			"format",
+			"parse",
+			"sep",
+			"delimiter",
+			"win32",
+			"posix"
+		]),
+		hasDefaultExport: true
+	},
+	"path/win32": {
+		namedExports: new Set([
+			"resolve",
+			"normalize",
+			"isAbsolute",
+			"join",
+			"relative",
+			"toNamespacedPath",
+			"dirname",
+			"basename",
+			"extname",
+			"format",
+			"parse",
+			"sep",
+			"delimiter",
+			"win32",
+			"posix"
+		]),
+		hasDefaultExport: true
+	},
 	perf_hooks: {
-		namedExports: new Set(["performance", "PerformanceObserver", "monitorEventLoopDelay", "constants"]),
+		namedExports: new Set(["performance", "PerformanceObserver", "monitorEventLoopDelay", "createHistogram", "constants"]),
 		hasDefaultExport: true
 	},
 	process: {
@@ -852,7 +903,7 @@ export const BUILT_IN_MODULE_MAP: BuiltInModuleMap = {
 		hasDefaultExport: true
 	},
 	"timers/promises": {
-		namedExports: new Set(["setTimeout", "setImmediate"]),
+		namedExports: new Set(["setTimeout", "setImmediate", "setInterval"]),
 		hasDefaultExport: true
 	},
 	tls: {
@@ -887,7 +938,20 @@ export const BUILT_IN_MODULE_MAP: BuiltInModuleMap = {
 		hasDefaultExport: true
 	},
 	url: {
-		namedExports: new Set(["Url", "parse", "resolve", "resolveObject", "format", "URL", "URLSearchParams", "domainToASCII", "domainToUnicode", "pathToFileURL", "fileURLToPath"]),
+		namedExports: new Set([
+			"Url",
+			"parse",
+			"resolve",
+			"resolveObject",
+			"format",
+			"URL",
+			"URLSearchParams",
+			"domainToASCII",
+			"domainToUnicode",
+			"pathToFileURL",
+			"fileURLToPath",
+			"urlToHttpOptions"
+		]),
 		hasDefaultExport: true
 	},
 	util: {
@@ -922,6 +986,51 @@ export const BUILT_IN_MODULE_MAP: BuiltInModuleMap = {
 			"TextDecoder",
 			"TextEncoder",
 			"types"
+		]),
+		hasDefaultExport: true
+	},
+	"util/types": {
+		namedExports: new Set([
+			"isExternal",
+			"isDate",
+			"isArgumentsObject",
+			"isBigIntObject",
+			"isBooleanObject",
+			"isNumberObject",
+			"isStringObject",
+			"isSymbolObject",
+			"isNativeError",
+			"isRegExp",
+			"isAsyncFunction",
+			"isGeneratorFunction",
+			"isGeneratorObject",
+			"isPromise",
+			"isMap",
+			"isSet",
+			"isMapIterator",
+			"isSetIterator",
+			"isWeakMap",
+			"isWeakSet",
+			"isArrayBuffer",
+			"isDataView",
+			"isSharedArrayBuffer",
+			"isProxy",
+			"isModuleNamespaceObject",
+			"isAnyArrayBuffer",
+			"isBoxedPrimitive",
+			"isArrayBufferView",
+			"isTypedArray",
+			"isUint8Array",
+			"isUint8ClampedArray",
+			"isUint16Array",
+			"isUint32Array",
+			"isInt8Array",
+			"isInt16Array",
+			"isInt32Array",
+			"isFloat32Array",
+			"isFloat64Array",
+			"isBigInt64Array",
+			"isBigUint64Array"
 		]),
 		hasDefaultExport: true
 	},
@@ -962,7 +1071,10 @@ export const BUILT_IN_MODULE_MAP: BuiltInModuleMap = {
 			"SHARE_ENV",
 			"Worker",
 			"parentPort",
-			"workerData"
+			"workerData",
+			"BroadcastChannel",
+			"setEnvironmentData",
+			"getEnvironmentData"
 		]),
 		hasDefaultExport: true
 	},
