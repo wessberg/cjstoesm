@@ -2,7 +2,7 @@ import Module from "module";
 import {join} from "path";
 import {existsSync, mkdirSync, writeFileSync} from "fs";
 import {format} from "prettier";
-// @ts-ignore
+
 import prettierConfig from "../prettier.config.js";
 
 const IGNORED_MODULE_NAMES = new Set([
@@ -54,7 +54,7 @@ function generateBuiltInModule(): string {
  * @file This file is auto-generated. Do not change its contents.
  */
 
-import {ElementOf} from "../util/element-of";
+import {ElementOf} from "helpertypes";
 import {ModuleExports} from "../module-exports/module-exports";
 
 export const BUILT_IN_MODULE = new Set([

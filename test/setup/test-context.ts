@@ -1,7 +1,7 @@
 import {isInDebugMode} from "../util/is-in-debug-mode";
 import * as TSModule from "typescript";
-import {PartialExcept} from "../../src/type/type-util";
 import {TransformTaskOptions} from "../../src/shared/task/transform-task-options";
+import {PartialExcept} from "helpertypes";
 
 export interface TestContext extends PartialExcept<TransformTaskOptions, "typescript" | "cwd"> {}
 

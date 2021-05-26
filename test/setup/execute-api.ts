@@ -1,9 +1,9 @@
 import {TestFile} from "./test-file";
 import {TestContext} from "./test-context";
-import {MaybeArray} from "../../src/type/type-util";
 import {createTestSetup} from "./test-setup";
 import {transform} from "../../src/api/transform";
 import {createTestResult, TestResult} from "./test-result";
+import {MaybeArray} from "helpertypes";
 
 /**
  * Prepares a test via the transform function

@@ -3,6 +3,7 @@
 	"include": ["src/**/*.*"],
 	"compilerOptions": {
 		"declaration": true,
-		"declarationMap": true
+		"declarationMap": true,
+		"allowJs": false
 	}
 }

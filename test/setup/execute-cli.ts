@@ -1,11 +1,11 @@
 import {TestFile} from "./test-file";
 import {TestContext} from "./test-context";
-import {MaybeArray} from "../../src/type/type-util";
 import {createTestSetup} from "./test-setup";
 import {configureCommands} from "../../src/cli/configure-commands";
 import {shouldDebug} from "../../src/transformer/util/should-debug";
 import {join, relative} from "../../src/transformer/util/path-util";
 import {createTestResult, TestResult} from "./test-result";
+import {MaybeArray} from "helpertypes";
 
 export interface CliTestContext extends TestContext {
 	args: string[];

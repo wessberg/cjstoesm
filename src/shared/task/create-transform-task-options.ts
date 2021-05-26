@@ -1,9 +1,9 @@
 import {realFileSystem} from "../file-system/file-system";
 import {TransformTaskOptions} from "./transform-task-options";
 import {createTaskOptions} from "./create-task-options";
-import {PartialExcept} from "../../type/type-util";
 import {isAbsolute, join} from "../../transformer/util/path-util";
 import {ensureArray} from "../util/util";
+import {PartialExcept} from "helpertypes";
 
 export function createTransformTaskOptions({
 	fileSystem = realFileSystem,

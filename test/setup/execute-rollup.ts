@@ -3,10 +3,10 @@ import typescriptRollupPlugin from "@wessberg/rollup-plugin-ts";
 import nodeResolve from "@rollup/plugin-node-resolve";
 import {cjsToEsm} from "../../src/transformer/cjs-to-esm";
 import {dirname, isAbsolute, join, nativeNormalize, normalize} from "../../src/transformer/util/path-util";
-import {MaybeArray} from "../../src/type/type-util";
 import {TestFile} from "./test-file";
 import {TestContext} from "./test-context";
 import {createTestSetup} from "./test-setup";
+import {MaybeArray} from "helpertypes";
 
 export interface RollupTestContext extends TestContext {
 	rollupOptions: Partial<RollupOptions>;

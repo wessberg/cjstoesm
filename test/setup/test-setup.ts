@@ -1,10 +1,10 @@
 import {createTestContext, TestContext} from "./test-context";
 import {FileSystem} from "../../src/shared/file-system/file-system";
 import {createTestFileStructure, TestFile, TestFileStructure} from "./test-file";
-import {MaybeArray} from "../../src/type/type-util";
 import {createVirtualFileSystem} from "./create-virtual-file-system";
 import {TS} from "../../src/type/ts";
 import {createCompilerHost} from "../../src/shared/compiler-host/create-compiler-host";
+import {MaybeArray} from "helpertypes";
 
 export interface TestSetup {
 	context: TestContext;

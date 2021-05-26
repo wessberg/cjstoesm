@@ -1,6 +1,6 @@
 import path, {ParsedPath} from "path";
 import slash from "slash";
-import {ElementOf} from "./element-of";
+import {ElementOf} from "helpertypes";
 
 export const KNOWN_EXTENSIONS = [".d.ts", ".d.dts.map", ".js.map", ".ts", ".tsx", ".js", ".jsx", ".mjs", ".mjsx", ".json", ".tsbuildinfo"] as const;
 

@@ -1,6 +1,6 @@
 import {TaskOptions} from "./task-options";
-import {MaybeArray} from "../../type/type-util";
 import {FileSystem} from "../file-system/file-system";
+import {MaybeArray} from "helpertypes";
 
 export interface TransformHooks {
 	/**

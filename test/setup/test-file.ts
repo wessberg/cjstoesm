@@ -1,7 +1,7 @@
 import {join} from "../../src/transformer/util/path-util";
 import {TestContext} from "./test-context";
-import {MaybeArray} from "../../src/type/type-util";
 import {ensureArray, generateRandomPath} from "../../src/shared/util/util";
+import {MaybeArray} from "helpertypes";
 
 export interface TestFileRecord {
 	fileName: string;

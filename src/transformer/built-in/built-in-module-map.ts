@@ -3,7 +3,7 @@
  * @file This file is auto-generated. Do not change its contents.
  */
 
-import {ElementOf} from "../util/element-of";
+import {ElementOf} from "helpertypes";
 import {ModuleExports} from "../module-exports/module-exports";
 
 export const BUILT_IN_MODULE = new Set([
