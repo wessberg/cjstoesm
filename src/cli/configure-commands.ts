@@ -28,9 +28,4 @@ export function configureCommands({
 		args.splice(2, 0, "transform");
 	}
 	program.parse(args);
-
-	// Show help if no arguments are given
-	if (program.args.length === 0) {
-		program.help(text => `Welcome to the CJS to ESM CLI!\n\n` + text);
-	}
 }
