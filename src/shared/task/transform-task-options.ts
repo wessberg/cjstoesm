@@ -4,12 +4,6 @@ import {FileSystem} from "../file-system/file-system";
 
 export interface TransformHooks {
 	/**
-	 * If a new Set is returned, that Set of file names
-	 * will be used as if the glob(s) matched those
-	 */
-	matchedFiles(files: Set<string>): Set<string> | undefined;
-
-	/**
 	 * If a string is returned from this hoo, that text will be written to disk instead
 	 */
 	writeFile(file: string, text: string): string | void;

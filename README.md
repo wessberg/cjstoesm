@@ -239,7 +239,7 @@ You can use this library as a CLI to convert your project files from using Commo
 The following command transforms all files matched by the glob `**/*.*` and emits them to the folder `dist` from the current working directory:
 
 ```
-cjstoesm "**/*.*" dist`
+cjstoesm "**/*.*" dist
 ```
 
 If you install `cjstoesm` globally, you'll have `cjstoesm` in your path. If you install it locally, you can run `npx cjstoesm`.

@@ -3,7 +3,7 @@ import {inspect} from "util";
 import {sync} from "fast-glob";
 import {TS} from "../../../type/ts";
 import {cjsToEsm} from "../../../transformer/cjs-to-esm";
-import {isAbsolute, nativeDirname, nativeJoin, nativeNormalize, nativeRelative, normalize} from "../../../transformer/util/path-util";
+import {isAbsolute, join, nativeDirname, nativeNormalize, nativeRelative, normalize} from "../../../transformer/util/path-util";
 import {createCompilerHost} from "../../../shared/compiler-host/create-compiler-host";
 import {TransformResult} from "../../../shared/task/transform-result";
 import chalk from "chalk";
@@ -28,14 +28,9 @@ export async function transformTask(options: TransformTaskOptions): Promise<Tran
 	);
 
 	// Match files based on the glob(s)
-	let matchedFiles = new Set(ensureArray(input).flatMap(glob => sync(glob, {fs: fileSystem}).map(file => (isAbsolute(file) ? nativeNormalize(file) : nativeJoin(cwd, file)))));
-	if (hooks.matchedFiles != null) {
-		const hookResult = hooks.matchedFiles(matchedFiles);
-		// Allow reassigning the hook result
-		if (hookResult != null) matchedFiles = hookResult;
-	}
+	const matchedFiles = new Set(ensureArray(input).flatMap(glob => sync(normalize(glob), {fs: fileSystem}).map(file => (isAbsolute(file) ? normalize(file) : join(cwd, file)))));
 
-	logger.debug(`Matched files:`, matchedFiles.size < 1 ? "(none)" : [...matchedFiles].map(f => `"${f}"`).join(", "));
+	logger.debug(`Matched files:`, matchedFiles.size < 1 ? "(none)" : [...matchedFiles].map(f => `"${nativeNormalize(f)}"`).join(", "));
 
 	// Prepare the result object
 	const result: TransformResult = {
@@ -56,7 +51,7 @@ export async function transformTask(options: TransformTaskOptions): Promise<Tran
 
 	// Create a TypeScript program based on the glob
 	const program = typescript.createProgram({
-		rootNames: [...matchedFiles].map(normalize),
+		rootNames: [...matchedFiles],
 		options: compilerOptions,
 		host: createCompilerHost({
 			cwd,
@@ -68,24 +63,25 @@ export async function transformTask(options: TransformTaskOptions): Promise<Tran
 	program.emit(
 		undefined,
 		(fileName, text) => {
-			const normalized = nativeNormalize(fileName);
-			result.files.push({fileName: normalized, text});
+			const nativeNormalizedFileName = nativeNormalize(fileName);
 
 			// If a hook was provided, call it
 			if (hooks.writeFile != null) {
-				const hookResult = hooks.writeFile(normalized, text);
+				const hookResult = hooks.writeFile(nativeNormalizedFileName, text);
 				// If it returned a new value, reassign it to `text`
 				if (hookResult != null) {
 					text = hookResult;
 				}
 			}
 
+			result.files.push({fileName: nativeNormalizedFileName, text});
+
 			// Only write files to disk if requested
 			if (write) {
-				fileSystem.mkdirSync(nativeDirname(normalized), {recursive: true});
-				fileSystem.writeFileSync(normalized, text);
+				fileSystem.mkdirSync(nativeDirname(nativeNormalizedFileName), {recursive: true});
+				fileSystem.writeFileSync(nativeNormalizedFileName, text);
 			}
-			logger.info(`${chalk.green("✔")} ${nativeRelative(cwd, normalized)}`);
+			logger.info(`${chalk.green("✔")} ${nativeRelative(cwd, nativeNormalizedFileName)}`);
 		},
 		undefined,
 		false,

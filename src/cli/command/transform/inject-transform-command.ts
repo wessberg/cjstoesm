@@ -21,7 +21,7 @@ export function injectTransformCommand(options: InjectCommandOptions): void {
 				outDir: {
 					type: "string",
 					required: true,
-					description: `The directory to write the transformed files to.`
+					description: `The directory to write the transformed files to`
 				}
 			},
 			options: {
