@@ -1,3 +1,9 @@
+## [1.1.1](https://github.com/wessberg/cjstoesm/compare/v1.1.0...v1.1.1) (2021-05-26)
+
+### Bug Fixes
+
+- remove deprecated call to program.help() ([e47e45d](https://github.com/wessberg/cjstoesm/commit/e47e45d6923f73e02083dd71ee18196b71fc1657))
+
 # [1.1.0](https://github.com/wessberg/cjstoesm/compare/v1.0.1...v1.1.0) (2021-05-26)
 
 ### Bug Fixes
