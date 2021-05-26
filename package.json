@@ -102,7 +102,7 @@
 		"reserved-words": "^0.1.2",
 		"resolve": "^1.20.0",
 		"helpertypes": "^0.0.1",
-		"crosspath": "^0.0.7"
+		"crosspath": "^0.0.8"
 	},
 	"peerDependencies": {
 		"typescript": ">=3.2.x || >= 4.x"

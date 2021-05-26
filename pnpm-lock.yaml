@@ -15,7 +15,7 @@ specifiers:
   ava: ^3.15.0
   chalk: ^4.1.1
   commander: ^7.2.0
-  crosspath: ^0.0.7
+  crosspath: ^0.0.8
   eslint: ^7.27.0
   eslint-config-prettier: ^8.3.0
   eslint-plugin-import: ^2.23.3
@@ -54,7 +54,7 @@ dependencies:
   "@wessberg/stringutil": 1.0.19
   chalk: 4.1.1
   commander: 7.2.0
-  crosspath: 0.0.7
+  crosspath: 0.0.8
   fast-glob: 3.2.5
   helpertypes: 0.0.1
   reserved-words: 0.1.2
@@ -2675,8 +2675,8 @@ packages:
       which: 2.0.2
     dev: true
 
-  /crosspath/0.0.7:
-    resolution: {integrity: sha512-tJz2X/i3BYtgl7ZWWgVfaR4DGIjXhDhv+rUcuc7R0EJBX7eXwjZ3Sp108fA8Q0plgx+rUAZlkV4qYIpBrXVB5w==}
+  /crosspath/0.0.8:
+    resolution: {integrity: sha512-IKlS3MpP0fhJ50M6ltyLO7Q4NzwfhafpmolMH0EDKyyaY81HutF2mH4hLpCdm3fKZ/TSTW5qPIdTy62YnefEyQ==}
     engines: {node: ">=10.0.0"}
     dependencies:
       "@types/node": 15.6.1
