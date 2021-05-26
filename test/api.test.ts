@@ -14,7 +14,7 @@ test("Can transform one or more SourceFiles via the API. #1", withTypeScript, as
 				`
 			}
 		],
-		{typescript, debug: true}
+		{typescript}
 	);
 
 	t.deepEqual(bundle.files.length, 1);

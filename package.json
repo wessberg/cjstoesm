@@ -19,8 +19,8 @@
 		"preversion": "pnpm run lint && pnpm run build:built_in_module_map && pnpm run build",
 		"version": "pnpm run preversion && pnpm run generate:all && git add .",
 		"release": "np --no-cleanup --no-yarn",
-		"update:check": "pnpx npm-check-updates -x slash,typescript-* --dep dev,prod",
-		"update:commit": "pnpx npm-check-updates -u -x slash,typescript-* --dep dev,prod && pnpm update && pnpm install"
+		"update:check": "pnpx npm-check-updates -x typescript-* --dep dev,prod",
+		"update:commit": "pnpx npm-check-updates -u -x typescript-* --dep dev,prod && pnpm update && pnpm install"
 	},
 	"keywords": [
 		"typescript",
@@ -125,7 +125,7 @@
 	},
 	"ava": {
 		"files": [
-			"test/api.test.ts"
+			"test/**.test.ts"
 		],
 		"verbose": true,
 		"timeout": "400s",
