@@ -1,4 +1,4 @@
-import {isNotEmittedStatement} from "../before/visitor/visit/is-not-emitted-statement";
+import {isNotEmittedStatement} from "../visitor/visit/is-not-emitted-statement";
 import {TS} from "../../type/ts";
 
 /**

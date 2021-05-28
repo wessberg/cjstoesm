@@ -1,8 +1,8 @@
 import {IsRequireCallResult} from "./is-require-call";
 import {ModuleExports} from "../module-exports/module-exports";
 import {BUILT_IN_MODULE_MAP, isBuiltInModule} from "../built-in/built-in-module-map";
-import {transformSourceFile} from "../before/transform-source-file";
-import {BeforeVisitorContext} from "../before/visitor/before-visitor-context";
+import {transformSourceFile} from "../transform-source-file";
+import {BeforeVisitorContext} from "../visitor/before-visitor-context";
 
 /**
  * Tries to get or potentially parse module exports based on the given data in the given context
@@ -41,12 +41,9 @@ export function getModuleExportsFromRequireDataInContext(data: IsRequireCallResu
 			moduleExports = transformSourceFile(
 				typescript.createSourceFile(resolvedModuleSpecifier, resolvedModuleSpecifierText, typescript.ScriptTarget.ESNext, true, typescript.ScriptKind.TS),
 				{
-					baseVisitorContext: {
-						...context,
-						onlyExports: true
-					}
-				},
-				context.transformationContext
+					...context,
+					onlyExports: true
+				}
 			).exports;
 		}
 	}

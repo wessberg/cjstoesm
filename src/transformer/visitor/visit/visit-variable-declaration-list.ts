@@ -1,16 +1,16 @@
 import {BeforeVisitorOptions} from "../before-visitor-options";
 import {isNotEmittedStatement} from "./is-not-emitted-statement";
-import {TS} from "../../../../type/ts";
+import {TS} from "../../../type/ts";
 
 /**
  * Visits the given VariableDeclarationList
  */
-export function visitVariableDeclarationList({node, childContinuation, context, compatFactory}: BeforeVisitorOptions<TS.VariableDeclarationList>): TS.VisitResult<TS.Node> {
+export function visitVariableDeclarationList({node, childContinuation, context}: BeforeVisitorOptions<TS.VariableDeclarationList>): TS.VisitResult<TS.Node> {
 	if (context.onlyExports) {
 		return childContinuation(node);
 	}
 
-	const {typescript} = context;
+	const {typescript, factory} = context;
 	const continuationResult = childContinuation(node);
 
 	// If the result isn't a new VariableDeclarationList, return that result
@@ -24,5 +24,5 @@ export function visitVariableDeclarationList({node, childContinuation, context, 
 	if (remainingDeclarations.length === 0) return continuationResult;
 
 	// Otherwise, return an updated version of the declaration list, preserving only those declarations that should be emitted
-	return compatFactory.updateVariableDeclarationList(node, remainingDeclarations);
+	return factory.updateVariableDeclarationList(node, remainingDeclarations);
 }

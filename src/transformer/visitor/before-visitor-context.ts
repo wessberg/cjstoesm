@@ -1,9 +1,8 @@
-import {VisitorContext} from "../../visitor-context";
-import {ModuleExports} from "../../module-exports/module-exports";
-import {TS} from "../../../type/ts";
+import {VisitorContext} from "../visitor-context";
+import {ModuleExports} from "../module-exports/module-exports";
+import {TS} from "../../type/ts";
 
 export interface BeforeVisitorContext extends VisitorContext {
-	transformationContext: TS.TransformationContext;
 	exportsName: string | undefined;
 	getModuleExportsForPath(path: string): ModuleExports | undefined;
 	addModuleExportsForPath(path: string, exports: ModuleExports): void;

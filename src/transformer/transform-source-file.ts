@@ -2,34 +2,28 @@ import {visitNode} from "./visitor/visit/visit-node";
 import {BeforeVisitorContext} from "./visitor/before-visitor-context";
 import {BeforeVisitorOptions} from "./visitor/before-visitor-options";
 import {check} from "reserved-words";
-import {isNamedDeclaration} from "../util/is-named-declaration";
-import {BeforeTransformerOptions} from "./before-transformer-options";
-import {getLocalsForBindingName} from "../util/get-locals-for-binding-name";
-import {shouldSkipEmit} from "../util/should-skip-emit";
-import {ModuleExports} from "../module-exports/module-exports";
+import {isNamedDeclaration} from "./util/is-named-declaration";
+import {getLocalsForBindingName} from "./util/get-locals-for-binding-name";
+import {shouldSkipEmit} from "./util/should-skip-emit";
+import {ModuleExports} from "./module-exports/module-exports";
 import {visitImportAndExportDeclarations} from "./visitor/visit/visit-import-and-export-declarations";
-import {TS} from "../../type/ts";
-import {shouldDebug} from "../util/should-debug";
-import {isNodeFactory} from "../util/is-node-factory";
+import {TS} from "../type/ts";
+import {shouldDebug} from "./util/should-debug";
 import path from "crosspath";
+import {VisitorContext} from "./visitor-context";
 
 export interface BeforeTransformerSourceFileStepResult {
 	sourceFile: TS.SourceFile;
 	exports: ModuleExports;
 }
 
-export function transformSourceFile(
-	sourceFile: TS.SourceFile,
-	{baseVisitorContext}: BeforeTransformerOptions,
-	context: TS.TransformationContext
-): BeforeTransformerSourceFileStepResult {
+export function transformSourceFile(sourceFile: TS.SourceFile, context: VisitorContext): BeforeTransformerSourceFileStepResult {
 	// Take a fast path of the text of the SourceFile doesn't contain anything that can be transformed
-	if (!baseVisitorContext.onlyExports && !sourceFile.text.includes("require") && !sourceFile.text.includes("exports")) {
+	if (!context.onlyExports && !sourceFile.text.includes("require") && !sourceFile.text.includes("exports")) {
 		return {sourceFile, exports: {namedExports: new Set(), hasDefaultExport: false}};
 	}
 
-	const {typescript} = baseVisitorContext;
-	const compatFactory = (context.factory as TS.NodeFactory | undefined) ?? typescript;
+	const {typescript, factory, transformationContext} = context;
 
 	// Prepare a VisitorContext
 	const visitorContext = ((): BeforeVisitorContext => {
@@ -156,8 +150,7 @@ export function transformSourceFile(
 		};
 
 		return {
-			...baseVisitorContext,
-			transformationContext: context,
+			...context,
 			exportsName: undefined,
 			addImport,
 			addLocal,
@@ -198,7 +191,6 @@ export function transformSourceFile(
 	})();
 
 	const visitorBaseOptions: Pick<BeforeVisitorOptions<TS.Node>, Exclude<keyof BeforeVisitorOptions<TS.Node>, "node" | "sourceFile">> = {
-		compatFactory,
 		context: visitorContext,
 
 		continuation: node =>
@@ -217,16 +209,15 @@ export function transformSourceFile(
 						node: cbNode
 					});
 					if (shouldSkipEmit(visitResult, typescript)) {
-						return compatFactory.createNotEmittedStatement(cbNode);
+						return factory.createNotEmittedStatement(cbNode);
 					}
 					return visitResult;
 				},
-				context
+				transformationContext
 			)
 	};
 
 	const importVisitorBaseOptions: Pick<BeforeVisitorOptions<TS.Node>, Exclude<keyof BeforeVisitorOptions<TS.Node>, "node" | "sourceFile">> = {
-		compatFactory,
 		context: visitorContext,
 
 		continuation: node =>
@@ -245,11 +236,11 @@ export function transformSourceFile(
 						node: cbNode
 					});
 					if (shouldSkipEmit(visitResult, typescript)) {
-						return compatFactory.createNotEmittedStatement(cbNode);
+						return factory.createNotEmittedStatement(cbNode);
 					}
 					return visitResult;
 				},
-				context
+				transformationContext
 			)
 	};
 
@@ -279,7 +270,7 @@ export function transformSourceFile(
 		...visitorContext.trailingStatements.filter(statement => !allImports.includes(statement) && !allExports.includes(statement))
 	];
 
-	updatedSourceFile = (isNodeFactory(compatFactory) ? compatFactory.updateSourceFile : compatFactory.updateSourceFileNode)(
+	updatedSourceFile = factory.updateSourceFile(
 		updatedSourceFile,
 		[...allImports, ...allOtherStatements, ...allExports],
 		sourceFile.isDeclarationFile,

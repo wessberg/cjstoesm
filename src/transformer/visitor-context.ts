@@ -14,5 +14,16 @@ export interface VisitorContext extends TaskOptions {
 	 * A cache that reuses previous lookups for module specifiers to avoid unnecessary duplication of work
 	 */
 	resolveCache: Map<string, string | null>;
+
+	/**
+	 * The Node Factory for creating and updating nodes in the tree
+	 */
+	factory: TS.NodeFactory;
+
+	/**
+	 * The TypeScript transformation context
+	 */
+	transformationContext: TS.TransformationContext;
+
 	printer?: TS.Printer;
 }

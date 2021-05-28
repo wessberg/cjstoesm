@@ -1,22 +1,21 @@
 import {BeforeVisitorOptions} from "../before-visitor-options";
-import {isRequireCall} from "../../../util/is-require-call";
-import {walkThroughFillerNodes} from "../../../util/walk-through-filler-nodes";
-import {getModuleExportsFromRequireDataInContext} from "../../../util/get-module-exports-from-require-data-in-context";
-import {TS} from "../../../../type/ts";
-import {willReassignIdentifier} from "../../../util/will-be-reassigned";
-import {hasExportModifier} from "../../../util/has-export-modifier";
-import {findNodeUp} from "../../../util/find-node-up";
-import {isNodeFactory} from "../../../util/is-node-factory";
+import {isRequireCall} from "../../util/is-require-call";
+import {walkThroughFillerNodes} from "../../util/walk-through-filler-nodes";
+import {getModuleExportsFromRequireDataInContext} from "../../util/get-module-exports-from-require-data-in-context";
+import {TS} from "../../../type/ts";
+import {willReassignIdentifier} from "../../util/will-be-reassigned";
+import {hasExportModifier} from "../../util/has-export-modifier";
+import {findNodeUp} from "../../util/find-node-up";
 
 /**
  * Visits the given VariableDeclaration
  */
-export function visitVariableDeclaration({node, childContinuation, sourceFile, context, compatFactory}: BeforeVisitorOptions<TS.VariableDeclaration>): TS.VisitResult<TS.Node> {
+export function visitVariableDeclaration({node, childContinuation, sourceFile, context}: BeforeVisitorOptions<TS.VariableDeclaration>): TS.VisitResult<TS.Node> {
 	if (context.onlyExports || node.initializer == null) {
 		return childContinuation(node);
 	}
 
-	const {typescript} = context;
+	const {typescript, factory} = context;
 
 	// Most sophisticated require(...) handling comes from the CallExpression visitor, but this Visitor is for rewriting simple
 	// 'foo = require("bar")' or '{foo} = require("bar")' as well as '{foo: bar} = require("bar")' expressions
@@ -65,50 +64,36 @@ export function visitVariableDeclaration({node, childContinuation, sourceFile, c
 		// Otherwise, the 'foo = require("bar")' VariableDeclaration is part of an Exported VariableStatement such as 'export const foo = require("bar")',
 		// and it should preferably be converted into an ExportDeclaration
 		else if (statement != null && hasExportModifier(statement, typescript)) {
-			const moduleSpecifierExpression = compatFactory.createStringLiteral(transformedModuleSpecifier);
+			const moduleSpecifierExpression = factory.createStringLiteral(transformedModuleSpecifier);
 
 			if (moduleExports == null || moduleExports.hasDefaultExport) {
-				const exportClause = compatFactory.createNamedExports([
-					compatFactory.createExportSpecifier(node.name.text === "default" ? undefined : compatFactory.createIdentifier("default"), compatFactory.createIdentifier(node.name.text))
+				const exportClause = factory.createNamedExports([
+					factory.createExportSpecifier(node.name.text === "default" ? undefined : factory.createIdentifier("default"), factory.createIdentifier(node.name.text))
 				]);
 
-				context.addTrailingStatements(
-					isNodeFactory(compatFactory)
-						? compatFactory.createExportDeclaration(undefined, undefined, false, exportClause, moduleSpecifierExpression)
-						: compatFactory.createExportDeclaration(undefined, undefined, exportClause, moduleSpecifierExpression)
-				);
+				context.addTrailingStatements(factory.createExportDeclaration(undefined, undefined, false, exportClause, moduleSpecifierExpression));
 				return undefined;
 			}
 			// Otherwise, if the TypeScript version supports named namespace exports
-			else if (compatFactory.createNamespaceExport != null) {
-				const exportClause = compatFactory.createNamespaceExport(compatFactory.createIdentifier(node.name.text));
+			else if (factory.createNamespaceExport != null) {
+				const exportClause = factory.createNamespaceExport(factory.createIdentifier(node.name.text));
 
-				context.addTrailingStatements(
-					isNodeFactory(compatFactory)
-						? compatFactory.createExportDeclaration(undefined, undefined, false, exportClause, moduleSpecifierExpression)
-						: compatFactory.createExportDeclaration(undefined, undefined, exportClause, moduleSpecifierExpression)
-				);
+				context.addTrailingStatements(factory.createExportDeclaration(undefined, undefined, false, exportClause, moduleSpecifierExpression));
 				return undefined;
 			}
 
 			// Otherwise, for older TypeScript versions, we'll have to first import and then re-export the namespace
 			else {
 				context.addImport(
-					compatFactory.createImportDeclaration(
+					factory.createImportDeclaration(
 						undefined,
 						undefined,
-						isNodeFactory(compatFactory)
-							? compatFactory.createImportClause(false, undefined, compatFactory.createNamespaceImport(compatFactory.createIdentifier(node.name.text)))
-							: compatFactory.createImportClause(undefined, compatFactory.createNamespaceImport(compatFactory.createIdentifier(node.name.text))),
+						factory.createImportClause(false, undefined, factory.createNamespaceImport(factory.createIdentifier(node.name.text))),
 						moduleSpecifierExpression
 					)
 				);
-				const exportClause = compatFactory.createNamedExports([compatFactory.createExportSpecifier(undefined, compatFactory.createIdentifier(node.name.text))]);
-				context.addTrailingStatements(
-					isNodeFactory(compatFactory)
-						? compatFactory.createExportDeclaration(undefined, undefined, false, exportClause)
-						: compatFactory.createExportDeclaration(undefined, undefined, exportClause)
-				);
+				const exportClause = factory.createNamedExports([factory.createExportSpecifier(undefined, factory.createIdentifier(node.name.text))]);
+				context.addTrailingStatements(factory.createExportDeclaration(undefined, undefined, false, exportClause));
 				return undefined;
 			}
 		}
@@ -120,33 +105,25 @@ export function visitVariableDeclaration({node, childContinuation, sourceFile, c
 			const newName = willReassign ? context.getFreeIdentifier(node.name.text, true) : node.name.text;
 
 			context.addImport(
-				compatFactory.createImportDeclaration(
+				factory.createImportDeclaration(
 					undefined,
 					undefined,
 
 					moduleExports == null || moduleExports.hasDefaultExport
 						? // Import the default if it has any (or if we don't know if it has)
-						  isNodeFactory(compatFactory)
-							? compatFactory.createImportClause(false, compatFactory.createIdentifier(newName), undefined)
-							: compatFactory.createImportClause(compatFactory.createIdentifier(newName), undefined)
+						  factory.createImportClause(false, factory.createIdentifier(newName), undefined)
 						: // Otherwise, import the entire namespace
-						isNodeFactory(compatFactory)
-						? compatFactory.createImportClause(false, undefined, compatFactory.createNamespaceImport(compatFactory.createIdentifier(newName)))
-						: compatFactory.createImportClause(undefined, compatFactory.createNamespaceImport(compatFactory.createIdentifier(newName))),
-					compatFactory.createStringLiteral(transformedModuleSpecifier)
+						  factory.createImportClause(false, undefined, factory.createNamespaceImport(factory.createIdentifier(newName))),
+					factory.createStringLiteral(transformedModuleSpecifier)
 				)
 			);
 			if (willReassign) {
 				// Now, immediately add a local mutable variable with the correct name
 				context.addLeadingStatements(
-					compatFactory.createVariableStatement(
+					factory.createVariableStatement(
 						undefined,
-						compatFactory.createVariableDeclarationList(
-							[
-								isNodeFactory(compatFactory)
-									? compatFactory.createVariableDeclaration(node.name.text, undefined, undefined, compatFactory.createIdentifier(newName))
-									: compatFactory.createVariableDeclaration(node.name.text, undefined, compatFactory.createIdentifier(newName))
-							],
+						factory.createVariableDeclarationList(
+							[factory.createVariableDeclaration(node.name.text, undefined, undefined, factory.createIdentifier(newName))],
 							typescript.NodeFlags.Let
 						)
 					)
@@ -170,7 +147,7 @@ export function visitVariableDeclaration({node, childContinuation, sourceFile, c
 					return childContinuation(node);
 				}
 
-				importSpecifiers.push(compatFactory.createImportSpecifier(undefined, compatFactory.createIdentifier(element.name.text)));
+				importSpecifiers.push(factory.createImportSpecifier(undefined, factory.createIdentifier(element.name.text)));
 			}
 
 			// This will be something like '{foo: bar} = require("bar")'
@@ -181,7 +158,7 @@ export function visitVariableDeclaration({node, childContinuation, sourceFile, c
 					return childContinuation(node);
 				}
 
-				importSpecifiers.push(compatFactory.createImportSpecifier(compatFactory.createIdentifier(element.propertyName.text), compatFactory.createIdentifier(element.name.text)));
+				importSpecifiers.push(factory.createImportSpecifier(factory.createIdentifier(element.propertyName.text), factory.createIdentifier(element.name.text)));
 			} else {
 				// Opt out and proceed with the child continuation for more sophisticated handling
 				return childContinuation(node);
@@ -197,29 +174,18 @@ export function visitVariableDeclaration({node, childContinuation, sourceFile, c
 				const propertyName = importSpecifier.propertyName ?? importSpecifier.name;
 				const newName = context.getFreeIdentifier(importSpecifier.name.text, true);
 
-				const namedImports = compatFactory.createNamedImports([
-					compatFactory.createImportSpecifier(compatFactory.createIdentifier(propertyName.text), compatFactory.createIdentifier(newName))
-				]);
+				const namedImports = factory.createNamedImports([factory.createImportSpecifier(factory.createIdentifier(propertyName.text), factory.createIdentifier(newName))]);
 
 				context.addImport(
-					compatFactory.createImportDeclaration(
-						undefined,
-						undefined,
-						isNodeFactory(compatFactory) ? compatFactory.createImportClause(false, undefined, namedImports) : compatFactory.createImportClause(undefined, namedImports),
-						compatFactory.createStringLiteral(transformedModuleSpecifier)
-					)
+					factory.createImportDeclaration(undefined, undefined, factory.createImportClause(false, undefined, namedImports), factory.createStringLiteral(transformedModuleSpecifier))
 				);
 
 				// Now, immediately add a local mutable variable with the correct name
 				context.addLeadingStatements(
-					compatFactory.createVariableStatement(
+					factory.createVariableStatement(
 						undefined,
-						compatFactory.createVariableDeclarationList(
-							[
-								isNodeFactory(compatFactory)
-									? compatFactory.createVariableDeclaration(importSpecifier.name.text, undefined, undefined, compatFactory.createIdentifier(newName))
-									: compatFactory.createVariableDeclaration(importSpecifier.name.text, undefined, compatFactory.createIdentifier(newName))
-							],
+						factory.createVariableDeclarationList(
+							[factory.createVariableDeclaration(importSpecifier.name.text, undefined, undefined, factory.createIdentifier(newName))],
 							typescript.NodeFlags.Let
 						)
 					)
@@ -228,13 +194,11 @@ export function visitVariableDeclaration({node, childContinuation, sourceFile, c
 
 			if (otherImportSpecifiers.length > 0) {
 				context.addImport(
-					compatFactory.createImportDeclaration(
+					factory.createImportDeclaration(
 						undefined,
 						undefined,
-						isNodeFactory(compatFactory)
-							? compatFactory.createImportClause(false, undefined, compatFactory.createNamedImports(otherImportSpecifiers))
-							: compatFactory.createImportClause(undefined, compatFactory.createNamedImports(otherImportSpecifiers)),
-						compatFactory.createStringLiteral(transformedModuleSpecifier)
+						factory.createImportClause(false, undefined, factory.createNamedImports(otherImportSpecifiers)),
+						factory.createStringLiteral(transformedModuleSpecifier)
 					)
 				);
 			}

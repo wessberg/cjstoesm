@@ -1,14 +1,13 @@
 import {BeforeVisitorOptions} from "../before-visitor-options";
-import {isRequireCall} from "../../../util/is-require-call";
-import {findNodeUp} from "../../../util/find-node-up";
-import {isStatementOrDeclaration} from "../../../util/is-statement-or-declaration";
-import {isStatement} from "../../../util/is-statement";
-import {generateNameFromModuleSpecifier} from "../../../util/generate-name-from-module-specifier";
-import {getModuleExportsFromRequireDataInContext} from "../../../util/get-module-exports-from-require-data-in-context";
-import {TS} from "../../../../type/ts";
-import {shouldDebug} from "../../../util/should-debug";
-import {walkThroughFillerNodes} from "../../../util/walk-through-filler-nodes";
-import {isNodeFactory} from "../../../util/is-node-factory";
+import {isRequireCall} from "../../util/is-require-call";
+import {findNodeUp} from "../../util/find-node-up";
+import {isStatementOrDeclaration} from "../../util/is-statement-or-declaration";
+import {isStatement} from "../../util/is-statement";
+import {generateNameFromModuleSpecifier} from "../../util/generate-name-from-module-specifier";
+import {getModuleExportsFromRequireDataInContext} from "../../util/get-module-exports-from-require-data-in-context";
+import {TS} from "../../../type/ts";
+import {shouldDebug} from "../../util/should-debug";
+import {walkThroughFillerNodes} from "../../util/walk-through-filler-nodes";
 
 /**
  * Visits the given CallExpression
@@ -16,14 +15,14 @@ import {isNodeFactory} from "../../../util/is-node-factory";
  * @param options
  * @returns
  */
-export function visitCallExpression({node, childContinuation, sourceFile, context, compatFactory}: BeforeVisitorOptions<TS.CallExpression>): TS.VisitResult<TS.Node> {
+export function visitCallExpression({node, childContinuation, sourceFile, context}: BeforeVisitorOptions<TS.CallExpression>): TS.VisitResult<TS.Node> {
 	if (context.onlyExports) {
 		return childContinuation(node);
 	}
 
 	// Check if the node represents a require(...) call.
 	const requireData = isRequireCall(node, sourceFile, context);
-	const {typescript} = context;
+	const {typescript, factory} = context;
 
 	// If it doesn't proceed without applying any transformations
 	if (!requireData.match) {
@@ -58,7 +57,7 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 		if (expressionStatementParent != null) {
 			// Only add the import if there isn't already an import within the SourceFile of the entire module without any bindings
 			if (!context.isModuleSpecifierImportedWithoutLocals(moduleSpecifier)) {
-				context.addImport(compatFactory.createImportDeclaration(undefined, undefined, undefined, compatFactory.createStringLiteral(transformedModuleSpecifier)));
+				context.addImport(factory.createImportDeclaration(undefined, undefined, undefined, factory.createStringLiteral(transformedModuleSpecifier)));
 			}
 
 			// Drop this CallExpression
@@ -71,15 +70,13 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 			// rather than generating a new unnecessary import
 			if (context.hasLocalForDefaultImportFromModule(moduleSpecifier)) {
 				const local = context.getLocalForDefaultImportFromModule(moduleSpecifier)!;
-				return compatFactory.createIdentifier(local);
+				return factory.createIdentifier(local);
 			} else {
-				const identifier = compatFactory.createIdentifier(context.getFreeIdentifier(generateNameFromModuleSpecifier(moduleSpecifier)));
+				const identifier = factory.createIdentifier(context.getFreeIdentifier(generateNameFromModuleSpecifier(moduleSpecifier)));
 
-				const importClause = isNodeFactory(compatFactory)
-					? compatFactory.createImportClause(false, identifier, undefined)
-					: compatFactory.createImportClause(identifier, undefined);
+				const importClause = factory.createImportClause(false, identifier, undefined);
 
-				context.addImport(compatFactory.createImportDeclaration(undefined, undefined, importClause, compatFactory.createStringLiteral(transformedModuleSpecifier)));
+				context.addImport(factory.createImportDeclaration(undefined, undefined, importClause, factory.createStringLiteral(transformedModuleSpecifier)));
 
 				// Replace the CallExpression by the identifier
 				return identifier;
@@ -122,31 +119,27 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 				// If the default export is already imported, get the local binding name for it and create an identifier for it
 				// rather than generating a new unnecessary import
 				if (moduleExports.hasDefaultExport && context.hasLocalForDefaultImportFromModule(moduleSpecifier)) {
-					identifier = compatFactory.createIdentifier(context.getLocalForDefaultImportFromModule(moduleSpecifier)!);
+					identifier = factory.createIdentifier(context.getLocalForDefaultImportFromModule(moduleSpecifier)!);
 				}
 
 				// If the namespace is already imported, get the local binding name for it and create an identifier for it
 				// rather than generating a new unnecessary import
 				else if (!moduleExports.hasDefaultExport && context.hasLocalForNamespaceImportFromModule(moduleSpecifier)) {
-					identifier = compatFactory.createIdentifier(context.getLocalForNamespaceImportFromModule(moduleSpecifier)!);
+					identifier = factory.createIdentifier(context.getLocalForNamespaceImportFromModule(moduleSpecifier)!);
 				} else {
-					identifier = compatFactory.createIdentifier(context.getFreeIdentifier(generateNameFromModuleSpecifier(moduleSpecifier)));
+					identifier = factory.createIdentifier(context.getFreeIdentifier(generateNameFromModuleSpecifier(moduleSpecifier)));
 
 					context.addImport(
-						compatFactory.createImportDeclaration(
+						factory.createImportDeclaration(
 							undefined,
 							undefined,
 
 							moduleExports.hasDefaultExport
 								? // Import the default if it has any (or if we don't know if it has)
-								  isNodeFactory(compatFactory)
-									? compatFactory.createImportClause(false, identifier, undefined)
-									: compatFactory.createImportClause(identifier, undefined)
+								  factory.createImportClause(false, identifier, undefined)
 								: // Otherwise, import the entire namespace
-								isNodeFactory(compatFactory)
-								? compatFactory.createImportClause(false, undefined, compatFactory.createNamespaceImport(identifier))
-								: compatFactory.createImportClause(undefined, compatFactory.createNamespaceImport(identifier)),
-							compatFactory.createStringLiteral(transformedModuleSpecifier)
+								  factory.createImportClause(false, undefined, factory.createNamespaceImport(identifier)),
+							factory.createStringLiteral(transformedModuleSpecifier)
 						)
 					);
 				}
@@ -154,10 +147,10 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 				// Replace the CallExpression by an ObjectLiteral that can be accessed by the wrapping Element- or PropertyAccessExpression
 				const objectLiteralProperties = [
 					identifier.text !== rightValue
-						? compatFactory.createPropertyAssignment(rightValue, compatFactory.createIdentifier(identifier.text))
-						: compatFactory.createShorthandPropertyAssignment(compatFactory.createIdentifier(identifier.text))
+						? factory.createPropertyAssignment(rightValue, factory.createIdentifier(identifier.text))
+						: factory.createShorthandPropertyAssignment(factory.createIdentifier(identifier.text))
 				];
-				return isNodeFactory(compatFactory) ? compatFactory.createObjectLiteralExpression(objectLiteralProperties) : compatFactory.createObjectLiteral(objectLiteralProperties);
+				return factory.createObjectLiteralExpression(objectLiteralProperties);
 			}
 
 			// Otherwise, use the right value as the ImportSpecifier for a new import.
@@ -183,19 +176,17 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 					// If that binding isn't free within the context, import it as another local name
 					importBindingName = context.getFreeIdentifier(importBindingPropertyName);
 
-					const namedImports = compatFactory.createNamedImports([
+					const namedImports = factory.createNamedImports([
 						importBindingPropertyName === importBindingName
 							? // If the property name is free within the context, don't alias the import
-							  compatFactory.createImportSpecifier(undefined, compatFactory.createIdentifier(importBindingPropertyName))
+							  factory.createImportSpecifier(undefined, factory.createIdentifier(importBindingPropertyName))
 							: // Otherwise, import it aliased by another name that is free within the context
-							  compatFactory.createImportSpecifier(compatFactory.createIdentifier(importBindingPropertyName), compatFactory.createIdentifier(importBindingName))
+							  factory.createImportSpecifier(factory.createIdentifier(importBindingPropertyName), factory.createIdentifier(importBindingName))
 					]);
 
-					const importClause = isNodeFactory(compatFactory)
-						? compatFactory.createImportClause(false, undefined, namedImports)
-						: compatFactory.createImportClause(undefined, namedImports);
+					const importClause = factory.createImportClause(false, undefined, namedImports);
 
-					context.addImport(compatFactory.createImportDeclaration(undefined, undefined, importClause, compatFactory.createStringLiteral(transformedModuleSpecifier)));
+					context.addImport(factory.createImportDeclaration(undefined, undefined, importClause, factory.createStringLiteral(transformedModuleSpecifier)));
 				}
 
 				// If the 'require(...)[<something>]' or 'require(...).<something>' expression is part of an ExpressionStatement
@@ -204,10 +195,10 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 				if (expressionStatementParent == null) {
 					const objectLiteralProperties = [
 						importBindingName !== rightValue
-							? compatFactory.createPropertyAssignment(rightValue, compatFactory.createIdentifier(importBindingName))
-							: compatFactory.createShorthandPropertyAssignment(compatFactory.createIdentifier(importBindingName))
+							? factory.createPropertyAssignment(rightValue, factory.createIdentifier(importBindingName))
+							: factory.createShorthandPropertyAssignment(factory.createIdentifier(importBindingName))
 					];
-					return isNodeFactory(compatFactory) ? compatFactory.createObjectLiteralExpression(objectLiteralProperties) : compatFactory.createObjectLiteral(objectLiteralProperties);
+					return factory.createObjectLiteralExpression(objectLiteralProperties);
 				} else {
 					return undefined;
 				}
@@ -231,34 +222,30 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 			// rather than generating a new unnecessary import
 			if (moduleExports.hasDefaultExport && context.hasLocalForDefaultImportFromModule(moduleSpecifier)) {
 				const local = context.getLocalForDefaultImportFromModule(moduleSpecifier)!;
-				return compatFactory.createIdentifier(local);
+				return factory.createIdentifier(local);
 			}
 
 			// If the namespace is already imported, get the local binding name for it and create an identifier for it
 			// rather than generating a new unnecessary import
 			else if (!moduleExports.hasDefaultExport && context.hasLocalForNamespaceImportFromModule(moduleSpecifier)) {
 				const local = context.getLocalForNamespaceImportFromModule(moduleSpecifier)!;
-				return compatFactory.createIdentifier(local);
+				return factory.createIdentifier(local);
 			}
 
 			// Otherwise proceed as planned
 			else {
-				const identifier = compatFactory.createIdentifier(context.getFreeIdentifier(generateNameFromModuleSpecifier(moduleSpecifier)));
+				const identifier = factory.createIdentifier(context.getFreeIdentifier(generateNameFromModuleSpecifier(moduleSpecifier)));
 				context.addImport(
-					compatFactory.createImportDeclaration(
+					factory.createImportDeclaration(
 						undefined,
 						undefined,
 
 						moduleExports.hasDefaultExport
 							? // Import the default if it has any (or if we don't know if it has)
-							  isNodeFactory(compatFactory)
-								? compatFactory.createImportClause(false, identifier, undefined)
-								: compatFactory.createImportClause(identifier, undefined)
+							  factory.createImportClause(false, identifier, undefined)
 							: // Otherwise, import the entire namespace
-							isNodeFactory(compatFactory)
-							? compatFactory.createImportClause(false, undefined, compatFactory.createNamespaceImport(identifier))
-							: compatFactory.createImportClause(undefined, compatFactory.createNamespaceImport(identifier)),
-						compatFactory.createStringLiteral(transformedModuleSpecifier)
+							  factory.createImportClause(false, undefined, factory.createNamespaceImport(identifier)),
+						factory.createStringLiteral(transformedModuleSpecifier)
 					)
 				);
 				return identifier;
@@ -285,19 +272,19 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 							const local = context.getLocalForNamedImportPropertyNameFromModule(element.name.text, moduleSpecifier)!;
 							skippedImportSpecifiers.push(
 								local === element.name.text
-									? compatFactory.createImportSpecifier(undefined, compatFactory.createIdentifier(local))
-									: compatFactory.createImportSpecifier(compatFactory.createIdentifier(element.name.text), compatFactory.createIdentifier(local))
+									? factory.createImportSpecifier(undefined, factory.createIdentifier(local))
+									: factory.createImportSpecifier(factory.createIdentifier(element.name.text), factory.createIdentifier(local))
 							);
 						}
 
 						// If the name is free, just import it as it is
 						else if (context.isIdentifierFree(element.name.text)) {
 							context.addLocal(element.name.text);
-							importSpecifiers.push(compatFactory.createImportSpecifier(undefined, compatFactory.createIdentifier(element.name.text)));
+							importSpecifiers.push(factory.createImportSpecifier(undefined, factory.createIdentifier(element.name.text)));
 						} else {
 							// Otherwise, import it under an aliased name
 							const alias = context.getFreeIdentifier(element.name.text);
-							importSpecifiers.push(compatFactory.createImportSpecifier(compatFactory.createIdentifier(element.name.text), compatFactory.createIdentifier(alias)));
+							importSpecifiers.push(factory.createImportSpecifier(factory.createIdentifier(element.name.text), factory.createIdentifier(alias)));
 						}
 					}
 				}
@@ -312,10 +299,10 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 					// If the name is free, just import it as it is
 					if (context.isIdentifierFree(element.propertyName.text)) {
 						context.addLocal(element.propertyName.text);
-						importSpecifiers.push(compatFactory.createImportSpecifier(undefined, compatFactory.createIdentifier(element.propertyName.text)));
+						importSpecifiers.push(factory.createImportSpecifier(undefined, factory.createIdentifier(element.propertyName.text)));
 					} else {
 						const alias = context.getFreeIdentifier(element.propertyName.text);
-						importSpecifiers.push(compatFactory.createImportSpecifier(compatFactory.createIdentifier(element.propertyName.text), compatFactory.createIdentifier(alias)));
+						importSpecifiers.push(factory.createImportSpecifier(factory.createIdentifier(element.propertyName.text), factory.createIdentifier(alias)));
 					}
 				}
 			}
@@ -327,34 +314,30 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 				// rather than generating a new unnecessary import
 				if (moduleExports.hasDefaultExport && context.hasLocalForDefaultImportFromModule(moduleSpecifier)) {
 					const local = context.getLocalForDefaultImportFromModule(moduleSpecifier)!;
-					return compatFactory.createIdentifier(local);
+					return factory.createIdentifier(local);
 				}
 
 				// If the namespace is already imported, get the local binding name for it and create an identifier for it
 				// rather than generating a new unnecessary import
 				else if (!moduleExports.hasDefaultExport && context.hasLocalForNamespaceImportFromModule(moduleSpecifier)) {
 					const local = context.getLocalForNamespaceImportFromModule(moduleSpecifier)!;
-					return compatFactory.createIdentifier(local);
+					return factory.createIdentifier(local);
 				}
 
 				// Otherwise proceed as planned
 				else {
-					const identifier = compatFactory.createIdentifier(context.getFreeIdentifier(generateNameFromModuleSpecifier(moduleSpecifier)));
+					const identifier = factory.createIdentifier(context.getFreeIdentifier(generateNameFromModuleSpecifier(moduleSpecifier)));
 					context.addImport(
-						compatFactory.createImportDeclaration(
+						factory.createImportDeclaration(
 							undefined,
 							undefined,
 
 							moduleExports.hasDefaultExport
 								? // Import the default if it has any (or if we don't know if it has)
-								  isNodeFactory(compatFactory)
-									? compatFactory.createImportClause(false, identifier, undefined)
-									: compatFactory.createImportClause(identifier, undefined)
+								  factory.createImportClause(false, identifier, undefined)
 								: // Otherwise, import the entire namespace
-								isNodeFactory(compatFactory)
-								? compatFactory.createImportClause(false, undefined, compatFactory.createNamespaceImport(identifier))
-								: compatFactory.createImportClause(undefined, compatFactory.createNamespaceImport(identifier)),
-							compatFactory.createStringLiteral(transformedModuleSpecifier)
+								  factory.createImportClause(false, undefined, factory.createNamespaceImport(identifier)),
+							factory.createStringLiteral(transformedModuleSpecifier)
 						)
 					);
 					return identifier;
@@ -366,23 +349,21 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 			else {
 				if (importSpecifiers.length > 0) {
 					context.addImport(
-						compatFactory.createImportDeclaration(
+						factory.createImportDeclaration(
 							undefined,
 							undefined,
-							isNodeFactory(compatFactory)
-								? compatFactory.createImportClause(false, undefined, compatFactory.createNamedImports(importSpecifiers))
-								: compatFactory.createImportClause(undefined, compatFactory.createNamedImports(importSpecifiers)),
-							compatFactory.createStringLiteral(transformedModuleSpecifier)
+							factory.createImportClause(false, undefined, factory.createNamedImports(importSpecifiers)),
+							factory.createStringLiteral(transformedModuleSpecifier)
 						)
 					);
 				}
 
 				const objectLiteralProperties = [...importSpecifiers, ...skippedImportSpecifiers].map(specifier =>
 					specifier.propertyName != null
-						? compatFactory.createPropertyAssignment(specifier.propertyName.text, compatFactory.createIdentifier(specifier.name.text))
-						: compatFactory.createShorthandPropertyAssignment(compatFactory.createIdentifier(specifier.name.text))
+						? factory.createPropertyAssignment(specifier.propertyName.text, factory.createIdentifier(specifier.name.text))
+						: factory.createShorthandPropertyAssignment(factory.createIdentifier(specifier.name.text))
 				);
-				return isNodeFactory(compatFactory) ? compatFactory.createObjectLiteralExpression(objectLiteralProperties) : compatFactory.createObjectLiteral(objectLiteralProperties);
+				return factory.createObjectLiteralExpression(objectLiteralProperties);
 			}
 		}
 	}
@@ -403,34 +384,30 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 		// rather than generating a new unnecessary import
 		if (moduleExports.hasDefaultExport && context.hasLocalForDefaultImportFromModule(moduleSpecifier)) {
 			const local = context.getLocalForDefaultImportFromModule(moduleSpecifier)!;
-			return compatFactory.createIdentifier(local);
+			return factory.createIdentifier(local);
 		}
 
 		// If the namespace is already imported, get the local binding name for it and create an identifier for it
 		// rather than generating a new unnecessary import
 		else if (!moduleExports.hasDefaultExport && context.hasLocalForNamespaceImportFromModule(moduleSpecifier)) {
 			const local = context.getLocalForNamespaceImportFromModule(moduleSpecifier)!;
-			return compatFactory.createIdentifier(local);
+			return factory.createIdentifier(local);
 		}
 
 		// Otherwise proceed as planned
 		else {
-			const identifier = compatFactory.createIdentifier(context.getFreeIdentifier(generateNameFromModuleSpecifier(moduleSpecifier)));
+			const identifier = factory.createIdentifier(context.getFreeIdentifier(generateNameFromModuleSpecifier(moduleSpecifier)));
 			context.addImport(
-				compatFactory.createImportDeclaration(
+				factory.createImportDeclaration(
 					undefined,
 					undefined,
 
 					moduleExports.hasDefaultExport
 						? // Import the default if it has any (or if we don't know if it has)
-						  isNodeFactory(compatFactory)
-							? compatFactory.createImportClause(false, identifier, undefined)
-							: compatFactory.createImportClause(identifier, undefined)
+						  factory.createImportClause(false, identifier, undefined)
 						: // Otherwise, import the entire namespace
-						isNodeFactory(compatFactory)
-						? compatFactory.createImportClause(false, undefined, compatFactory.createNamespaceImport(identifier))
-						: compatFactory.createImportClause(undefined, compatFactory.createNamespaceImport(identifier)),
-					compatFactory.createStringLiteral(transformedModuleSpecifier)
+						  factory.createImportClause(false, undefined, factory.createNamespaceImport(identifier)),
+					factory.createStringLiteral(transformedModuleSpecifier)
 				)
 			);
 			return identifier;
@@ -448,34 +425,30 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 		// rather than generating a new unnecessary import
 		if (moduleExports.hasDefaultExport && context.hasLocalForDefaultImportFromModule(moduleSpecifier)) {
 			const local = context.getLocalForDefaultImportFromModule(moduleSpecifier)!;
-			return compatFactory.createIdentifier(local);
+			return factory.createIdentifier(local);
 		}
 
 		// If the namespace is already imported, get the local binding name for it and create an identifier for it
 		// rather than generating a new unnecessary import
 		else if (!moduleExports.hasDefaultExport && context.hasLocalForNamespaceImportFromModule(moduleSpecifier)) {
 			const local = context.getLocalForNamespaceImportFromModule(moduleSpecifier)!;
-			return compatFactory.createIdentifier(local);
+			return factory.createIdentifier(local);
 		}
 
 		// Otherwise, proceed as planned
 		else {
-			const identifier = compatFactory.createIdentifier(context.getFreeIdentifier(generateNameFromModuleSpecifier(moduleSpecifier)));
+			const identifier = factory.createIdentifier(context.getFreeIdentifier(generateNameFromModuleSpecifier(moduleSpecifier)));
 			context.addImport(
-				compatFactory.createImportDeclaration(
+				factory.createImportDeclaration(
 					undefined,
 					undefined,
 
 					moduleExports.hasDefaultExport
 						? // Import the default if it has any (or if we don't know if it has)
-						  isNodeFactory(compatFactory)
-							? compatFactory.createImportClause(false, identifier, undefined)
-							: compatFactory.createImportClause(identifier, undefined)
+						  factory.createImportClause(false, identifier, undefined)
 						: // Otherwise, import the entire namespace
-						isNodeFactory(compatFactory)
-						? compatFactory.createImportClause(false, undefined, compatFactory.createNamespaceImport(identifier))
-						: compatFactory.createImportClause(undefined, compatFactory.createNamespaceImport(identifier)),
-					compatFactory.createStringLiteral(transformedModuleSpecifier)
+						  factory.createImportClause(false, undefined, factory.createNamespaceImport(identifier)),
+					factory.createStringLiteral(transformedModuleSpecifier)
 				)
 			);
 			return identifier;

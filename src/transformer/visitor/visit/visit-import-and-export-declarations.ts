@@ -2,11 +2,11 @@ import {BeforeVisitorOptions} from "../before-visitor-options";
 import {visitImportDeclaration} from "./visit-import-declaration";
 import {visitExportDeclaration} from "./visit-export-declaration";
 import {visitExportAssignment} from "./visit-export-assignment";
-import {hasExportModifier} from "../../../util/has-export-modifier";
-import {hasDefaultExportModifier} from "../../../util/has-default-export-modifier";
-import {isDeclaration} from "../../../util/is-declaration";
-import {getLocalsForBindingName} from "../../../util/get-locals-for-binding-name";
-import {TS} from "../../../../type/ts";
+import {hasExportModifier} from "../../util/has-export-modifier";
+import {hasDefaultExportModifier} from "../../util/has-default-export-modifier";
+import {isDeclaration} from "../../util/is-declaration";
+import {getLocalsForBindingName} from "../../util/get-locals-for-binding-name";
+import {TS} from "../../../type/ts";
 
 /**
  * Visits the given Node

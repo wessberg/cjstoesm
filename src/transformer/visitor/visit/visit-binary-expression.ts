@@ -1,25 +1,24 @@
 import {BeforeVisitorOptions} from "../before-visitor-options";
-import {getExportsData} from "../../../util/get-exports-data";
-import {walkThroughFillerNodes} from "../../../util/walk-through-filler-nodes";
-import {isNamedDeclaration} from "../../../util/is-named-declaration";
-import {ensureNodeHasExportModifier} from "../../../util/ensure-node-has-export-modifier";
-import {nodeContainsSuper} from "../../../util/node-contains-super";
-import {addExportModifier} from "../../../util/add-export-modifier";
-import {isRequireCall} from "../../../util/is-require-call";
-import {getModuleExportsFromRequireDataInContext} from "../../../util/get-module-exports-from-require-data-in-context";
-import {isExpression} from "../../../util/is-expression";
-import {findNodeUp} from "../../../util/find-node-up";
-import {getLocalsForBindingName} from "../../../util/get-locals-for-binding-name";
-import {TS} from "../../../../type/ts";
-import {shouldDebug} from "../../../util/should-debug";
-import {isNodeFactory} from "../../../util/is-node-factory";
+import {getExportsData} from "../../util/get-exports-data";
+import {walkThroughFillerNodes} from "../../util/walk-through-filler-nodes";
+import {isNamedDeclaration} from "../../util/is-named-declaration";
+import {ensureNodeHasExportModifier} from "../../util/ensure-node-has-export-modifier";
+import {nodeContainsSuper} from "../../util/node-contains-super";
+import {addExportModifier} from "../../util/add-export-modifier";
+import {isRequireCall} from "../../util/is-require-call";
+import {getModuleExportsFromRequireDataInContext} from "../../util/get-module-exports-from-require-data-in-context";
+import {isExpression} from "../../util/is-expression";
+import {findNodeUp} from "../../util/find-node-up";
+import {getLocalsForBindingName} from "../../util/get-locals-for-binding-name";
+import {TS} from "../../../type/ts";
+import {shouldDebug} from "../../util/should-debug";
 
 /**
  * Visits the given BinaryExpression
  */
-export function visitBinaryExpression({node, sourceFile, context, continuation, compatFactory}: BeforeVisitorOptions<TS.BinaryExpression>): TS.VisitResult<TS.Node> {
+export function visitBinaryExpression({node, sourceFile, context, continuation}: BeforeVisitorOptions<TS.BinaryExpression>): TS.VisitResult<TS.Node> {
 	// Check if the left-hand side contains exports. For example: 'exports = ...' or 'exports.foo = 1' or event 'module.exports = 1'
-	const {typescript} = context;
+	const {typescript, factory} = context;
 	const exportsData = getExportsData(node.left, context.exportsName, typescript);
 	const right = walkThroughFillerNodes(node.right, typescript);
 	if (exportsData == null) return node;
@@ -30,7 +29,7 @@ export function visitBinaryExpression({node, sourceFile, context, continuation, 
 		// For example: 'const foo = module.exports = ...'
 		const variableDeclarationParent = findNodeUp(node, typescript.isVariableDeclaration);
 		const variableDeclarationLocal =
-			variableDeclarationParent != null ? compatFactory.createIdentifier(getLocalsForBindingName(variableDeclarationParent.name, typescript)[0]) : undefined;
+			variableDeclarationParent != null ? factory.createIdentifier(getLocalsForBindingName(variableDeclarationParent.name, typescript)[0]) : undefined;
 
 		// This is something like for example 'exports = ...', 'module.exports = ...', 'exports.default', or 'module.exports.default'
 		if (exportsData.property == null || exportsData.property === "default") {
@@ -51,7 +50,7 @@ export function visitBinaryExpression({node, sourceFile, context, continuation, 
 					// Only generate the default export if the module don't already include a default export
 					if (!context.isDefaultExported) {
 						context.markDefaultAsExported();
-						context.addTrailingStatements(compatFactory.createExportAssignment(undefined, undefined, false, exportedSymbol));
+						context.addTrailingStatements(factory.createExportAssignment(undefined, undefined, false, exportedSymbol));
 					}
 
 					return variableDeclarationParent != null ? node.right : undefined;
@@ -82,14 +81,10 @@ export function visitBinaryExpression({node, sourceFile, context, continuation, 
 					if (typescript.isShorthandPropertyAssignment(property)) {
 						context.markLocalAsExported(propertyName);
 
-						elements.push(compatFactory.createShorthandPropertyAssignment(propertyName, property.objectAssignmentInitializer));
+						elements.push(factory.createShorthandPropertyAssignment(propertyName, property.objectAssignmentInitializer));
 
-						const namedExports = compatFactory.createNamedExports([compatFactory.createExportSpecifier(undefined, propertyName)]);
-						statements.push(
-							isNodeFactory(compatFactory)
-								? compatFactory.createExportDeclaration(undefined, undefined, false, namedExports, undefined)
-								: compatFactory.createExportDeclaration(undefined, undefined, namedExports, undefined)
-						);
+						const namedExports = factory.createNamedExports([factory.createExportSpecifier(undefined, propertyName)]);
+						statements.push(factory.createExportDeclaration(undefined, undefined, false, namedExports, undefined));
 					}
 
 					// If it is a PropertyAssignment that points to an Identifier, we know that it holds a reference to some root-level identifier.
@@ -97,34 +92,23 @@ export function visitBinaryExpression({node, sourceFile, context, continuation, 
 					else if (typescript.isPropertyAssignment(property) && typescript.isIdentifier(property.initializer)) {
 						context.markLocalAsExported(propertyName);
 
-						elements.push(compatFactory.createPropertyAssignment(propertyName, compatFactory.createIdentifier(property.initializer.text)));
+						elements.push(factory.createPropertyAssignment(propertyName, factory.createIdentifier(property.initializer.text)));
 
-						const namedExports = compatFactory.createNamedExports([
+						const namedExports = factory.createNamedExports([
 							propertyName === property.initializer.text
-								? compatFactory.createExportSpecifier(undefined, propertyName)
-								: compatFactory.createExportSpecifier(property.initializer.text, propertyName)
+								? factory.createExportSpecifier(undefined, propertyName)
+								: factory.createExportSpecifier(property.initializer.text, propertyName)
 						]);
 
-						statements.push(
-							isNodeFactory(compatFactory)
-								? compatFactory.createExportDeclaration(undefined, undefined, false, namedExports, undefined)
-								: compatFactory.createExportDeclaration(undefined, undefined, namedExports, undefined)
-						);
+						statements.push(factory.createExportDeclaration(undefined, undefined, false, namedExports, undefined));
 					} else if (context.isIdentifierFree(propertyName) && typescript.isPropertyAssignment(property) && !nodeContainsSuper(property.initializer, typescript)) {
 						context.addLocal(propertyName);
-						elements.push(compatFactory.createShorthandPropertyAssignment(propertyName));
+						elements.push(factory.createShorthandPropertyAssignment(propertyName));
 
 						statements.push(
-							compatFactory.createVariableStatement(
-								[compatFactory.createModifier(typescript.SyntaxKind.ExportKeyword)],
-								compatFactory.createVariableDeclarationList(
-									[
-										isNodeFactory(compatFactory)
-											? compatFactory.createVariableDeclaration(propertyName, undefined, undefined, property.initializer)
-											: compatFactory.createVariableDeclaration(propertyName, undefined, property.initializer)
-									],
-									typescript.NodeFlags.Const
-								)
+							factory.createVariableStatement(
+								[factory.createModifier(typescript.SyntaxKind.ExportKeyword)],
+								factory.createVariableDeclarationList([factory.createVariableDeclaration(propertyName, undefined, undefined, property.initializer)], typescript.NodeFlags.Const)
 							)
 						);
 					}
@@ -137,12 +121,12 @@ export function visitBinaryExpression({node, sourceFile, context, continuation, 
 						!nodeContainsSuper(property, typescript)
 					) {
 						context.addLocal(propertyName);
-						elements.push(compatFactory.createShorthandPropertyAssignment(propertyName));
+						elements.push(factory.createShorthandPropertyAssignment(propertyName));
 
 						statements.push(
-							compatFactory.createFunctionDeclaration(
+							factory.createFunctionDeclaration(
 								property.decorators,
-								addExportModifier(property.modifiers, typescript, compatFactory),
+								addExportModifier(property.modifiers, context),
 								property.asteriskToken,
 								property.name,
 								property.typeParameters,
@@ -164,22 +148,16 @@ export function visitBinaryExpression({node, sourceFile, context, continuation, 
 
 						context.markLocalAsExported(propertyName);
 						statements.push(
-							compatFactory.createVariableStatement(
-								[compatFactory.createModifier(typescript.SyntaxKind.ExportKeyword)],
-								compatFactory.createVariableDeclarationList(
+							factory.createVariableStatement(
+								[factory.createModifier(typescript.SyntaxKind.ExportKeyword)],
+								factory.createVariableDeclarationList(
 									[
-										isNodeFactory(compatFactory)
-											? compatFactory.createVariableDeclaration(
-													propertyName,
-													undefined,
-													undefined,
-													compatFactory.createPropertyAccessExpression(compatFactory.createIdentifier(moduleExportsIdentifierName), propertyName)
-											  )
-											: compatFactory.createVariableDeclaration(
-													propertyName,
-													undefined,
-													compatFactory.createPropertyAccess(compatFactory.createIdentifier(moduleExportsIdentifierName), propertyName)
-											  )
+										factory.createVariableDeclaration(
+											propertyName,
+											undefined,
+											undefined,
+											factory.createPropertyAccessExpression(factory.createIdentifier(moduleExportsIdentifierName), propertyName)
+										)
 									],
 									typescript.NodeFlags.Const
 								)
@@ -195,21 +173,17 @@ export function visitBinaryExpression({node, sourceFile, context, continuation, 
 				if (moduleExportsIdentifierName != null) {
 					// Create a VariableStatement that exports the ObjectLiteral
 					statements.push(
-						compatFactory.createVariableStatement(
+						factory.createVariableStatement(
 							undefined,
-							compatFactory.createVariableDeclarationList(
-								[
-									isNodeFactory(compatFactory)
-										? compatFactory.createVariableDeclaration(moduleExportsIdentifierName, undefined, undefined, compatFactory.createObjectLiteralExpression(elements, true))
-										: compatFactory.createVariableDeclaration(moduleExportsIdentifierName, undefined, compatFactory.createObjectLiteral(elements, true))
-								],
+							factory.createVariableDeclarationList(
+								[factory.createVariableDeclaration(moduleExportsIdentifierName, undefined, undefined, factory.createObjectLiteralExpression(elements, true))],
 								typescript.NodeFlags.Const
 							)
 						)
 					);
 
 					if (!context.isDefaultExported) {
-						statements.push(compatFactory.createExportAssignment(undefined, undefined, false, compatFactory.createIdentifier(moduleExportsIdentifierName)));
+						statements.push(factory.createExportAssignment(undefined, undefined, false, factory.createIdentifier(moduleExportsIdentifierName)));
 
 						context.markDefaultAsExported();
 					}
@@ -217,10 +191,8 @@ export function visitBinaryExpression({node, sourceFile, context, continuation, 
 
 				// Otherwise, we don't need to assign it to a VariableStatement. Instead, we can just provide the ObjectLiteralExpression to the ExportAssignment directly.
 				else if (!context.isDefaultExported) {
-					const defaultExportInitializer = isNodeFactory(compatFactory)
-						? compatFactory.createObjectLiteralExpression(elements, true)
-						: compatFactory.createObjectLiteral(elements, true);
-					statements.push(compatFactory.createExportAssignment(undefined, undefined, false, defaultExportInitializer));
+					const defaultExportInitializer = factory.createObjectLiteralExpression(elements, true);
+					statements.push(factory.createExportAssignment(undefined, undefined, false, defaultExportInitializer));
 				}
 
 				// Return all of the statements
@@ -244,7 +216,7 @@ export function visitBinaryExpression({node, sourceFile, context, continuation, 
 							const replacementNode = variableDeclarationParent != null ? continuationResult : undefined;
 							const exportedSymbol = variableDeclarationLocal != null ? variableDeclarationLocal : continuationResult;
 
-							context.addTrailingStatements(compatFactory.createExportAssignment(undefined, undefined, false, exportedSymbol));
+							context.addTrailingStatements(factory.createExportAssignment(undefined, undefined, false, exportedSymbol));
 							return replacementNode;
 						}
 					}
@@ -266,28 +238,20 @@ export function visitBinaryExpression({node, sourceFile, context, continuation, 
 				// Otherwise, take the exports from that module
 				else {
 					const moduleExports = getModuleExportsFromRequireDataInContext(requireData, context);
-					const moduleSpecifierExpression = compatFactory.createStringLiteral(moduleSpecifier);
+					const moduleSpecifierExpression = factory.createStringLiteral(moduleSpecifier);
 
 					// If the module has a default export, or if we know nothing about it,
 					// export the default export from that module
 					if (!context.isDefaultExported && (moduleExports == null || moduleExports.hasDefaultExport)) {
 						context.markDefaultAsExported();
-						const namedExports = compatFactory.createNamedExports([compatFactory.createExportSpecifier(undefined, "default")]);
-						context.addTrailingStatements(
-							isNodeFactory(compatFactory)
-								? compatFactory.createExportDeclaration(undefined, undefined, false, namedExports, moduleSpecifierExpression)
-								: compatFactory.createExportDeclaration(undefined, undefined, namedExports, moduleSpecifierExpression)
-						);
+						const namedExports = factory.createNamedExports([factory.createExportSpecifier(undefined, "default")]);
+						context.addTrailingStatements(factory.createExportDeclaration(undefined, undefined, false, namedExports, moduleSpecifierExpression));
 						return undefined;
 					}
 
 					// Otherwise, export the entire module (e.g. all named exports)
 					else {
-						context.addTrailingStatements(
-							isNodeFactory(compatFactory)
-								? compatFactory.createExportDeclaration(undefined, undefined, false, undefined, moduleSpecifierExpression)
-								: compatFactory.createExportDeclaration(undefined, undefined, undefined, moduleSpecifierExpression)
-						);
+						context.addTrailingStatements(factory.createExportDeclaration(undefined, undefined, false, undefined, moduleSpecifierExpression));
 						return undefined;
 					}
 				}
@@ -305,17 +269,13 @@ export function visitBinaryExpression({node, sourceFile, context, continuation, 
 				return undefined;
 			}
 
-			const namedExports = compatFactory.createNamedExports([
+			const namedExports = factory.createNamedExports([
 				local === variableDeclarationLocal.text
-					? compatFactory.createExportSpecifier(undefined, compatFactory.createIdentifier(local))
-					: compatFactory.createExportSpecifier(variableDeclarationLocal.text, compatFactory.createIdentifier(local))
+					? factory.createExportSpecifier(undefined, factory.createIdentifier(local))
+					: factory.createExportSpecifier(variableDeclarationLocal.text, factory.createIdentifier(local))
 			]);
 
-			context.addTrailingStatements(
-				isNodeFactory(compatFactory)
-					? compatFactory.createExportDeclaration(undefined, undefined, false, namedExports)
-					: compatFactory.createExportDeclaration(undefined, undefined, namedExports)
-			);
+			context.addTrailingStatements(factory.createExportDeclaration(undefined, undefined, false, namedExports));
 			return continuationResult;
 		}
 
@@ -324,24 +284,20 @@ export function visitBinaryExpression({node, sourceFile, context, continuation, 
 		else if (typescript.isIdentifier(right)) {
 			const local = exportsData.property;
 			if (!context.isLocalExported(local)) {
-				const namedExports = compatFactory.createNamedExports([
+				const namedExports = factory.createNamedExports([
 					local === right.text
-						? compatFactory.createExportSpecifier(undefined, compatFactory.createIdentifier(local))
-						: compatFactory.createExportSpecifier(right.text, compatFactory.createIdentifier(local))
+						? factory.createExportSpecifier(undefined, factory.createIdentifier(local))
+						: factory.createExportSpecifier(right.text, factory.createIdentifier(local))
 				]);
 				context.markLocalAsExported(local);
-				context.addTrailingStatements(
-					isNodeFactory(compatFactory)
-						? compatFactory.createExportDeclaration(undefined, undefined, false, namedExports)
-						: compatFactory.createExportDeclaration(undefined, undefined, namedExports)
-				);
+				context.addTrailingStatements(factory.createExportDeclaration(undefined, undefined, false, namedExports));
 			}
 			return undefined;
 		}
 
 		// Otherwise, this is something like 'exports.foo = function foo () {}'
 		else if (isNamedDeclaration(right, typescript) && right.name != null && typescript.isIdentifier(right.name) && exportsData.property === right.name.text) {
-			context.addTrailingStatements(ensureNodeHasExportModifier(right, context, compatFactory) as unknown as TS.Statement);
+			context.addTrailingStatements(ensureNodeHasExportModifier(right, context) as unknown as TS.Statement);
 			return undefined;
 		}
 
@@ -357,53 +313,39 @@ export function visitBinaryExpression({node, sourceFile, context, continuation, 
 				context.markLocalAsExported(exportsData.property);
 
 				if (typescript.isIdentifier(continuationResult)) {
-					const namedExports = compatFactory.createNamedExports([
+					const namedExports = factory.createNamedExports([
 						continuationResult.text === exportsData.property
-							? compatFactory.createExportSpecifier(undefined, compatFactory.createIdentifier(exportsData.property))
-							: compatFactory.createExportSpecifier(compatFactory.createIdentifier(continuationResult.text), compatFactory.createIdentifier(exportsData.property))
+							? factory.createExportSpecifier(undefined, factory.createIdentifier(exportsData.property))
+							: factory.createExportSpecifier(factory.createIdentifier(continuationResult.text), factory.createIdentifier(exportsData.property))
 					]);
-					context.addTrailingStatements(
-						isNodeFactory(compatFactory)
-							? compatFactory.createExportDeclaration(undefined, undefined, false, namedExports, undefined)
-							: compatFactory.createExportDeclaration(undefined, undefined, namedExports, undefined)
-					);
+					context.addTrailingStatements(factory.createExportDeclaration(undefined, undefined, false, namedExports, undefined));
 				} else {
 					const freeIdentifier = context.getFreeIdentifier(exportsData.property);
 
 					// If it is free, we can simply add an export modifier in front of the expression
 					if (freeIdentifier === exportsData.property) {
 						context.addTrailingStatements(
-							compatFactory.createVariableStatement(
-								[compatFactory.createModifier(typescript.SyntaxKind.ExportKeyword)],
-								compatFactory.createVariableDeclarationList(
-									[
-										isNodeFactory(compatFactory)
-											? compatFactory.createVariableDeclaration(exportsData.property, undefined, undefined, continuationResult as TS.Expression)
-											: compatFactory.createVariableDeclaration(exportsData.property, undefined, continuationResult as TS.Expression)
-									],
+							factory.createVariableStatement(
+								[factory.createModifier(typescript.SyntaxKind.ExportKeyword)],
+								factory.createVariableDeclarationList(
+									[factory.createVariableDeclaration(exportsData.property, undefined, undefined, continuationResult as TS.Expression)],
 									typescript.NodeFlags.Const
 								)
 							)
 						);
 					} else {
-						const namedExports = compatFactory.createNamedExports([compatFactory.createExportSpecifier(freeIdentifier, exportsData.property)]);
+						const namedExports = factory.createNamedExports([factory.createExportSpecifier(freeIdentifier, exportsData.property)]);
 
 						// If it isn't, we'll need to bind it to a variable with the free name, but then export it under the original one
 						context.addTrailingStatements(
-							compatFactory.createVariableStatement(
+							factory.createVariableStatement(
 								undefined,
-								compatFactory.createVariableDeclarationList(
-									[
-										isNodeFactory(compatFactory)
-											? compatFactory.createVariableDeclaration(freeIdentifier, undefined, undefined, continuationResult as TS.Expression)
-											: compatFactory.createVariableDeclaration(freeIdentifier, undefined, continuationResult as TS.Expression)
-									],
+								factory.createVariableDeclarationList(
+									[factory.createVariableDeclaration(freeIdentifier, undefined, undefined, continuationResult as TS.Expression)],
 									typescript.NodeFlags.Const
 								)
 							),
-							isNodeFactory(compatFactory)
-								? compatFactory.createExportDeclaration(undefined, undefined, false, namedExports, undefined)
-								: compatFactory.createExportDeclaration(undefined, undefined, namedExports, undefined)
+							factory.createExportDeclaration(undefined, undefined, false, namedExports, undefined)
 						);
 					}
 				}

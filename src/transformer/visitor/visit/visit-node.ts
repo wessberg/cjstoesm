@@ -3,8 +3,8 @@ import {visitCallExpression} from "./visit-call-expression";
 import {visitBinaryExpression} from "./visit-binary-expression";
 import {visitVariableDeclaration} from "./visit-variable-declaration";
 import {visitVariableDeclarationList} from "./visit-variable-declaration-list";
-import {getBestBodyInScope} from "../../../util/get-best-body-in-scope";
-import {TS} from "../../../../type/ts";
+import {getBestBodyInScope} from "../../util/get-best-body-in-scope";
+import {TS} from "../../../type/ts";
 
 /**
  * Visits the given Node
