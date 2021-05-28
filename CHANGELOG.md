@@ -1,3 +1,5 @@
+## [1.1.2](https://github.com/wessberg/cjstoesm/compare/v1.1.1...v1.1.2) (2021-05-28)
+
 ## [1.1.1](https://github.com/wessberg/cjstoesm/compare/v1.1.0...v1.1.1) (2021-05-26)
 
 ### Bug Fixes
