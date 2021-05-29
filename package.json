@@ -104,7 +104,7 @@
 		"resolve": "^1.20.0",
 		"helpertypes": "^0.0.2",
 		"crosspath": "^0.0.8",
-		"compatfactory": "^0.0.5"
+		"compatfactory": "^0.0.6"
 	},
 	"peerDependencies": {
 		"typescript": ">=3.2.x || >= 4.x"
