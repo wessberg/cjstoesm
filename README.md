@@ -241,6 +241,7 @@ The following command transforms all files matched by the glob `**/*.*` and emit
 ```
 cjstoesm "**/*.*" dist
 ```
+
 Here's an overview of the options that can be passed via the CLI:
 
 ```
