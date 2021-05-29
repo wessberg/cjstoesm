@@ -241,9 +241,7 @@ The following command transforms all files matched by the glob `**/*.*` and emit
 ```
 cjstoesm "**/*.*" dist
 ```
-
-If you install `cjstoesm` globally, you'll have `cjstoesm` in your path. If you install it locally, you can run `npx cjstoesm`.
-If you don't install it globally nor locally, you can also just run it once with the command `npx -p typescript cjstoesm <glob> <outdir>`.
+Here's an overview of the options that can be passed via the CLI:
 
 ```
 $ cjstoesm --help
