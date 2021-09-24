@@ -994,3 +994,21 @@ test("Handles reassignments to imported bindings. #3", withTypeScript, (t, {type
 		`)
 	);
 });
+
+test("Converts 'Object.defineProperty(...)' syntax into an ExportAssignment", withTypeScript, (t, {typescript}) => {
+	const bundle = executeTransformer(
+		`
+		function foo () {}
+		Object.defineProperty(module, 'exports', { get: foo });
+	`,
+		{typescript}
+	);
+	const [file] = bundle.files;
+	t.deepEqual(
+		formatCode(file.text),
+		formatCode(`\
+		function foo () {}
+		export default foo();
+		`)
+	);
+});
