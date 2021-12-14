@@ -3,12 +3,12 @@ import {TestContext} from "./test-context";
 import {createTestSetup} from "./test-setup";
 import {transform} from "../../src/api/transform";
 import {createTestResult, TestResult} from "./test-result";
-import {MaybeArray} from "helpertypes";
+import {MaybeArray, PartialExcept} from "helpertypes";
 
 /**
  * Prepares a test via the transform function
  */
-export async function executeApi(inputFiles: MaybeArray<TestFile>, options?: Partial<TestContext>): Promise<TestResult> {
+export async function executeApi(inputFiles: MaybeArray<TestFile>, options: PartialExcept<TestContext, "typescript">): Promise<TestResult> {
 	const {
 		context,
 		fileStructure: {files, dir},

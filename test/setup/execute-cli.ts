@@ -4,7 +4,7 @@ import {createTestSetup} from "./test-setup";
 import {configureCommands} from "../../src/cli/configure-commands";
 import {shouldDebug} from "../../src/transformer/util/should-debug";
 import {createTestResult, TestResult} from "./test-result";
-import {MaybeArray} from "helpertypes";
+import {MaybeArray, PartialExcept} from "helpertypes";
 import path from "crosspath";
 
 export interface CliTestContext extends TestContext {
@@ -16,7 +16,7 @@ export interface CliTestContext extends TestContext {
 /**
  * Prepares a test via the CLI
  */
-export async function executeCli(options: Partial<CliTestContext> = {}): Promise<TestResult> {
+export async function executeCli(options: PartialExcept<CliTestContext, "typescript">): Promise<TestResult> {
 	const {
 		context,
 		fileSystem,

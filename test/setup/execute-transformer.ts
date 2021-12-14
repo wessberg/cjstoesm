@@ -4,13 +4,13 @@ import {createTestResult, TestResult} from "./test-result";
 import {TestFile} from "./test-file";
 import {TestContext} from "./test-context";
 import {createTestSetup} from "./test-setup";
-import {MaybeArray} from "helpertypes";
+import {MaybeArray, PartialExcept} from "helpertypes";
 import path from "crosspath";
 
 /**
  * Prepares a test
  */
-export function executeTransformer(inputFiles: MaybeArray<TestFile>, options?: Partial<TestContext>): TestResult {
+export function executeTransformer(inputFiles: MaybeArray<TestFile>, options: PartialExcept<TestContext, "typescript">): TestResult {
 	const {
 		context,
 		fileStructure: {files, dir},

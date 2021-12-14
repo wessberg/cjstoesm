@@ -5,7 +5,7 @@ import {cjsToEsm} from "../../src/transformer/cjs-to-esm";
 import {TestFile} from "./test-file";
 import {TestContext} from "./test-context";
 import {createTestSetup} from "./test-setup";
-import {MaybeArray} from "helpertypes";
+import {MaybeArray, PartialExcept} from "helpertypes";
 import path from "crosspath";
 
 export interface RollupTestContext extends TestContext {
@@ -15,7 +15,7 @@ export interface RollupTestContext extends TestContext {
 /**
  * Prepares a test
  */
-export async function executeRollup(inputFiles: MaybeArray<TestFile>, options: Partial<RollupTestContext> = {}): Promise<RollupOutput> {
+export async function executeRollup(inputFiles: MaybeArray<TestFile>, options: PartialExcept<RollupTestContext, "typescript">): Promise<RollupOutput> {
 	const {
 		context,
 		fileStructure: {files, entry},

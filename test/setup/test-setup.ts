@@ -4,7 +4,7 @@ import {createTestFileStructure, TestFile, TestFileStructure} from "./test-file"
 import {createVirtualFileSystem} from "./create-virtual-file-system";
 import {TS} from "../../src/type/ts";
 import {createCompilerHost} from "../../src/shared/compiler-host/create-compiler-host";
-import {MaybeArray} from "helpertypes";
+import {MaybeArray, PartialExcept} from "helpertypes";
 
 export interface TestSetup {
 	context: TestContext;
@@ -13,7 +13,7 @@ export interface TestSetup {
 	compilerHost: TS.CompilerHost;
 }
 
-export function createTestSetup(inputFiles: MaybeArray<TestFile>, options?: Partial<TestContext>): TestSetup {
+export function createTestSetup(inputFiles: MaybeArray<TestFile>, options: PartialExcept<TestContext, "typescript">): TestSetup {
 	const context = createTestContext(options);
 	const fileStructure = createTestFileStructure(inputFiles, context);
 	const fileSystem = createVirtualFileSystem(fileStructure.files);
