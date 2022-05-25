@@ -1,6 +1,6 @@
 {
 	"name": "cjstoesm",
-	"version": "1.1.4",
+	"version": "1.1.5",
 	"description": "A tool that can transform CommonJS to ESM",
 	"scripts": {
 		"generate:sandhog": "sandhog all --yes",
