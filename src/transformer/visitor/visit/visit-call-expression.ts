@@ -179,9 +179,9 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 					const namedImports = factory.createNamedImports([
 						importBindingPropertyName === importBindingName
 							? // If the property name is free within the context, don't alias the import
-							  factory.createImportSpecifier(undefined, factory.createIdentifier(importBindingPropertyName))
+							  factory.createImportSpecifier(false, undefined, factory.createIdentifier(importBindingPropertyName))
 							: // Otherwise, import it aliased by another name that is free within the context
-							  factory.createImportSpecifier(factory.createIdentifier(importBindingPropertyName), factory.createIdentifier(importBindingName))
+							  factory.createImportSpecifier(false, factory.createIdentifier(importBindingPropertyName), factory.createIdentifier(importBindingName))
 					]);
 
 					const importClause = factory.createImportClause(false, undefined, namedImports);
@@ -272,19 +272,19 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 							const local = context.getLocalForNamedImportPropertyNameFromModule(element.name.text, moduleSpecifier)!;
 							skippedImportSpecifiers.push(
 								local === element.name.text
-									? factory.createImportSpecifier(undefined, factory.createIdentifier(local))
-									: factory.createImportSpecifier(factory.createIdentifier(element.name.text), factory.createIdentifier(local))
+									? factory.createImportSpecifier(false, undefined, factory.createIdentifier(local))
+									: factory.createImportSpecifier(false, factory.createIdentifier(element.name.text), factory.createIdentifier(local))
 							);
 						}
 
 						// If the name is free, just import it as it is
 						else if (context.isIdentifierFree(element.name.text)) {
 							context.addLocal(element.name.text);
-							importSpecifiers.push(factory.createImportSpecifier(undefined, factory.createIdentifier(element.name.text)));
+							importSpecifiers.push(factory.createImportSpecifier(false, undefined, factory.createIdentifier(element.name.text)));
 						} else {
 							// Otherwise, import it under an aliased name
 							const alias = context.getFreeIdentifier(element.name.text);
-							importSpecifiers.push(factory.createImportSpecifier(factory.createIdentifier(element.name.text), factory.createIdentifier(alias)));
+							importSpecifiers.push(factory.createImportSpecifier(false, factory.createIdentifier(element.name.text), factory.createIdentifier(alias)));
 						}
 					}
 				}
@@ -299,10 +299,10 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 					// If the name is free, just import it as it is
 					if (context.isIdentifierFree(element.propertyName.text)) {
 						context.addLocal(element.propertyName.text);
-						importSpecifiers.push(factory.createImportSpecifier(undefined, factory.createIdentifier(element.propertyName.text)));
+						importSpecifiers.push(factory.createImportSpecifier(false, undefined, factory.createIdentifier(element.propertyName.text)));
 					} else {
 						const alias = context.getFreeIdentifier(element.propertyName.text);
-						importSpecifiers.push(factory.createImportSpecifier(factory.createIdentifier(element.propertyName.text), factory.createIdentifier(alias)));
+						importSpecifiers.push(factory.createImportSpecifier(false, factory.createIdentifier(element.propertyName.text), factory.createIdentifier(alias)));
 					}
 				}
 			}

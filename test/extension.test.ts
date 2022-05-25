@@ -3,7 +3,7 @@ import {withTypeScript} from "./util/ts-macro";
 import {executeTransformer} from "./setup/execute-transformer";
 import {formatCode} from "./util/format-code";
 
-test("Adds correct extensions for module specifiers for internal files when preserveModuleSpecifiers = 'external'. #1", withTypeScript, (t, {typescript}) => {
+test.serial("Adds correct extensions for module specifiers for internal files when preserveModuleSpecifiers = 'external'. #1", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -33,7 +33,7 @@ test("Adds correct extensions for module specifiers for internal files when pres
 	);
 });
 
-test("Converts directory-imports to filenames for files with .js extensions when preserveModuleSpecifiers = 'external'. #1", withTypeScript, (t, {typescript}) => {
+test.serial("Converts directory-imports to filenames for files with .js extensions when preserveModuleSpecifiers = 'external'. #1", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -63,7 +63,7 @@ test("Converts directory-imports to filenames for files with .js extensions when
 	);
 });
 
-test("Converts directory-imports to absolute filenames for files with .js extensions when preserveModuleSpecifiers = 'never'. #1", withTypeScript, (t, {typescript}) => {
+test.serial("Converts directory-imports to absolute filenames for files with .js extensions when preserveModuleSpecifiers = 'never'. #1", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -93,7 +93,7 @@ test("Converts directory-imports to absolute filenames for files with .js extens
 	);
 });
 
-test("Preserves module specifiers pointing to internal files when preserveModuleSpecifiers = 'internal' #1", withTypeScript, (t, {typescript}) => {
+test.serial("Preserves module specifiers pointing to internal files when preserveModuleSpecifiers = 'internal' #1", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -123,7 +123,7 @@ test("Preserves module specifiers pointing to internal files when preserveModule
 	);
 });
 
-test("Drops module specifiers pointing to external files when preserveModuleSpecifiers = 'internal' #1", withTypeScript, (t, {typescript}) => {
+test.serial("Drops module specifiers pointing to external files when preserveModuleSpecifiers = 'internal' #1", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{

@@ -3,7 +3,7 @@ import {withTypeScript} from "./util/ts-macro";
 import {executeApi} from "./setup/execute-api";
 import {formatCode} from "./util/format-code";
 
-test("Can transform one or more SourceFiles via the API. #1", withTypeScript, async (t, {typescript}) => {
+test.serial("Can transform one or more SourceFiles via the API. #1", withTypeScript, async (t, {typescript}) => {
 	const bundle = await executeApi(
 		[
 			{

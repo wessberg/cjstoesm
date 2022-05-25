@@ -1,5 +1,5 @@
 import {rollup, RollupOptions, RollupOutput} from "rollup";
-import typescriptRollupPlugin from "@wessberg/rollup-plugin-ts";
+import typescriptRollupPlugin from "rollup-plugin-ts";
 import nodeResolve from "@rollup/plugin-node-resolve";
 import {cjsToEsm} from "../../src/transformer/cjs-to-esm";
 import {TestFile} from "./test-file";

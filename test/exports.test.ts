@@ -3,7 +3,7 @@ import {withTypeScript} from "./util/ts-macro";
 import {executeTransformer} from "./setup/execute-transformer";
 import {formatCode} from "./util/format-code";
 
-test("Converts 'exports = ...' syntax into an ExportAssignment. #1", withTypeScript, (t, {typescript}) => {
+test.serial("Converts 'exports = ...' syntax into an ExportAssignment. #1", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		function foo () {}
@@ -21,7 +21,7 @@ test("Converts 'exports = ...' syntax into an ExportAssignment. #1", withTypeScr
 	);
 });
 
-test("Converts 'exports = ...' syntax into an ExportAssignment. #2", withTypeScript, (t, {typescript}) => {
+test.serial("Converts 'exports = ...' syntax into an ExportAssignment. #2", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		function foo () {}
@@ -39,7 +39,7 @@ test("Converts 'exports = ...' syntax into an ExportAssignment. #2", withTypeScr
 	);
 });
 
-test("Converts 'exports = ...' syntax into an ExportAssignment. #3", withTypeScript, (t, {typescript}) => {
+test.serial("Converts 'exports = ...' syntax into an ExportAssignment. #3", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		exports = function foo () {};
@@ -55,7 +55,7 @@ test("Converts 'exports = ...' syntax into an ExportAssignment. #3", withTypeScr
 	);
 });
 
-test("Converts 'exports = ...' syntax into an ExportAssignment. #4", withTypeScript, (t, {typescript}) => {
+test.serial("Converts 'exports = ...' syntax into an ExportAssignment. #4", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		class Baz {}
@@ -88,7 +88,7 @@ test("Converts 'exports = ...' syntax into an ExportAssignment. #4", withTypeScr
 	);
 });
 
-test("Converts 'exports = ...' syntax into an ExportAssignment. #5", withTypeScript, (t, {typescript}) => {
+test.serial("Converts 'exports = ...' syntax into an ExportAssignment. #5", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 
@@ -114,7 +114,7 @@ test("Converts 'exports = ...' syntax into an ExportAssignment. #5", withTypeScr
 	);
 });
 
-test("Converts 'exports = ...' syntax into an ExportAssignment. #6", withTypeScript, (t, {typescript}) => {
+test.serial("Converts 'exports = ...' syntax into an ExportAssignment. #6", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		const foo = "bar";
@@ -140,7 +140,7 @@ test("Converts 'exports = ...' syntax into an ExportAssignment. #6", withTypeScr
 	);
 });
 
-test("Converts 'exports = ...' syntax into an ExportAssignment. #7", withTypeScript, (t, {typescript}) => {
+test.serial("Converts 'exports = ...' syntax into an ExportAssignment. #7", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		module.exports = {};
@@ -156,7 +156,7 @@ test("Converts 'exports = ...' syntax into an ExportAssignment. #7", withTypeScr
 	);
 });
 
-test("Converts 'exports = ...' syntax into an ExportAssignment. #8", withTypeScript, (t, {typescript}) => {
+test.serial("Converts 'exports = ...' syntax into an ExportAssignment. #8", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		(module.exports = {});
@@ -172,7 +172,7 @@ test("Converts 'exports = ...' syntax into an ExportAssignment. #8", withTypeScr
 	);
 });
 
-test("Converts 'exports.<something> into ExportDeclarations. #1", withTypeScript, (t, {typescript}) => {
+test.serial("Converts 'exports.<something> into ExportDeclarations. #1", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		exports.foo = 1;
@@ -189,7 +189,7 @@ test("Converts 'exports.<something> into ExportDeclarations. #1", withTypeScript
 	);
 });
 
-test("Converts 'exports.<something> into ExportDeclarations. #2", withTypeScript, (t, {typescript}) => {
+test.serial("Converts 'exports.<something> into ExportDeclarations. #2", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		function foo () {}
@@ -207,7 +207,7 @@ test("Converts 'exports.<something> into ExportDeclarations. #2", withTypeScript
 	);
 });
 
-test("Converts 'exports.<something> into ExportDeclarations. #3", withTypeScript, (t, {typescript}) => {
+test.serial("Converts 'exports.<something> into ExportDeclarations. #3", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		exports.foo = function foo () {};
@@ -223,7 +223,7 @@ test("Converts 'exports.<something> into ExportDeclarations. #3", withTypeScript
 	);
 });
 
-test("Converts 'exports.<something> into ExportDeclarations. #4", withTypeScript, (t, {typescript}) => {
+test.serial("Converts 'exports.<something> into ExportDeclarations. #4", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		exports.foo = () => {}
@@ -239,7 +239,7 @@ test("Converts 'exports.<something> into ExportDeclarations. #4", withTypeScript
 	);
 });
 
-test("Converts 'exports.<something> into ExportDeclarations. #5", withTypeScript, (t, {typescript}) => {
+test.serial("Converts 'exports.<something> into ExportDeclarations. #5", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		exports.f = Object.getOwnPropertySymbols;
@@ -255,7 +255,7 @@ test("Converts 'exports.<something> into ExportDeclarations. #5", withTypeScript
 	);
 });
 
-test("Converts 'exports.<something> into ExportDeclarations. #6", withTypeScript, (t, {typescript}) => {
+test.serial("Converts 'exports.<something> into ExportDeclarations. #6", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		function foo () {}
@@ -273,7 +273,7 @@ test("Converts 'exports.<something> into ExportDeclarations. #6", withTypeScript
 	);
 });
 
-test("Converts 'exports.<something>' into ExportDeclarations. #7", withTypeScript, (t, {typescript}) => {
+test.serial("Converts 'exports.<something>' into ExportDeclarations. #7", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -299,7 +299,7 @@ test("Converts 'exports.<something>' into ExportDeclarations. #7", withTypeScrip
 	);
 });
 
-test("Converts 'exports.default into a default export. #1", withTypeScript, (t, {typescript}) => {
+test.serial("Converts 'exports.default into a default export. #1", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		exports.default = function foo () {}
@@ -315,7 +315,7 @@ test("Converts 'exports.default into a default export. #1", withTypeScript, (t, 
 	);
 });
 
-test("Converts 'exports.default into a default export. #2", withTypeScript, (t, {typescript}) => {
+test.serial("Converts 'exports.default into a default export. #2", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		module.exports.default = function foo () {}
@@ -331,7 +331,7 @@ test("Converts 'exports.default into a default export. #2", withTypeScript, (t, 
 	);
 });
 
-test("Won't generate duplicate ExportAssignments. #1", withTypeScript, (t, {typescript}) => {
+test.serial("Won't generate duplicate ExportAssignments. #1", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		function foo () {}
@@ -351,7 +351,7 @@ test("Won't generate duplicate ExportAssignments. #1", withTypeScript, (t, {type
 	);
 });
 
-test("Won't generate duplicate ExportDeclarations. #1", withTypeScript, (t, {typescript}) => {
+test.serial("Won't generate duplicate ExportDeclarations. #1", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		function foo () {}
@@ -374,7 +374,7 @@ test("Won't generate duplicate ExportDeclarations. #1", withTypeScript, (t, {typ
 	);
 });
 
-test("Generates named exports for members of an ObjectLiteral that is assigned to 'exports = ...' if possible. #1", withTypeScript, (t, {typescript}) => {
+test.serial("Generates named exports for members of an ObjectLiteral that is assigned to 'exports = ...' if possible. #1", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		module.exports = {
@@ -395,7 +395,7 @@ test("Generates named exports for members of an ObjectLiteral that is assigned t
 	);
 });
 
-test("Generates named exports for members of an ObjectLiteral that is assigned to 'exports = ...' if possible. #2", withTypeScript, (t, {typescript}) => {
+test.serial("Generates named exports for members of an ObjectLiteral that is assigned to 'exports = ...' if possible. #2", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		module.exports = {
@@ -416,7 +416,7 @@ test("Generates named exports for members of an ObjectLiteral that is assigned t
 	);
 });
 
-test("Generates named exports for members of an ObjectLiteral that is assigned to 'exports = ...' if possible. #3", withTypeScript, (t, {typescript}) => {
+test.serial("Generates named exports for members of an ObjectLiteral that is assigned to 'exports = ...' if possible. #3", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		module.exports = {
@@ -437,7 +437,7 @@ test("Generates named exports for members of an ObjectLiteral that is assigned t
 	);
 });
 
-test("Generates named exports for members of an ObjectLiteral that is assigned to 'exports = ...' if possible. #4", withTypeScript, (t, {typescript}) => {
+test.serial("Generates named exports for members of an ObjectLiteral that is assigned to 'exports = ...' if possible. #4", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		module.exports = {
@@ -458,7 +458,7 @@ test("Generates named exports for members of an ObjectLiteral that is assigned t
 	);
 });
 
-test("Generates named exports for members of an ObjectLiteral that is assigned to 'exports = ...' if possible. #5", withTypeScript, (t, {typescript}) => {
+test.serial("Generates named exports for members of an ObjectLiteral that is assigned to 'exports = ...' if possible. #5", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		module.exports = {
@@ -479,7 +479,7 @@ test("Generates named exports for members of an ObjectLiteral that is assigned t
 	);
 });
 
-test("Generates named exports for members of an ObjectLiteral that is assigned to 'exports = ...' if possible. #6", withTypeScript, (t, {typescript}) => {
+test.serial("Generates named exports for members of an ObjectLiteral that is assigned to 'exports = ...' if possible. #6", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		module.exports = {
@@ -506,7 +506,7 @@ test("Generates named exports for members of an ObjectLiteral that is assigned t
 	);
 });
 
-test("Generates named exports for members of an ObjectLiteral that is assigned to 'exports = ...' if possible. #7", withTypeScript, (t, {typescript}) => {
+test.serial("Generates named exports for members of an ObjectLiteral that is assigned to 'exports = ...' if possible. #7", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		module.exports = {
@@ -531,7 +531,7 @@ test("Generates named exports for members of an ObjectLiteral that is assigned t
 	);
 });
 
-test("Generates named exports for members of an ObjectLiteral that is assigned to 'exports = ...' if possible. #8", withTypeScript, (t, {typescript}) => {
+test.serial("Generates named exports for members of an ObjectLiteral that is assigned to 'exports = ...' if possible. #8", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		const obj = {
@@ -562,7 +562,7 @@ test("Generates named exports for members of an ObjectLiteral that is assigned t
 	);
 });
 
-test.only("Converts 'exports = require(...)' syntax into namespace re-exports if the required module has named exports. #1", withTypeScript, (t, {typescript}) => {
+test.serial("Converts 'exports = require(...)' syntax into namespace re-exports if the required module has named exports. #1", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -591,7 +591,7 @@ test.only("Converts 'exports = require(...)' syntax into namespace re-exports if
 	);
 });
 
-test(
+test.serial(
 	"Converts 'exports = require(...)()' syntax into namespace import along with a default export if the required module has named exports. #1",
 	withTypeScript,
 	(t, {typescript}) => {
@@ -625,7 +625,7 @@ test(
 	}
 );
 
-test("Converts 'exports = require(...)' syntax into a default export if the required module has one. #1", withTypeScript, (t, {typescript}) => {
+test.serial("Converts 'exports = require(...)' syntax into a default export if the required module has one. #1", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -654,7 +654,7 @@ test("Converts 'exports = require(...)' syntax into a default export if the requ
 	);
 });
 
-test("Converts 'exports = require(...)' syntax into a default export if the required module is unknown. #1", withTypeScript, (t, {typescript}) => {
+test.serial("Converts 'exports = require(...)' syntax into a default export if the required module is unknown. #1", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -676,7 +676,7 @@ test("Converts 'exports = require(...)' syntax into a default export if the requ
 	);
 });
 
-test("Converts 'exports = require(...)()' syntax into a default export if the required module is unknown. #2", withTypeScript, (t, {typescript}) => {
+test.serial("Converts 'exports = require(...)()' syntax into a default export if the required module is unknown. #2", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -699,7 +699,7 @@ test("Converts 'exports = require(...)()' syntax into a default export if the re
 	);
 });
 
-test("Converts 'const foo = module.exports = ...' syntax into a VariableStatement followed by an ExportAssignment. #1", withTypeScript, (t, {typescript}) => {
+test.serial("Converts 'const foo = module.exports = ...' syntax into a VariableStatement followed by an ExportAssignment. #1", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -722,7 +722,7 @@ test("Converts 'const foo = module.exports = ...' syntax into a VariableStatemen
 	);
 });
 
-test("Converts 'const foo = module.exports = ...' syntax into a VariableStatement followed by an ExportAssignment. #2", withTypeScript, (t, {typescript}) => {
+test.serial("Converts 'const foo = module.exports = ...' syntax into a VariableStatement followed by an ExportAssignment. #2", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -745,7 +745,7 @@ test("Converts 'const foo = module.exports = ...' syntax into a VariableStatemen
 	);
 });
 
-test("Converts 'const foo = module.exports = ...' syntax into a VariableStatement followed by an ExportAssignment. #3", withTypeScript, (t, {typescript}) => {
+test.serial("Converts 'const foo = module.exports = ...' syntax into a VariableStatement followed by an ExportAssignment. #3", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -768,7 +768,7 @@ test("Converts 'const foo = module.exports = ...' syntax into a VariableStatemen
 	);
 });
 
-test("Converts 'const foo = exports.foo = ...' syntax into a VariableStatement followed by an ExportDeclaration. #4", withTypeScript, (t, {typescript}) => {
+test.serial("Converts 'const foo = exports.foo = ...' syntax into a VariableStatement followed by an ExportDeclaration. #4", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -791,7 +791,7 @@ test("Converts 'const foo = exports.foo = ...' syntax into a VariableStatement f
 	);
 });
 
-test("Converts 'const foo = exports.foo = ...' syntax into a VariableStatement followed by an ExportDeclaration. #5", withTypeScript, (t, {typescript}) => {
+test.serial("Converts 'const foo = exports.foo = ...' syntax into a VariableStatement followed by an ExportDeclaration. #5", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -814,7 +814,7 @@ test("Converts 'const foo = exports.foo = ...' syntax into a VariableStatement f
 	);
 });
 
-test("Converts 'const foo = exports.foo = ...' syntax into a VariableStatement followed by an ExportDeclaration. #6", withTypeScript, (t, {typescript}) => {
+test.serial("Converts 'const foo = exports.foo = ...' syntax into a VariableStatement followed by an ExportDeclaration. #6", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -837,7 +837,7 @@ test("Converts 'const foo = exports.foo = ...' syntax into a VariableStatement f
 	);
 });
 
-test("When rewriting 'exports.something = function () {...}', no error will occur if a local binding already exists for 'something'", withTypeScript, (t, {typescript}) => {
+test.serial("When rewriting 'exports.something = function () {...}', no error will occur if a local binding already exists for 'something'", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -866,7 +866,7 @@ test("When rewriting 'exports.something = function () {...}', no error will occu
 	);
 });
 
-test("When bundling UMD containing exports assignments, the SourceFile will be flattened to the body of the UMD wrapper", withTypeScript, (t, {typescript}) => {
+test.serial("When bundling UMD containing exports assignments, the SourceFile will be flattened to the body of the UMD wrapper", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -899,7 +899,7 @@ test("When bundling UMD containing exports assignments, the SourceFile will be f
 	);
 });
 
-test("Handles reassignments to imported bindings. #1", withTypeScript, (t, {typescript}) => {
+test.serial("Handles reassignments to imported bindings. #1", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -931,7 +931,7 @@ test("Handles reassignments to imported bindings. #1", withTypeScript, (t, {type
 	);
 });
 
-test("Handles reassignments to imported bindings. #2", withTypeScript, (t, {typescript}) => {
+test.serial("Handles reassignments to imported bindings. #2", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -963,7 +963,7 @@ test("Handles reassignments to imported bindings. #2", withTypeScript, (t, {type
 	);
 });
 
-test("Handles reassignments to imported bindings. #3", withTypeScript, (t, {typescript}) => {
+test.serial("Handles reassignments to imported bindings. #3", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -991,6 +991,42 @@ test("Handles reassignments to imported bindings. #3", withTypeScript, (t, {type
 		import * as foo$0 from "./foo";
 		let foo = foo$0;
 		foo = 2;
+		`)
+	);
+});
+
+
+test.serial("Handles functions exported via short hand property assignments to the module.exports Object. #1", withTypeScript, (t, {typescript}) => {
+	const bundle = executeTransformer(
+		[
+			{
+				entry: true,
+				fileName: "index.ts",
+				text: `
+				function myFunction() {
+					console.log( 'lorem ipsum' );
+				}
+				
+				module.exports = {
+					myFunction
+				};
+			`
+			}
+		],
+		{typescript}
+	);
+	const [file] = bundle.files;
+
+	t.deepEqual(
+		formatCode(file.text),
+		formatCode(`\
+		function myFunction() {
+			console.log('lorem ipsum');
+		}
+		export { myFunction };
+		export default {
+			myFunction
+		};
 		`)
 	);
 });

@@ -83,7 +83,7 @@ export function visitBinaryExpression({node, sourceFile, context, continuation}:
 
 						elements.push(factory.createShorthandPropertyAssignment(propertyName, property.objectAssignmentInitializer));
 
-						const namedExports = factory.createNamedExports([factory.createExportSpecifier(undefined, propertyName)]);
+						const namedExports = factory.createNamedExports([factory.createExportSpecifier(false, undefined, propertyName)]);
 						statements.push(factory.createExportDeclaration(undefined, undefined, false, namedExports, undefined));
 					}
 
@@ -96,8 +96,8 @@ export function visitBinaryExpression({node, sourceFile, context, continuation}:
 
 						const namedExports = factory.createNamedExports([
 							propertyName === property.initializer.text
-								? factory.createExportSpecifier(undefined, propertyName)
-								: factory.createExportSpecifier(property.initializer.text, propertyName)
+								? factory.createExportSpecifier(false, undefined, propertyName)
+								: factory.createExportSpecifier(false, property.initializer.text, propertyName)
 						]);
 
 						statements.push(factory.createExportDeclaration(undefined, undefined, false, namedExports, undefined));
@@ -244,7 +244,7 @@ export function visitBinaryExpression({node, sourceFile, context, continuation}:
 					// export the default export from that module
 					if (!context.isDefaultExported && (moduleExports == null || moduleExports.hasDefaultExport)) {
 						context.markDefaultAsExported();
-						const namedExports = factory.createNamedExports([factory.createExportSpecifier(undefined, "default")]);
+						const namedExports = factory.createNamedExports([factory.createExportSpecifier(false, undefined, "default")]);
 						context.addTrailingStatements(factory.createExportDeclaration(undefined, undefined, false, namedExports, moduleSpecifierExpression));
 						return undefined;
 					}
@@ -271,8 +271,8 @@ export function visitBinaryExpression({node, sourceFile, context, continuation}:
 
 			const namedExports = factory.createNamedExports([
 				local === variableDeclarationLocal.text
-					? factory.createExportSpecifier(undefined, factory.createIdentifier(local))
-					: factory.createExportSpecifier(variableDeclarationLocal.text, factory.createIdentifier(local))
+					? factory.createExportSpecifier(false, undefined, factory.createIdentifier(local))
+					: factory.createExportSpecifier(false, variableDeclarationLocal.text, factory.createIdentifier(local))
 			]);
 
 			context.addTrailingStatements(factory.createExportDeclaration(undefined, undefined, false, namedExports));
@@ -286,8 +286,8 @@ export function visitBinaryExpression({node, sourceFile, context, continuation}:
 			if (!context.isLocalExported(local)) {
 				const namedExports = factory.createNamedExports([
 					local === right.text
-						? factory.createExportSpecifier(undefined, factory.createIdentifier(local))
-						: factory.createExportSpecifier(right.text, factory.createIdentifier(local))
+						? factory.createExportSpecifier(false, undefined, factory.createIdentifier(local))
+						: factory.createExportSpecifier(false, right.text, factory.createIdentifier(local))
 				]);
 				context.markLocalAsExported(local);
 				context.addTrailingStatements(factory.createExportDeclaration(undefined, undefined, false, namedExports));
@@ -315,8 +315,8 @@ export function visitBinaryExpression({node, sourceFile, context, continuation}:
 				if (typescript.isIdentifier(continuationResult)) {
 					const namedExports = factory.createNamedExports([
 						continuationResult.text === exportsData.property
-							? factory.createExportSpecifier(undefined, factory.createIdentifier(exportsData.property))
-							: factory.createExportSpecifier(factory.createIdentifier(continuationResult.text), factory.createIdentifier(exportsData.property))
+							? factory.createExportSpecifier(false, undefined, factory.createIdentifier(exportsData.property))
+							: factory.createExportSpecifier(false, factory.createIdentifier(continuationResult.text), factory.createIdentifier(exportsData.property))
 					]);
 					context.addTrailingStatements(factory.createExportDeclaration(undefined, undefined, false, namedExports, undefined));
 				} else {
@@ -334,7 +334,7 @@ export function visitBinaryExpression({node, sourceFile, context, continuation}:
 							)
 						);
 					} else {
-						const namedExports = factory.createNamedExports([factory.createExportSpecifier(freeIdentifier, exportsData.property)]);
+						const namedExports = factory.createNamedExports([factory.createExportSpecifier(false, freeIdentifier, exportsData.property)]);
 
 						// If it isn't, we'll need to bind it to a variable with the free name, but then export it under the original one
 						context.addTrailingStatements(

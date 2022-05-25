@@ -68,7 +68,7 @@ export function visitVariableDeclaration({node, childContinuation, sourceFile, c
 
 			if (moduleExports == null || moduleExports.hasDefaultExport) {
 				const exportClause = factory.createNamedExports([
-					factory.createExportSpecifier(node.name.text === "default" ? undefined : factory.createIdentifier("default"), factory.createIdentifier(node.name.text))
+					factory.createExportSpecifier(false, node.name.text === "default" ? undefined : factory.createIdentifier("default"), factory.createIdentifier(node.name.text))
 				]);
 
 				context.addTrailingStatements(factory.createExportDeclaration(undefined, undefined, false, exportClause, moduleSpecifierExpression));
@@ -92,7 +92,7 @@ export function visitVariableDeclaration({node, childContinuation, sourceFile, c
 						moduleSpecifierExpression
 					)
 				);
-				const exportClause = factory.createNamedExports([factory.createExportSpecifier(undefined, factory.createIdentifier(node.name.text))]);
+				const exportClause = factory.createNamedExports([factory.createExportSpecifier(false, undefined, factory.createIdentifier(node.name.text))]);
 				context.addTrailingStatements(factory.createExportDeclaration(undefined, undefined, false, exportClause));
 				return undefined;
 			}
@@ -147,7 +147,7 @@ export function visitVariableDeclaration({node, childContinuation, sourceFile, c
 					return childContinuation(node);
 				}
 
-				importSpecifiers.push(factory.createImportSpecifier(undefined, factory.createIdentifier(element.name.text)));
+				importSpecifiers.push(factory.createImportSpecifier(false, undefined, factory.createIdentifier(element.name.text)));
 			}
 
 			// This will be something like '{foo: bar} = require("bar")'
@@ -158,7 +158,7 @@ export function visitVariableDeclaration({node, childContinuation, sourceFile, c
 					return childContinuation(node);
 				}
 
-				importSpecifiers.push(factory.createImportSpecifier(factory.createIdentifier(element.propertyName.text), factory.createIdentifier(element.name.text)));
+				importSpecifiers.push(factory.createImportSpecifier(false, factory.createIdentifier(element.propertyName.text), factory.createIdentifier(element.name.text)));
 			} else {
 				// Opt out and proceed with the child continuation for more sophisticated handling
 				return childContinuation(node);
@@ -174,7 +174,7 @@ export function visitVariableDeclaration({node, childContinuation, sourceFile, c
 				const propertyName = importSpecifier.propertyName ?? importSpecifier.name;
 				const newName = context.getFreeIdentifier(importSpecifier.name.text, true);
 
-				const namedImports = factory.createNamedImports([factory.createImportSpecifier(factory.createIdentifier(propertyName.text), factory.createIdentifier(newName))]);
+				const namedImports = factory.createNamedImports([factory.createImportSpecifier(false, factory.createIdentifier(propertyName.text), factory.createIdentifier(newName))]);
 
 				context.addImport(
 					factory.createImportDeclaration(undefined, undefined, factory.createImportClause(false, undefined, namedImports), factory.createStringLiteral(transformedModuleSpecifier))

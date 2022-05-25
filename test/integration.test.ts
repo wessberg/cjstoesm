@@ -3,7 +3,7 @@ import {withTypeScript} from "./util/ts-macro";
 import {formatCode} from "./util/format-code";
 import {executeRollup} from "./setup/execute-rollup";
 
-test("Can bundle Commonjs. #1", withTypeScript, async (t, {typescript}) => {
+test.serial("Can bundle Commonjs. #1", withTypeScript, async (t, {typescript}) => {
 	const bundle = await executeRollup(
 		[
 			{
@@ -39,7 +39,7 @@ test("Can bundle Commonjs. #1", withTypeScript, async (t, {typescript}) => {
 	);
 });
 
-test("Can treeshake Commonjs. #1", withTypeScript, async (t, {typescript}) => {
+test.serial("Can treeshake Commonjs. #1", withTypeScript, async (t, {typescript}) => {
 	const bundle = await executeRollup(
 		[
 			{
@@ -78,7 +78,7 @@ test("Can treeshake Commonjs. #1", withTypeScript, async (t, {typescript}) => {
 	);
 });
 
-test("Can treeshake Commonjs. #2", withTypeScript, async (t, {typescript}) => {
+test.serial("Can treeshake Commonjs. #2", withTypeScript, async (t, {typescript}) => {
 	const bundle = await executeRollup(
 		[
 			{
@@ -119,7 +119,7 @@ test("Can treeshake Commonjs. #2", withTypeScript, async (t, {typescript}) => {
 	);
 });
 
-test("Can treeshake Commonjs. #3", withTypeScript, async (t, {typescript}) => {
+test.serial("Can treeshake Commonjs. #3", withTypeScript, async (t, {typescript}) => {
 	const bundle = await executeRollup(
 		[
 			{

@@ -3,7 +3,7 @@ import {CommanderError} from "commander";
 import {withTypeScript} from "./util/ts-macro";
 import {executeCli} from "./setup/execute-cli";
 
-test("Will throw if no 'input' argument is given. #1", withTypeScript, async (t, {typescript}) => {
+test.serial("Will throw if no 'input' argument is given. #1", withTypeScript, async (t, {typescript}) => {
 	await t.throwsAsync(executeCli({typescript, noForcedOutDir: true}), {
 		instanceOf: CommanderError,
 		code: "commander.missingArgument",
@@ -11,7 +11,7 @@ test("Will throw if no 'input' argument is given. #1", withTypeScript, async (t,
 	});
 });
 
-test("Will throw if no 'outDir' argument is given. #1", withTypeScript, async (t, {typescript}) => {
+test.serial("Will throw if no 'outDir' argument is given. #1", withTypeScript, async (t, {typescript}) => {
 	await t.throwsAsync(executeCli({typescript, noForcedOutDir: true, args: ["index.js"]}), {
 		instanceOf: CommanderError,
 		code: "commander.missingArgument",
@@ -19,7 +19,7 @@ test("Will throw if no 'outDir' argument is given. #1", withTypeScript, async (t
 	});
 });
 
-test("Will match a file called 'index.js' with input argument: index.js. #1", withTypeScript, async (t, {typescript}) => {
+test.serial("Will match a file called 'index.js' with input argument: index.js. #1", withTypeScript, async (t, {typescript}) => {
 	const result = await executeCli({
 		files: [
 			{
@@ -34,7 +34,7 @@ test("Will match a file called 'index.js' with input argument: index.js. #1", wi
 	t.true(result.findFile("index.js") != null);
 });
 
-test("Will match a file called 'index.js' with input argument: **.js. #1", withTypeScript, async (t, {typescript}) => {
+test.serial("Will match a file called 'index.js' with input argument: **.js. #1", withTypeScript, async (t, {typescript}) => {
 	const result = await executeCli({
 		files: [
 			{

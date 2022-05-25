@@ -4,7 +4,7 @@ import {executeTransformer} from "./setup/execute-transformer";
 import {formatCode} from "./util/format-code";
 import {lt} from "semver";
 
-test("Converts ObjectBindingPatterns to NamedImportBindings. #1", withTypeScript, (t, {typescript}) => {
+test.serial("Converts ObjectBindingPatterns to NamedImportBindings. #1", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -32,7 +32,7 @@ test("Converts ObjectBindingPatterns to NamedImportBindings. #1", withTypeScript
 	);
 });
 
-test("Converts ObjectBindingPatterns to NamedImportBindings. #2", withTypeScript, (t, {typescript}) => {
+test.serial("Converts ObjectBindingPatterns to NamedImportBindings. #2", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -61,7 +61,7 @@ test("Converts ObjectBindingPatterns to NamedImportBindings. #2", withTypeScript
 	);
 });
 
-test("Handles complex binding patterns by using the first level as an import and the remaining levels as new VariableStatements #1", withTypeScript, (t, {typescript}) => {
+test.serial("Handles complex binding patterns by using the first level as an import and the remaining levels as new VariableStatements #1", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -92,7 +92,7 @@ test("Handles complex binding patterns by using the first level as an import and
 	);
 });
 
-test("Converts require calls wrapped in ElementAccessExpressions to NamedImportBindings. #1", withTypeScript, (t, {typescript}) => {
+test.serial("Converts require calls wrapped in ElementAccessExpressions to NamedImportBindings. #1", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -122,7 +122,7 @@ test("Converts require calls wrapped in ElementAccessExpressions to NamedImportB
 	);
 });
 
-test("Converts require calls wrapped in ElementAccessExpressions to NamedImportBindings. #2", withTypeScript, (t, {typescript}) => {
+test.serial("Converts require calls wrapped in ElementAccessExpressions to NamedImportBindings. #2", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -152,7 +152,7 @@ test("Converts require calls wrapped in ElementAccessExpressions to NamedImportB
 	);
 });
 
-test("Converts require calls wrapped in ElementAccessExpressions to NamedImportBindings. #3", withTypeScript, (t, {typescript}) => {
+test.serial("Converts require calls wrapped in ElementAccessExpressions to NamedImportBindings. #3", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -182,7 +182,7 @@ test("Converts require calls wrapped in ElementAccessExpressions to NamedImportB
 	);
 });
 
-test("Converts require calls wrapped in ElementAccessExpressions to NamedImportBindings. #4", withTypeScript, (t, {typescript}) => {
+test.serial("Converts require calls wrapped in ElementAccessExpressions to NamedImportBindings. #4", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -212,7 +212,7 @@ test("Converts require calls wrapped in ElementAccessExpressions to NamedImportB
 	);
 });
 
-test("Converts require calls wrapped in non-statically analyzable ElementAccessExpressions to Namespace ImportDeclarations. #1", withTypeScript, (t, {typescript}) => {
+test.serial("Converts require calls wrapped in non-statically analyzable ElementAccessExpressions to Namespace ImportDeclarations. #1", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -243,7 +243,7 @@ test("Converts require calls wrapped in non-statically analyzable ElementAccessE
 	);
 });
 
-test("Converts require calls wrapped in non-statically analyzable ElementAccessExpressions to Namespace ImportDeclarations. #2", withTypeScript, (t, {typescript}) => {
+test.serial("Converts require calls wrapped in non-statically analyzable ElementAccessExpressions to Namespace ImportDeclarations. #2", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -273,7 +273,7 @@ test("Converts require calls wrapped in non-statically analyzable ElementAccessE
 	);
 });
 
-test("Converts require calls wrapped in non-statically analyzable ElementAccessExpressions to Namespace ImportDeclarations. #3", withTypeScript, (t, {typescript}) => {
+test.serial("Converts require calls wrapped in non-statically analyzable ElementAccessExpressions to Namespace ImportDeclarations. #3", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -303,7 +303,7 @@ test("Converts require calls wrapped in non-statically analyzable ElementAccessE
 	);
 });
 
-test("Converts default imports from modules that has none into namespace imports. #1", withTypeScript, (t, {typescript}) => {
+test.serial("Converts default imports from modules that has none into namespace imports. #1", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -332,7 +332,7 @@ test("Converts default imports from modules that has none into namespace imports
 	);
 });
 
-test("Converts require calls wrapped in PropertyAccessExpressions to NamedImportBindings. #1", withTypeScript, (t, {typescript}) => {
+test.serial("Converts require calls wrapped in PropertyAccessExpressions to NamedImportBindings. #1", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -362,7 +362,7 @@ test("Converts require calls wrapped in PropertyAccessExpressions to NamedImport
 	);
 });
 
-test("Converts require calls wrapped in PropertyAccessExpressions to NamedImportBindings. #2", withTypeScript, (t, {typescript}) => {
+test.serial("Converts require calls wrapped in PropertyAccessExpressions to NamedImportBindings. #2", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -392,7 +392,7 @@ test("Converts require calls wrapped in PropertyAccessExpressions to NamedImport
 	);
 });
 
-test("Converts require calls wrapped in PropertyAccessExpressions to NamedImportBindings. #3", withTypeScript, (t, {typescript}) => {
+test.serial("Converts require calls wrapped in PropertyAccessExpressions to NamedImportBindings. #3", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -422,7 +422,7 @@ test("Converts require calls wrapped in PropertyAccessExpressions to NamedImport
 	);
 });
 
-test("Converts require calls wrapped in PropertyAccessExpressions to NamedImportBindings. #4", withTypeScript, (t, {typescript}) => {
+test.serial("Converts require calls wrapped in PropertyAccessExpressions to NamedImportBindings. #4", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -452,7 +452,7 @@ test("Converts require calls wrapped in PropertyAccessExpressions to NamedImport
 	);
 });
 
-test("Can handle immediately-invoked require calls. #1", withTypeScript, (t, {typescript}) => {
+test.serial("Can handle immediately-invoked require calls. #1", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		const foo = require('foo')("bar");
@@ -469,7 +469,7 @@ test("Can handle immediately-invoked require calls. #1", withTypeScript, (t, {ty
 	);
 });
 
-test("Can handle immediately-invoked require calls. #2", withTypeScript, (t, {typescript}) => {
+test.serial("Can handle immediately-invoked require calls. #2", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -499,7 +499,7 @@ test("Can handle immediately-invoked require calls. #2", withTypeScript, (t, {ty
 	);
 });
 
-test("Can handle immediately-invoked require calls. #3", withTypeScript, (t, {typescript}) => {
+test.serial("Can handle immediately-invoked require calls. #3", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -529,7 +529,7 @@ test("Can handle immediately-invoked require calls. #3", withTypeScript, (t, {ty
 	);
 });
 
-test("Can handle immediately-invoked require calls. #4", withTypeScript, (t, {typescript}) => {
+test.serial("Can handle immediately-invoked require calls. #4", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -561,7 +561,7 @@ test("Can handle immediately-invoked require calls. #4", withTypeScript, (t, {ty
 	);
 });
 
-test("Converts Identifiers to default imports. #1", withTypeScript, (t, {typescript}) => {
+test.serial("Converts Identifiers to default imports. #1", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		const foo = require("foo");
@@ -577,7 +577,7 @@ test("Converts Identifiers to default imports. #1", withTypeScript, (t, {typescr
 	);
 });
 
-test("Handles multiple require() calls inside one VariableStatement. #1", withTypeScript, (t, {typescript}) => {
+test.serial("Handles multiple require() calls inside one VariableStatement. #1", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		const foo = require("foo"), bar = require("bar");
@@ -594,7 +594,7 @@ test("Handles multiple require() calls inside one VariableStatement. #1", withTy
 	);
 });
 
-test("Handles multiple require() calls inside one VariableStatement mixed with other content. #1", withTypeScript, (t, {typescript}) => {
+test.serial("Handles multiple require() calls inside one VariableStatement mixed with other content. #1", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		const foo = require("foo"), bar = require("bar"), baz = 2;
@@ -613,7 +613,7 @@ test("Handles multiple require() calls inside one VariableStatement mixed with o
 	);
 });
 
-test("Places imports in top of the SourceFile in the order they were parsed in from top to bottom. #1", withTypeScript, (t, {typescript}) => {
+test.serial("Places imports in top of the SourceFile in the order they were parsed in from top to bottom. #1", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		const foo = 2;
@@ -632,7 +632,7 @@ test("Places imports in top of the SourceFile in the order they were parsed in f
 	);
 });
 
-test("Handles anonymous require calls. #1", withTypeScript, (t, {typescript}) => {
+test.serial("Handles anonymous require calls. #1", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		myFunction(require("foo"));
@@ -650,7 +650,7 @@ test("Handles anonymous require calls. #1", withTypeScript, (t, {typescript}) =>
 	);
 });
 
-test("Handles anonymous require calls. #2", withTypeScript, (t, {typescript}) => {
+test.serial("Handles anonymous require calls. #2", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		myFunction(require("foo").bar);
@@ -668,7 +668,7 @@ test("Handles anonymous require calls. #2", withTypeScript, (t, {typescript}) =>
 	);
 });
 
-test("Handles anonymous require calls. #3", withTypeScript, (t, {typescript}) => {
+test.serial("Handles anonymous require calls. #3", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		myFunction(require("foo")["bar"]);
@@ -686,7 +686,7 @@ test("Handles anonymous require calls. #3", withTypeScript, (t, {typescript}) =>
 	);
 });
 
-test("Handles anonymous require calls. #4", withTypeScript, (t, {typescript}) => {
+test.serial("Handles anonymous require calls. #4", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		require("foo");
@@ -703,7 +703,7 @@ test("Handles anonymous require calls. #4", withTypeScript, (t, {typescript}) =>
 	);
 });
 
-test("Handles anonymous require calls. #5", withTypeScript, (t, {typescript}) => {
+test.serial("Handles anonymous require calls. #5", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		require('./foo')({foo: "bar"});
@@ -721,7 +721,7 @@ test("Handles anonymous require calls. #5", withTypeScript, (t, {typescript}) =>
 	);
 });
 
-test("Handles anonymous require calls. #6", withTypeScript, (t, {typescript}) => {
+test.serial("Handles anonymous require calls. #6", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -752,7 +752,7 @@ test("Handles anonymous require calls. #6", withTypeScript, (t, {typescript}) =>
 	);
 });
 
-test("Handles anonymous require calls. #7", withTypeScript, (t, {typescript}) => {
+test.serial("Handles anonymous require calls. #7", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -783,7 +783,7 @@ test("Handles anonymous require calls. #7", withTypeScript, (t, {typescript}) =>
 	);
 });
 
-test("Deconflicts named imports for anonymous require calls. #1", withTypeScript, (t, {typescript}) => {
+test.serial("Deconflicts named imports for anonymous require calls. #1", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		const foo = 2;
@@ -803,7 +803,7 @@ test("Deconflicts named imports for anonymous require calls. #1", withTypeScript
 	);
 });
 
-test("Deconflicts named imports for anonymous require calls. #2", withTypeScript, (t, {typescript}) => {
+test.serial("Deconflicts named imports for anonymous require calls. #2", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		const bar = 2;
@@ -823,7 +823,7 @@ test("Deconflicts named imports for anonymous require calls. #2", withTypeScript
 	);
 });
 
-test("Deconflicts named imports for anonymous require calls. #3", withTypeScript, (t, {typescript}) => {
+test.serial("Deconflicts named imports for anonymous require calls. #3", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		const bar = 2;
@@ -843,7 +843,7 @@ test("Deconflicts named imports for anonymous require calls. #3", withTypeScript
 	);
 });
 
-test("Deconflicts named imports for anonymous require calls. #4", withTypeScript, (t, {typescript}) => {
+test.serial("Deconflicts named imports for anonymous require calls. #4", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -874,7 +874,7 @@ test("Deconflicts named imports for anonymous require calls. #4", withTypeScript
 	);
 });
 
-test("Won't use reserved identifiers as generated names for import bindings. #1", withTypeScript, (t, {typescript}) => {
+test.serial("Won't use reserved identifiers as generated names for import bindings. #1", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		require("export")("foo");
@@ -892,7 +892,7 @@ test("Won't use reserved identifiers as generated names for import bindings. #1"
 	);
 });
 
-test("Won't generate NamedImports when the module that is being imported from has none. #1", withTypeScript, (t, {typescript}) => {
+test.serial("Won't generate NamedImports when the module that is being imported from has none. #1", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -920,7 +920,7 @@ test("Won't generate NamedImports when the module that is being imported from ha
 	);
 });
 
-test("Won't generate NamedImports when the module that is being imported from has none. #2", withTypeScript, (t, {typescript}) => {
+test.serial("Won't generate NamedImports when the module that is being imported from has none. #2", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		require('./foo').bar({foo: "bar"});
@@ -938,7 +938,7 @@ test("Won't generate NamedImports when the module that is being imported from ha
 	);
 });
 
-test("Won't generate NamedImports when the module that is being imported from has none. #3", withTypeScript, (t, {typescript}) => {
+test.serial("Won't generate NamedImports when the module that is being imported from has none. #3", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		const foo = require('foo').bar("bar");
@@ -958,7 +958,7 @@ test("Won't generate NamedImports when the module that is being imported from ha
 	);
 });
 
-test("Won't generate NamedImports when the module that is being imported from has none. #4", withTypeScript, (t, {typescript}) => {
+test.serial("Won't generate NamedImports when the module that is being imported from has none. #4", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		const foo = 2;
@@ -978,7 +978,7 @@ test("Won't generate NamedImports when the module that is being imported from ha
 	);
 });
 
-test("Won't generate NamedImports when the module that is being imported from has none. #5", withTypeScript, (t, {typescript}) => {
+test.serial("Won't generate NamedImports when the module that is being imported from has none. #5", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		const foo = require('foo').bar("bar");
@@ -995,7 +995,7 @@ test("Won't generate NamedImports when the module that is being imported from ha
 	);
 });
 
-test("Won't generate NamedImports when the module that is being imported from has none. #6", withTypeScript, (t, {typescript}) => {
+test.serial("Won't generate NamedImports when the module that is being imported from has none. #6", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		const {foo} = (require("./foo").BAR);
@@ -1012,7 +1012,7 @@ test("Won't generate NamedImports when the module that is being imported from ha
 	);
 });
 
-test("Won't generate NamedImports when the module that is being imported from has none. #7", withTypeScript, (t, {typescript}) => {
+test.serial("Won't generate NamedImports when the module that is being imported from has none. #7", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		const bar = require('./foo').bar("bar");
@@ -1029,7 +1029,7 @@ test("Won't generate NamedImports when the module that is being imported from ha
 	);
 });
 
-test("Won't generate NamedImports when the module that is being imported from has none. #8", withTypeScript, (t, {typescript}) => {
+test.serial("Won't generate NamedImports when the module that is being imported from has none. #8", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		const foo = require("./foo")[BAR];
@@ -1046,7 +1046,7 @@ test("Won't generate NamedImports when the module that is being imported from ha
 	);
 });
 
-test("Won't generate NamedImports when the module that is being imported from has none. #9", withTypeScript, (t, {typescript}) => {
+test.serial("Won't generate NamedImports when the module that is being imported from has none. #9", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		const {foo} = require("./foo")[BAR];
@@ -1063,7 +1063,7 @@ test("Won't generate NamedImports when the module that is being imported from ha
 	);
 });
 
-test("Won't generate NamedImports when the module that is being imported from has none. #10", withTypeScript, (t, {typescript}) => {
+test.serial("Won't generate NamedImports when the module that is being imported from has none. #10", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		const {foo: {bar: baz}} = require("./foo");
@@ -1081,7 +1081,7 @@ test("Won't generate NamedImports when the module that is being imported from ha
 	);
 });
 
-test("Won't generate NamedImports when the module that is being imported from has none. #11", withTypeScript, (t, {typescript}) => {
+test.serial("Won't generate NamedImports when the module that is being imported from has none. #11", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		const {readFileSync: _foo} = require("./foo");`,
@@ -1098,7 +1098,7 @@ test("Won't generate NamedImports when the module that is being imported from ha
 	);
 });
 
-test("Can import named bindings from built in Node modules. #1", withTypeScript, (t, {typescript}) => {
+test.serial("Can import named bindings from built in Node modules. #1", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		const {join} = require("path");`,
@@ -1114,7 +1114,7 @@ test("Can import named bindings from built in Node modules. #1", withTypeScript,
 	);
 });
 
-test("Won't duplicate imports of the same module without an ImportClause. #1", withTypeScript, (t, {typescript}) => {
+test.serial("Won't duplicate imports of the same module without an ImportClause. #1", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		import "foo";
@@ -1132,7 +1132,7 @@ test("Won't duplicate imports of the same module without an ImportClause. #1", w
 	);
 });
 
-test("Won't duplicate imports of the same module without an ImportClause. #2", withTypeScript, (t, {typescript}) => {
+test.serial("Won't duplicate imports of the same module without an ImportClause. #2", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		require("foo");
@@ -1150,7 +1150,7 @@ test("Won't duplicate imports of the same module without an ImportClause. #2", w
 	);
 });
 
-test("Won't duplicate imports of the same default export. #1", withTypeScript, (t, {typescript}) => {
+test.serial("Won't duplicate imports of the same default export. #1", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		myFunction(require("foo"));
@@ -1170,7 +1170,7 @@ test("Won't duplicate imports of the same default export. #1", withTypeScript, (
 	);
 });
 
-test("Won't duplicate imports of the same default export. #2", withTypeScript, (t, {typescript}) => {
+test.serial("Won't duplicate imports of the same default export. #2", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		const foo = require("foo");
@@ -1189,7 +1189,7 @@ test("Won't duplicate imports of the same default export. #2", withTypeScript, (
 	);
 });
 
-test("Won't duplicate imports of the same default export. #3", withTypeScript, (t, {typescript}) => {
+test.serial("Won't duplicate imports of the same default export. #3", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		const foo = require("foo").foo;
@@ -1209,7 +1209,7 @@ test("Won't duplicate imports of the same default export. #3", withTypeScript, (
 	);
 });
 
-test("Won't duplicate imports of the same Namespace. #1", withTypeScript, (t, {typescript}) => {
+test.serial("Won't duplicate imports of the same Namespace. #1", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -1240,7 +1240,7 @@ test("Won't duplicate imports of the same Namespace. #1", withTypeScript, (t, {t
 	);
 });
 
-test("Won't duplicate imports of the same Namespace. #2", withTypeScript, (t, {typescript}) => {
+test.serial("Won't duplicate imports of the same Namespace. #2", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -1272,7 +1272,7 @@ test("Won't duplicate imports of the same Namespace. #2", withTypeScript, (t, {t
 	);
 });
 
-test("Won't duplicate imports of the same Named import. #1", withTypeScript, (t, {typescript}) => {
+test.serial("Won't duplicate imports of the same Named import. #1", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -1305,7 +1305,7 @@ test("Won't duplicate imports of the same Named import. #1", withTypeScript, (t,
 	);
 });
 
-test("Takes deep require() calls and places them in top of the file. #1", withTypeScript, (t, {typescript}) => {
+test.serial("Takes deep require() calls and places them in top of the file. #1", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		(async () => {
@@ -1326,7 +1326,7 @@ test("Takes deep require() calls and places them in top of the file. #1", withTy
 	);
 });
 
-test("Takes deep require() calls and places them in top of the file. #2", withTypeScript, (t, {typescript}) => {
+test.serial("Takes deep require() calls and places them in top of the file. #2", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -1362,7 +1362,7 @@ test("Takes deep require() calls and places them in top of the file. #2", withTy
 	);
 });
 
-test("Handles CommonJS-based barrel exports. #1", withTypeScript, (t, {typescript}) => {
+test.serial("Handles CommonJS-based barrel exports. #1", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -1393,7 +1393,7 @@ test("Handles CommonJS-based barrel exports. #1", withTypeScript, (t, {typescrip
 	);
 });
 
-test("Handles CommonJS-based barrel exports. #2", withTypeScript, (t, {typescript}) => {
+test.serial("Handles CommonJS-based barrel exports. #2", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -1424,7 +1424,7 @@ test("Handles CommonJS-based barrel exports. #2", withTypeScript, (t, {typescrip
 	);
 });
 
-test("Handles CommonJS-based barrel exports. #3", withTypeScript, (t, {typescript}) => {
+test.serial("Handles CommonJS-based barrel exports. #3", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -1456,7 +1456,7 @@ test("Handles CommonJS-based barrel exports. #3", withTypeScript, (t, {typescrip
 	);
 });
 
-test("Handles named CommonJS-based barrel exports. #1", withTypeScript, (t, {typescript}) => {
+test.serial("Handles named CommonJS-based barrel exports. #1", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -1479,7 +1479,7 @@ test("Handles named CommonJS-based barrel exports. #1", withTypeScript, (t, {typ
 	);
 });
 
-test("Handles named CommonJS-based barrel exports. #2", withTypeScript, (t, {typescript}) => {
+test.serial("Handles named CommonJS-based barrel exports. #2", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -1520,7 +1520,7 @@ test("Handles named CommonJS-based barrel exports. #2", withTypeScript, (t, {typ
 	}
 });
 
-test("Handles named CommonJS-based barrel exports. #3", withTypeScript, (t, {typescript}) => {
+test.serial("Handles named CommonJS-based barrel exports. #3", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -1546,7 +1546,7 @@ test("Handles named CommonJS-based barrel exports. #3", withTypeScript, (t, {typ
 	);
 });
 
-test("Deconflicts local bindings. #1", withTypeScript, (t, {typescript}) => {
+test.serial("Deconflicts local bindings. #1", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
