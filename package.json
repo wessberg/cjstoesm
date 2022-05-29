@@ -12,7 +12,7 @@
 		"test": "ava",
 		"prebuild": "pnpm run clean",
 		"build": "pnpm run prebuild && pnpm run rollup",
-		"build:built_in_module_map": "ts-node script/generate-built-in-module-map.ts",
+		"build:built_in_module_map": "ts-node --esm script/generate-built-in-module-map.ts",
 		"prewatch": "pnpm run clean",
 		"watch": "pnpm run prewatch && pnpm run rollup:watch",
 		"rollup": "rollup -c rollup.config.js",

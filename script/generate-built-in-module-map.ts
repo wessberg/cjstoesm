@@ -1,9 +1,8 @@
 import Module from "module";
-import {join} from "path";
+import path from "crosspath";
 import {existsSync, mkdirSync, writeFileSync} from "fs";
-import {format} from "prettier";
-
-import prettierConfig from "../prettier.config.js";
+import {format, type RequiredOptions} from "prettier";
+import prettierConfig from "@wessberg/prettier-config" assert {type: "json"};
 
 const IGNORED_MODULE_NAMES = new Set([
 	"_http_agent",
@@ -46,7 +45,7 @@ function generateBuiltInModuleInnerContents(): string {
 	return str;
 }
 
-function generateBuiltInModule(): string {
+async function generateBuiltInModule(): Promise<string> {
 	return format(
 		`\
 /* eslint-disable */
@@ -71,21 +70,21 @@ export function isBuiltInModule (moduleName: string): moduleName is BuiltInModul
 }
 	
 export const BUILT_IN_MODULE_MAP: BuiltInModuleMap = {
-	${generateBuiltInModuleMapInnerContents()}
+	${await generateBuiltInModuleMapInnerContents()}
 };
 `,
 		{
-			...prettierConfig,
+			...(prettierConfig as Partial<RequiredOptions>),
 			parser: "typescript"
 		}
 	);
 }
 
-function generateBuiltInModuleMapInnerContents(): string {
+async function generateBuiltInModuleMapInnerContents(): Promise<string> {
 	let str = "";
 	for (const moduleName of Module.builtinModules) {
 		if (IGNORED_MODULE_NAMES.has(moduleName)) continue;
-		str += `${generateBuiltInModuleMapContents(moduleName)},\n`;
+		str += `${await generateBuiltInModuleMapContents(moduleName)},\n`;
 	}
 	return str;
 }
@@ -95,9 +94,10 @@ function filterAndFormatModuleKeys(keys: string[]): string {
 	return `[${filteredKeys.map(filteredKey => `"${filteredKey}"`).join(",")}]`;
 }
 
-function generateBuiltInModuleMapContents(moduleName: string): string {
-	// eslint-disable-next-line @typescript-eslint/no-require-imports,@typescript-eslint/no-var-requires
-	const loadedModule = require(moduleName);
+async function generateBuiltInModuleMapContents(moduleName: string): Promise<string> {
+	let loadedModule = await import(moduleName);
+	loadedModule ="default" in loadedModule ? loadedModule.default : loadedModule;
+
 	return `\
 		${moduleName.includes("/") ? `"${moduleName}"` : moduleName}: {
 			namedExports: new Set(${typeof loadedModule === "function" ? "[]" : filterAndFormatModuleKeys(Object.keys(loadedModule))}),
@@ -105,11 +105,12 @@ function generateBuiltInModuleMapContents(moduleName: string): string {
 		}`;
 }
 
-const DESTINATION_DIR = join(__dirname, "../src/transformer/built-in");
-const DESTINATION = join(DESTINATION_DIR, "built-in-module-map.ts");
+const CURRENT_DIR = path.dirname(import.meta.url.replace(/file:\/{2,3}/, ``));
+const DESTINATION_DIR = path.join(CURRENT_DIR, "../src/transformer/built-in");
+const DESTINATION = path.join(DESTINATION_DIR, "built-in-module-map.ts");
 
-if (!existsSync(DESTINATION_DIR)) {
-	mkdirSync(DESTINATION_DIR);
+if (!existsSync(path.native.normalize(DESTINATION_DIR))) {
+	mkdirSync(path.native.normalize(DESTINATION_DIR));
 }
 
-writeFileSync(DESTINATION, generateBuiltInModule());
+writeFileSync(path.native.normalize(DESTINATION), await generateBuiltInModule());

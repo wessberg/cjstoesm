@@ -1,6 +1,6 @@
 {
 	"extends": "@wessberg/ts-config",
-	"include": ["src/**/*.*", "test/**/*.*"],
+	"include": ["src/**/*.*", "script/**/*.*", "test/**/*.*"],
 	"compilerOptions": {
 		"module": "esnext",
 		"target": "es2019",

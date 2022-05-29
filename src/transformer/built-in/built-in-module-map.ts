@@ -39,6 +39,7 @@ export const BUILT_IN_MODULE = new Set([
 	"punycode",
 	"querystring",
 	"readline",
+	"readline/promises",
 	"repl",
 	"stream",
 	"stream/consumers",
@@ -78,7 +79,7 @@ export const BUILT_IN_MODULE_MAP: BuiltInModuleMap = {
 		hasDefaultExport: true
 	},
 	async_hooks: {
-		namedExports: new Set(["AsyncLocalStorage", "createHook", "executionAsyncId", "triggerAsyncId", "executionAsyncResource", "AsyncResource"]),
+		namedExports: new Set(["AsyncLocalStorage", "createHook", "executionAsyncId", "triggerAsyncId", "executionAsyncResource", "asyncWrapProviders", "AsyncResource"]),
 		hasDefaultExport: true
 	},
 	buffer: {
@@ -311,6 +312,8 @@ export const BUILT_IN_MODULE_MAP: BuiltInModuleMap = {
 			"UV_FS_O_FILEMAP",
 			"O_TRUNC",
 			"O_APPEND",
+			"S_IRUSR",
+			"S_IWUSR",
 			"F_OK",
 			"R_OK",
 			"W_OK",
@@ -378,7 +381,6 @@ export const BUILT_IN_MODULE_MAP: BuiltInModuleMap = {
 			"DH_NOT_SUITABLE_GENERATOR",
 			"ALPN_ENABLED",
 			"RSA_PKCS1_PADDING",
-			"RSA_SSLV23_PADDING",
 			"RSA_NO_PADDING",
 			"RSA_PKCS1_OAEP_PADDING",
 			"RSA_X931_PADDING",
@@ -393,7 +395,8 @@ export const BUILT_IN_MODULE_MAP: BuiltInModuleMap = {
 			"TLS1_3_VERSION",
 			"POINT_CONVERSION_COMPRESSED",
 			"POINT_CONVERSION_UNCOMPRESSED",
-			"POINT_CONVERSION_HYBRID"
+			"POINT_CONVERSION_HYBRID",
+			"defaultCipherList"
 		]),
 		hasDefaultExport: true
 	},
@@ -462,7 +465,9 @@ export const BUILT_IN_MODULE_MAP: BuiltInModuleMap = {
 			"X509Certificate",
 			"secureHeapUsed",
 			"constants",
-			"webcrypto"
+			"webcrypto",
+			"subtle",
+			"getRandomValues"
 		]),
 		hasDefaultExport: true
 	},
@@ -843,6 +848,7 @@ export const BUILT_IN_MODULE_MAP: BuiltInModuleMap = {
 			"PerformanceMeasure",
 			"PerformanceObserver",
 			"PerformanceObserverEntryList",
+			"PerformanceResourceTiming",
 			"monitorEventLoopDelay",
 			"createHistogram",
 			"performance",
@@ -863,12 +869,14 @@ export const BUILT_IN_MODULE_MAP: BuiltInModuleMap = {
 			"config",
 			"dlopen",
 			"uptime",
+			"getActiveResourcesInfo",
 			"reallyExit",
 			"cpuUsage",
 			"resourceUsage",
 			"memoryUsage",
 			"kill",
 			"exit",
+			"hrtime",
 			"openStdin",
 			"allowedNodeEnvironmentFlags",
 			"assert",
@@ -892,8 +900,9 @@ export const BUILT_IN_MODULE_MAP: BuiltInModuleMap = {
 			"ppid",
 			"execPath",
 			"debugPort",
-			"hrtime",
 			"argv0",
+			"exitCode",
+			"report",
 			"setSourceMapsEnabled",
 			"mainModule",
 			"emit"
@@ -909,7 +918,11 @@ export const BUILT_IN_MODULE_MAP: BuiltInModuleMap = {
 		hasDefaultExport: true
 	},
 	readline: {
-		namedExports: new Set(["Interface", "clearLine", "clearScreenDown", "createInterface", "cursorTo", "emitKeypressEvents", "moveCursor"]),
+		namedExports: new Set(["Interface", "clearLine", "clearScreenDown", "createInterface", "cursorTo", "emitKeypressEvents", "moveCursor", "promises"]),
+		hasDefaultExport: true
+	},
+	"readline/promises": {
+		namedExports: new Set(["Interface", "Readline", "createInterface"]),
 		hasDefaultExport: true
 	},
 	repl: {
@@ -944,7 +957,9 @@ export const BUILT_IN_MODULE_MAP: BuiltInModuleMap = {
 			"ByteLengthQueuingStrategy",
 			"CountQueuingStrategy",
 			"TextEncoderStream",
-			"TextDecoderStream"
+			"TextDecoderStream",
+			"CompressionStream",
+			"DecompressionStream"
 		]),
 		hasDefaultExport: true
 	},
@@ -957,7 +972,7 @@ export const BUILT_IN_MODULE_MAP: BuiltInModuleMap = {
 		hasDefaultExport: true
 	},
 	"timers/promises": {
-		namedExports: new Set(["setTimeout", "setImmediate", "setInterval"]),
+		namedExports: new Set(["setTimeout", "setImmediate", "setInterval", "scheduler"]),
 		hasDefaultExport: true
 	},
 	tls: {
@@ -978,7 +993,6 @@ export const BUILT_IN_MODULE_MAP: BuiltInModuleMap = {
 			"Server",
 			"createServer",
 			"connect",
-			"parseCertString",
 			"createSecurePair"
 		]),
 		hasDefaultExport: true
@@ -1038,6 +1052,7 @@ export const BUILT_IN_MODULE_MAP: BuiltInModuleMap = {
 			"isPrimitive",
 			"log",
 			"promisify",
+			"stripVTControlCharacters",
 			"toUSVString",
 			"TextDecoder",
 			"TextEncoder",
@@ -1108,7 +1123,8 @@ export const BUILT_IN_MODULE_MAP: BuiltInModuleMap = {
 			"takeCoverage",
 			"stopCoverage",
 			"serialize",
-			"writeHeapSnapshot"
+			"writeHeapSnapshot",
+			"promiseHooks"
 		]),
 		hasDefaultExport: true
 	},
