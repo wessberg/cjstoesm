@@ -249,7 +249,7 @@ cjstoesm **/*.*
 You can also just pass in a folder name, in which case all direct descendents of that folder will be transformed and overwritten:
 
 ```
-cjstoesm some-folder
+cjstoesm src
 ```
 
 You can also pass in a second argument, `outDir`, to avoid overwriting the source files. The following command transforms all files matched by the glob `**/*.*` and emits them to the folder `dist` from the current working directory:

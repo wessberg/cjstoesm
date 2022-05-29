@@ -32,10 +32,12 @@
 		"es6 modules",
 		"transformer",
 		"custom transformer",
-		"treeshake"
+		"treeshake",
+		"cli",
+		"api"
 	],
 	"bin": {
-		"cjstoesm": "bin/cjstoesm"
+		"cjstoesm": "bin/cjstoesm.js"
 	},
 	"files": [
 		"bin/**/*.*",
