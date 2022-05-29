@@ -122,6 +122,7 @@ As you can see, this transformer will attempt to produce code that generates as 
 - Tree-shaking friendly
 - Clean, idiomatic output
 - Automatic and configurable addition of file extensions to module specifiers
+- Automatic and configurable addition of import assertions to relevant import declarations
 - No wrappers
 - Low-level implementation that can be used as the foundation for other tools such as Loaders, Plugins, CLIs, and Linters.
 - CLI integration, enabling you to convert a project from CJS to ESM from the command line.
@@ -163,6 +164,8 @@ As you can see, this transformer will attempt to produce code that generates as 
   - [Run once with npx](#run-once-with-npx)
   - [Peer Dependencies](#peer-dependencies)
 - [Engine](#engine)
+- [File extension handling](#file-extension-handling)
+- [Import Assertion handling](#import-assertion-handling)
 - [Usage](#usage)
   - [CLI usage](#cli-usage)
   - [API Usage](#api-usage)

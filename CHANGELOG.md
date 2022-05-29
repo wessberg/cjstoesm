@@ -1,3 +1,12 @@
+# [2.1.0](https://github.com/wessberg/cjstoesm/compare/v2.0.0...v2.1.0) (2022-05-29)
+
+
+### Features
+
+* add support for adding and customizing Import Assertions ([6bf8056](https://github.com/wessberg/cjstoesm/commit/6bf8056d8db2439b4d5ae334a7ae3a34fe714911))
+
+
+
 # [2.0.0](https://github.com/wessberg/cjstoesm/compare/v1.1.5...v2.0.0) (2022-05-29)
 
 
