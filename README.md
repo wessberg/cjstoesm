@@ -14,7 +14,7 @@
 
 <a href="https://npmcharts.com/compare/cjstoesm?minimal=true"><img alt="Downloads per month" src="https://img.shields.io/npm/dm/cjstoesm.svg"    /></a>
 <a href="https://www.npmjs.com/package/cjstoesm"><img alt="NPM version" src="https://badge.fury.io/js/cjstoesm.svg"    /></a>
-<a href="https://david-dm.org/wessberg/cjstoesm"><img alt="Dependencies" src="https://img.shields.io/david/wessberg%2Fcjstoesm.svg"    /></a>
+<img alt="Dependencies" src="https://img.shields.io/librariesio/github/wessberg%2Fcjstoesm.svg"    />
 <a href="https://github.com/wessberg/cjstoesm/graphs/contributors"><img alt="Contributors" src="https://img.shields.io/github/contributors/wessberg%2Fcjstoesm.svg"    /></a>
 <a href="https://github.com/prettier/prettier"><img alt="code style: prettier" src="https://img.shields.io/badge/code_style-prettier-ff69b4.svg"    /></a>
 <a href="https://opensource.org/licenses/MIT"><img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-yellow.svg"    /></a>
@@ -162,6 +162,7 @@ As you can see, this transformer will attempt to produce code that generates as 
   - [pnpm](#pnpm)
   - [Run once with npx](#run-once-with-npx)
   - [Peer Dependencies](#peer-dependencies)
+- [Engine](#engine)
 - [Usage](#usage)
   - [CLI usage](#cli-usage)
   - [API Usage](#api-usage)

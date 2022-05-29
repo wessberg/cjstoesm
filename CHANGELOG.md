@@ -1,3 +1,19 @@
+# [2.0.0](https://github.com/wessberg/cjstoesm/compare/v1.1.5...v2.0.0) (2022-05-29)
+
+
+### Bug Fixes
+
+* don't use import assertions to ensure compatibility with Node 14 and 16 in the test runner ([8c2b76a](https://github.com/wessberg/cjstoesm/commit/8c2b76a878e047c9b54e37555d4a432e8ff61b04))
+* don't use import assertions to ensure compatibility with Node 14 and 16 in the test runner ([d9c996e](https://github.com/wessberg/cjstoesm/commit/d9c996e72098cb5ebcd8014ee05d2997e0c9c9cc))
+* fix built-in-module-map generator ([65e1179](https://github.com/wessberg/cjstoesm/commit/65e1179f2b5abb18f4aeb235f50647c7f8b6fdfd))
+
+
+### Features
+
+* migrate to publishing ES-modules with a CommonJS fallback. Improve emit-behavior. Fix bugs related to inclusion of module specifiers ([78592d0](https://github.com/wessberg/cjstoesm/commit/78592d0d33e1116b6cc2ff81dd010a3f1b63254c))
+
+
+
 ## [1.1.5](https://github.com/wessberg/cjstoesm/compare/v1.1.4...v1.1.5) (2022-05-25)
 
 
