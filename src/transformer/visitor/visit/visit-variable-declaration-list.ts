@@ -1,6 +1,6 @@
-import {BeforeVisitorOptions} from "../before-visitor-options";
-import {isNotEmittedStatement} from "./is-not-emitted-statement";
-import {TS} from "../../../type/ts";
+import {BeforeVisitorOptions} from "../before-visitor-options.js";
+import {isNotEmittedStatement} from "./is-not-emitted-statement.js";
+import {TS} from "../../../type/ts.js";
 
 /**
  * Visits the given VariableDeclarationList

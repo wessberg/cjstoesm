@@ -1,9 +1,9 @@
-import {VisitorContext} from "../visitor-context";
-import {resolvePath} from "./resolve-path";
-import {walkThroughFillerNodes} from "./walk-through-filler-nodes";
-import {isBuiltInModule} from "../built-in/built-in-module-map";
-import {TS} from "../../type/ts";
-import {transformModuleSpecifier} from "./transform-module-specifier";
+import {VisitorContext} from "../visitor-context.js";
+import {resolvePath} from "./resolve-path.js";
+import {walkThroughFillerNodes} from "./walk-through-filler-nodes.js";
+import {isBuiltInModule} from "../built-in/built-in-module-map.js";
+import {TS} from "../../type/ts.js";
+import {transformModuleSpecifier} from "./transform-module-specifier.js";
 
 export interface IsRequireCallNoMatchResult {
 	match: false;

@@ -4,7 +4,7 @@
  * @param expression
  * @returns
  */
-import {TS} from "../../type/ts";
+import {TS} from "../../type/ts.js";
 
 export function walkThroughFillerNodes(expression: TS.Expression, typescript: typeof TS): TS.Expression {
 	// noinspection JSDeprecatedSymbols

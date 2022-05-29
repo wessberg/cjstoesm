@@ -1,5 +1,5 @@
-import {isNotEmittedStatement} from "../visitor/visit/is-not-emitted-statement";
-import {TS} from "../../type/ts";
+import {isNotEmittedStatement} from "../visitor/visit/is-not-emitted-statement.js";
+import {TS} from "../../type/ts.js";
 
 /**
  * Returns true if the given Node contains an empty child

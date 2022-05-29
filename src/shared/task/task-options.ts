@@ -1,6 +1,6 @@
-import {ReadonlyFileSystem} from "../file-system/file-system";
-import {Loggable} from "../logger/loggable";
-import {TS} from "../../type/ts";
+import {ReadonlyFileSystem} from "../file-system/file-system.js";
+import {Loggable} from "../logger/loggable.js";
+import {TS} from "../../type/ts.js";
 
 export interface TaskOptions {
 	/**

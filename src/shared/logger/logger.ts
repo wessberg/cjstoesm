@@ -1,6 +1,6 @@
-import {LogLevelKind} from "./log-level-kind";
+import {LogLevelKind} from "./log-level-kind.js";
 import chalk from "chalk";
-import {Loggable} from "./loggable";
+import {Loggable} from "./loggable.js";
 
 /**
  * A logger that can print to the console

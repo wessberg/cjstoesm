@@ -1,5 +1,5 @@
-import {BeforeVisitorOptions} from "../before-visitor-options";
-import {TS} from "../../../type/ts";
+import {BeforeVisitorOptions} from "../before-visitor-options.js";
+import {TS} from "../../../type/ts.js";
 
 /**
  * Visits the given ExportDeclaration

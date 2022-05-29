@@ -1,19 +1,20 @@
-import {TransformTaskOptions} from "../../../shared/task/transform-task-options";
+import {TransformTaskOptions} from "../../../shared/task/transform-task-options.js";
 import {inspect} from "util";
-import {sync} from "fast-glob";
-import {TS} from "../../../type/ts";
-import {cjsToEsm} from "../../../transformer/cjs-to-esm";
-import {createCompilerHost} from "../../../shared/compiler-host/create-compiler-host";
-import {TransformResult} from "../../../shared/task/transform-result";
+import fastGlob from "fast-glob";
+import {TS} from "../../../type/ts.js";
+import {cjsToEsm} from "../../../transformer/cjs-to-esm.js";
+import {createCompilerHost} from "../../../shared/compiler-host/create-compiler-host.js";
+import {TransformResult} from "../../../shared/task/transform-result.js";
 import chalk from "chalk";
-import {ensureArray} from "../../../shared/util/util";
+import {ensureArray, getFolderClosestToRoot, normalizeGlob} from "../../../shared/util/util.js";
 import path from "crosspath";
+import {TEMPORARY_SUBFOLDER_NAME} from "../../../shared/constant.js";
 
 /**
  * Executes the 'generate' task
  */
 export async function transformTask(options: TransformTaskOptions): Promise<TransformResult> {
-	const {logger, input, cwd, outDir, fileSystem, write, typescript, debug, preserveModuleSpecifiers, hooks} = options;
+	let {logger, input, cwd, outDir, fileSystem, write, typescript, debug, preserveModuleSpecifiers, hooks} = options;
 
 	logger.debug(
 		"Options:",
@@ -29,7 +30,9 @@ export async function transformTask(options: TransformTaskOptions): Promise<Tran
 
 	// Match files based on the glob(s)
 	const matchedFiles = new Set(
-		ensureArray(input).flatMap(glob => sync(path.normalize(glob), {fs: fileSystem}).map(file => (path.isAbsolute(file) ? path.normalize(file) : path.join(cwd, file))))
+		ensureArray(input).flatMap(glob =>
+			fastGlob.sync(normalizeGlob(path.normalize(glob)), {fs: fileSystem}).map(file => (path.isAbsolute(file) ? path.normalize(file) : path.join(cwd, file)))
+		)
 	);
 
 	logger.debug(`Matched files:`, matchedFiles.size < 1 ? "(none)" : [...matchedFiles].map(f => `"${path.native.normalize(f)}"`).join(", "));
@@ -39,6 +42,18 @@ export async function transformTask(options: TransformTaskOptions): Promise<Tran
 		files: []
 	};
 
+	if (matchedFiles.size < 1) {
+		return result;
+	}
+
+	const closestFolderToRoot = getFolderClosestToRoot(cwd, matchedFiles);
+
+	// We're going to need an outDir no matter what.
+	// If none is given, get the folder closest to the root based on the matched files and use that one.
+	if (outDir == null) {
+		outDir = path.join(closestFolderToRoot, TEMPORARY_SUBFOLDER_NAME);
+	}
+
 	// Prepare CompilerOptions
 	const compilerOptions: TS.CompilerOptions = {
 		target: typescript.ScriptTarget.ESNext,
@@ -47,7 +62,7 @@ export async function transformTask(options: TransformTaskOptions): Promise<Tran
 		outDir,
 		sourceMap: false,
 		newLine: typescript.sys.newLine === "\n" ? typescript.NewLineKind.LineFeed : typescript.NewLineKind.CarriageReturnLineFeed,
-		rootDir: cwd,
+		rootDir: closestFolderToRoot,
 		moduleResolution: typescript.ModuleResolutionKind.NodeJs
 	};
 
@@ -65,7 +80,8 @@ export async function transformTask(options: TransformTaskOptions): Promise<Tran
 	program.emit(
 		undefined,
 		(fileName, text) => {
-			const nativeNormalizedFileName = path.native.normalize(fileName);
+			const newFilename = path.normalize(fileName).replace(`/${TEMPORARY_SUBFOLDER_NAME}`, ``);
+			const nativeNormalizedFileName = path.native.normalize(newFilename);
 
 			// If a hook was provided, call it
 			if (hooks.writeFile != null) {

@@ -1,21 +1,17 @@
-import {visitNode} from "./visitor/visit/visit-node";
-import {BeforeVisitorContext} from "./visitor/before-visitor-context";
-import {BeforeVisitorOptions} from "./visitor/before-visitor-options";
+import {visitNode} from "./visitor/visit/visit-node.js";
+import {BeforeTransformerSourceFileStepResult, BeforeVisitorContext} from "./visitor/before-visitor-context.js";
+import {BeforeVisitorOptions} from "./visitor/before-visitor-options.js";
 import {check} from "reserved-words";
-import {isNamedDeclaration} from "./util/is-named-declaration";
-import {getLocalsForBindingName} from "./util/get-locals-for-binding-name";
-import {shouldSkipEmit} from "./util/should-skip-emit";
-import {ModuleExports} from "./module-exports/module-exports";
-import {visitImportAndExportDeclarations} from "./visitor/visit/visit-import-and-export-declarations";
-import {TS} from "../type/ts";
-import {shouldDebug} from "./util/should-debug";
+import {isNamedDeclaration} from "./util/is-named-declaration.js";
+import {getLocalsForBindingName} from "./util/get-locals-for-binding-name.js";
+import {shouldSkipEmit} from "./util/should-skip-emit.js";
+import {ModuleExports} from "./module-exports/module-exports.js";
+import {visitImportAndExportDeclarations} from "./visitor/visit/visit-import-and-export-declarations.js";
+import {TS} from "../type/ts.js";
+import {shouldDebug} from "./util/should-debug.js";
 import path from "crosspath";
-import {VisitorContext} from "./visitor-context";
+import {VisitorContext} from "./visitor-context.js";
 
-export interface BeforeTransformerSourceFileStepResult {
-	sourceFile: TS.SourceFile;
-	exports: ModuleExports;
-}
 
 export function transformSourceFile(sourceFile: TS.SourceFile, context: VisitorContext): BeforeTransformerSourceFileStepResult {
 	// Take a fast path of the text of the SourceFile doesn't contain anything that can be transformed
@@ -27,7 +23,7 @@ export function transformSourceFile(sourceFile: TS.SourceFile, context: VisitorC
 
 	// Prepare a VisitorContext
 	const visitorContext = ((): BeforeVisitorContext => {
-		const imports: Map<TS.ImportDeclaration, boolean> = new Map();
+		const imports: Map<TS.ImportDeclaration, {originalModuleSpecifier: string; noEmit: boolean}> = new Map();
 		const leadingStatements: TS.Statement[] = [];
 		const trailingStatements: TS.Statement[] = [];
 		const moduleExportsMap: Map<string, ModuleExports> = new Map();
@@ -36,8 +32,8 @@ export function transformSourceFile(sourceFile: TS.SourceFile, context: VisitorC
 		const exportedLocals = new Set<string>();
 		let isDefaultExported = false;
 
-		const addImport = (declaration: TS.ImportDeclaration, noEmit = false): void => {
-			imports.set(declaration, noEmit);
+		const addImport = (declaration: TS.ImportDeclaration, originalModuleSpecifier: string, noEmit = false): void => {
+			imports.set(declaration, {originalModuleSpecifier, noEmit});
 		};
 
 		const markLocalAsExported = (local: string): void => {
@@ -55,9 +51,7 @@ export function transformSourceFile(sourceFile: TS.SourceFile, context: VisitorC
 		};
 
 		const getImportDeclarationWithModuleSpecifier = (moduleSpecifier: string): TS.ImportDeclaration | undefined =>
-			[...imports.keys()].find(
-				declaration => declaration.moduleSpecifier != null && typescript.isStringLiteralLike(declaration.moduleSpecifier) && declaration.moduleSpecifier.text === moduleSpecifier
-			);
+			[...imports.entries()].find(([, {originalModuleSpecifier}]) => originalModuleSpecifier === moduleSpecifier)?.[0];
 
 		const isModuleSpecifierImportedWithoutLocals = (moduleSpecifier: string): boolean => {
 			const matchingDeclaration = getImportDeclarationWithModuleSpecifier(moduleSpecifier);
@@ -151,6 +145,7 @@ export function transformSourceFile(sourceFile: TS.SourceFile, context: VisitorC
 
 		return {
 			...context,
+			transformSourceFile,
 			exportsName: undefined,
 			addImport,
 			addLocal,
@@ -173,7 +168,7 @@ export function transformSourceFile(sourceFile: TS.SourceFile, context: VisitorC
 			getModuleExportsForPath: p => moduleExportsMap.get(path.normalize(p)),
 			addModuleExportsForPath: (p, exports) => moduleExportsMap.set(path.normalize(p), exports),
 			get imports() {
-				return [...imports.entries()].filter(([, noEmit]) => !noEmit).map(([declaration]) => declaration);
+				return [...imports.entries()].filter(([, {noEmit}]) => !noEmit).map(([declaration]) => declaration);
 			},
 			get leadingStatements() {
 				return leadingStatements;

@@ -1,8 +1,8 @@
-import {realFileSystem} from "../file-system/file-system";
-import {TransformTaskOptions} from "./transform-task-options";
-import {createTaskOptions} from "./create-task-options";
+import {realFileSystem} from "../file-system/file-system.js";
+import {TransformTaskOptions} from "./transform-task-options.js";
+import {createTaskOptions} from "./create-task-options.js";
 import path from "crosspath";
-import {ensureArray} from "../util/util";
+import {ensureArray} from "../util/util.js";
 import {PartialExcept} from "helpertypes";
 
 export function createTransformTaskOptions({
@@ -17,10 +17,6 @@ export function createTransformTaskOptions({
 		throw new ReferenceError(`Missing required argument: 'input'`);
 	}
 
-	if (outDir == null) {
-		throw new ReferenceError(`Missing required argument: 'outDir'`);
-	}
-
 	const taskOptions = createTaskOptions(rest);
 	return {
 		...taskOptions,
@@ -28,6 +24,6 @@ export function createTransformTaskOptions({
 		fileSystem,
 		hooks,
 		input: ensureArray(input).map(file => path.normalize(path.isAbsolute(file) ? file : path.join(taskOptions.cwd, file))),
-		outDir: path.normalize(path.isAbsolute(outDir) ? outDir : path.join(taskOptions.cwd, outDir))
+		outDir: outDir == null ? undefined : path.normalize(path.isAbsolute(outDir) ? outDir : path.join(taskOptions.cwd, outDir))
 	};
 }

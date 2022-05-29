@@ -1,7 +1,7 @@
 import test from "ava";
-import {withTypeScript} from "./util/ts-macro";
-import {executeTransformer} from "./setup/execute-transformer";
-import {formatCode} from "./util/format-code";
+import {withTypeScript} from "./util/ts-macro.js";
+import {executeTransformer} from "./setup/execute-transformer.js";
+import {formatCode} from "./util/format-code.js";
 
 test.serial("Converts 'exports = ...' syntax into an ExportAssignment. #1", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(
@@ -586,7 +586,7 @@ test.serial("Converts 'exports = require(...)' syntax into namespace re-exports 
 	t.deepEqual(
 		formatCode(file.text),
 		formatCode(`\
-		export * from "./foo";
+		export * from "./foo.js";
 		`)
 	);
 });
@@ -618,7 +618,7 @@ test.serial(
 		t.deepEqual(
 			formatCode(file.text),
 			formatCode(`\
-		import * as foo from "./foo";
+		import * as foo from "./foo.js";
 		export default foo();
 		`)
 		);
@@ -646,10 +646,11 @@ test.serial("Converts 'exports = require(...)' syntax into a default export if t
 		{typescript}
 	);
 	const [file] = bundle.files;
+
 	t.deepEqual(
 		formatCode(file.text),
 		formatCode(`\
-		export {default} from "./foo";
+		export {default} from "./foo.js";
 		`)
 	);
 });
@@ -924,7 +925,7 @@ test.serial("Handles reassignments to imported bindings. #1", withTypeScript, (t
 	t.deepEqual(
 		formatCode(file.text),
 		formatCode(`\
-		import { foo as foo$0 } from "./foo";
+		import { foo as foo$0 } from "./foo.js";
 		let foo = foo$0;
 		foo = 2;
 		`)
@@ -956,7 +957,7 @@ test.serial("Handles reassignments to imported bindings. #2", withTypeScript, (t
 	t.deepEqual(
 		formatCode(file.text),
 		formatCode(`\
-		import foo$0 from "./foo";
+		import foo$0 from "./foo.js";
 		let foo = foo$0;
 		foo = 2;
 		`)
@@ -988,13 +989,12 @@ test.serial("Handles reassignments to imported bindings. #3", withTypeScript, (t
 	t.deepEqual(
 		formatCode(file.text),
 		formatCode(`\
-		import * as foo$0 from "./foo";
+		import * as foo$0 from "./foo.js";
 		let foo = foo$0;
 		foo = 2;
 		`)
 	);
 });
-
 
 test.serial("Handles functions exported via short hand property assignments to the module.exports Object. #1", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(

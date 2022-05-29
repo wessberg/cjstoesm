@@ -224,6 +224,10 @@ $ npx -p typescript -p cjstoesm cjstoesm
 
 <!-- SHADOW_SECTION_INSTALL_END -->
 
+## Engine
+
+`cjstoesm` requires Node.js v14.19.0 or newer to function correctly.
+
 <!-- SHADOW_SECTION_USAGE_START -->
 
 ## Usage
@@ -236,17 +240,29 @@ $ npx -p typescript -p cjstoesm cjstoesm
 
 You can use this library as a CLI to convert your project files from using CommonJS to using ESM.
 
-The following command transforms all files matched by the glob `**/*.*` and emits them to the folder `dist` from the current working directory:
+The following command transforms all files matched by the glob `**/*.*` and overwrites them in-place:
 
 ```
-cjstoesm "**/*.*" dist
+cjstoesm **/*.*
+```
+
+You can also just pass in a folder name, in which case all direct descendents of that folder will be transformed and overwritten:
+
+```
+cjstoesm some-folder
+```
+
+You can also pass in a second argument, `outDir`, to avoid overwriting the source files. The following command transforms all files matched by the glob `**/*.*` and emits them to the folder `dist` from the current working directory:
+
+```
+cjstoesm **/*.* dist
 ```
 
 Here's an overview of the options that can be passed via the CLI:
 
 ```
 $ cjstoesm --help
-Usage: cjstoesm transform [options] <input> <outDir>
+Usage: cjstoesm [options] <input> <outDir>
 
 Transforms CJS to ESM modules based on the input glob
 
@@ -259,9 +275,6 @@ Options:
   -m, --dry [arg]                         If true, no files will be written to disk
   -h, --help                              display help for command
 ```
-
-For example, you can run `cjstoesm transform "**/*.*" dist` to transform all files matched by the glob `**/*.*` and emit them to the folder `dist` from the current working directory.
-You can also just run `cjstoesm "**/*.*" dist` which is an alias for the `transform` command.
 
 The default behavior is to add file extensions to module specifiers to align with the implementation in [node.js](https://nodejs.org/dist/latest-v12.x/docs/api/esm.html#esm_mandatory_file_extensions) and across browsers.
 You can customize this with the `--preserve-module-specifiers` command line option. See the [API Options](#api-options) for documentation for the possible values you can pass for it.
@@ -288,7 +301,6 @@ import {writeFileSync} from "fs";
 
 const result = await transform({
 	input: "src/**/*.*",
-	outDir: "dist",
 	write: false
 });
 
@@ -307,9 +319,9 @@ interface TransformOptions {
 	 */
 	input: string[] | string;
 	/**
-	 * The output directory to use
+	 * Optionally, the output directory to use. Defaults to inheriting that of the matched input files`
 	 */
-	outDir: string;
+	outDir?: string;
 	/**
 	 * If write is false, no files will be written to disk
 	 */

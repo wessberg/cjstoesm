@@ -1,11 +1,11 @@
-import {TaskOptions} from "./task-options";
-import {realReadonlyFileSystem} from "../file-system/file-system";
-import {Logger} from "../logger/logger";
-import {LogLevelKind} from "../logger/log-level-kind";
-import {TS} from "../../type/ts";
+import {TaskOptions} from "./task-options.js";
+import {realReadonlyFileSystem} from "../file-system/file-system.js";
+import {Logger} from "../logger/logger.js";
+import {LogLevelKind} from "../logger/log-level-kind.js";
+import ts from "typescript";
 
 export function createTaskOptions({
-	typescript = TS,
+	typescript = ts,
 	fileSystem = realReadonlyFileSystem,
 	debug = false,
 	cwd = process.cwd(),

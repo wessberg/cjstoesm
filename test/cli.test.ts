@@ -1,21 +1,13 @@
 import test from "ava";
 import {CommanderError} from "commander";
-import {withTypeScript} from "./util/ts-macro";
-import {executeCli} from "./setup/execute-cli";
+import {withTypeScript} from "./util/ts-macro.js";
+import {executeCli} from "./setup/execute-cli.js";
 
 test.serial("Will throw if no 'input' argument is given. #1", withTypeScript, async (t, {typescript}) => {
 	await t.throwsAsync(executeCli({typescript, noForcedOutDir: true}), {
 		instanceOf: CommanderError,
 		code: "commander.missingArgument",
 		message: `error: missing required argument 'input'`
-	});
-});
-
-test.serial("Will throw if no 'outDir' argument is given. #1", withTypeScript, async (t, {typescript}) => {
-	await t.throwsAsync(executeCli({typescript, noForcedOutDir: true, args: ["index.js"]}), {
-		instanceOf: CommanderError,
-		code: "commander.missingArgument",
-		message: `error: missing required argument 'outDir'`
 	});
 });
 

@@ -1,8 +1,8 @@
-import {TestFile} from "./test-file";
-import {TestContext} from "./test-context";
-import {createTestSetup} from "./test-setup";
-import {transform} from "../../src/api/transform";
-import {createTestResult, TestResult} from "./test-result";
+import {TestFile} from "./test-file.js";
+import {TestContext} from "./test-context.js";
+import {createTestSetup} from "./test-setup.js";
+import {transform} from "../../src/api/transform.js";
+import {createTestResult, TestResult} from "./test-result.js";
 import {MaybeArray, PartialExcept} from "helpertypes";
 
 /**

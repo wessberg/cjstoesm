@@ -1,5 +1,5 @@
-import {TaskOptions} from "./task-options";
-import {FileSystem} from "../file-system/file-system";
+import {TaskOptions} from "./task-options.js";
+import {FileSystem} from "../file-system/file-system.js";
 import {MaybeArray} from "helpertypes";
 
 export interface TransformHooks {
@@ -16,9 +16,9 @@ export interface TransformTaskOptions extends TaskOptions {
 	input: MaybeArray<string>;
 
 	/**
-	 * The output directory to use
+	 * Optionally, the output directory to use. Defaults to inheriting that of the matched input files`
 	 */
-	outDir: string;
+	outDir?: string;
 
 	/**
 	 * If write is false, no files will be written to disk

@@ -1,6 +1,6 @@
 import {normalize} from "crosspath";
 
-export const KNOWN_EXTENSIONS = [".d.ts", ".d.dts.map", ".js.map", ".ts", ".tsx", ".js", ".jsx", ".mjs", ".mjsx", ".json", ".tsbuildinfo"] as const;
+export const KNOWN_EXTENSIONS = [".d.ts", ".d.dts.map", ".js.map", ".ts", ".tsx", ".js", ".jsx", ".mjs", ".mjs.map", ".mjsx", ".cjs", ".cjs.map", ".csjx", ".d.cts", ".d.cts.map", ".d.mts", ".d.mts.map", ".json", ".tsbuildinfo"] as const;
 
 /**
  * Ensure that the given path has a leading "."

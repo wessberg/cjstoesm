@@ -1,3 +1,3 @@
-import {configureCommands} from "./configure-commands";
+import {configureCommands} from "./configure-commands.js";
 
 configureCommands();

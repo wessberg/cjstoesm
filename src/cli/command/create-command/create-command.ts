@@ -1,4 +1,4 @@
-import {CliProgram, CommandAction, CommandActionOptions, CommandOptionType, CreateCommandOptions} from "./create-command-options";
+import {CliProgram, CommandAction, CommandActionOptions, CommandOptionType, CreateCommandOptions} from "./create-command-options.js";
 
 // tslint:disable:no-any
 

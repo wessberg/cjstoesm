@@ -1,5 +1,5 @@
-import {FileSystem} from "../file-system/file-system";
-import {TS} from "../../type/ts";
+import {FileSystem} from "../file-system/file-system.js";
+import {TS} from "../../type/ts.js";
 import path from "crosspath";
 
 export interface CreateCompilerHostOptions {

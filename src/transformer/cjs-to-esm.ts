@@ -1,6 +1,6 @@
-import {TS} from "../type/ts";
-import {CjsToEsmOptions} from "./cjs-to-esm-options";
-import {cjsToEsmTransformer} from "./cjs-to-esm-transformer";
+import {TS} from "../type/ts.js";
+import {CjsToEsmOptions} from "./cjs-to-esm-options.js";
+import {cjsToEsmTransformer} from "./cjs-to-esm-transformer.js";
 
 /**
  * CustomTransformer that converts CommonJS to tree-shakeable ESM

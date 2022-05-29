@@ -1,4 +1,4 @@
-import {TS} from "../../type/ts";
+import {TS} from "../../type/ts.js";
 
 export function isNamedDeclaration(node: TS.Node | TS.NamedDeclaration, typescript: typeof TS): node is TS.NamedDeclaration {
 	if (typescript.isPropertyAccessExpression(node)) return false;

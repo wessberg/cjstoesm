@@ -1,9 +1,9 @@
-import {createCommand} from "../create-command/create-command";
-import {InjectCommandOptions} from "../inject-command/inject-command-options";
-import {LogLevelKind} from "../../../shared/logger/log-level-kind";
-import {Logger} from "../../../shared/logger/logger";
-import {createTransformTaskOptions} from "../../../shared/task/create-transform-task-options";
-import {transformTask} from "../../task/transform/transform-task";
+import {createCommand} from "../create-command/create-command.js";
+import {InjectCommandOptions} from "../inject-command/inject-command-options.js";
+import {LogLevelKind} from "../../../shared/logger/log-level-kind.js";
+import {Logger} from "../../../shared/logger/logger.js";
+import {createTransformTaskOptions} from "../../../shared/task/create-transform-task-options.js";
+import {transformTask} from "../../task/transform/transform-task.js";
 
 export function injectTransformCommand(options: InjectCommandOptions): void {
 	createCommand(
@@ -20,8 +20,8 @@ export function injectTransformCommand(options: InjectCommandOptions): void {
 				},
 				outDir: {
 					type: "string",
-					required: true,
-					description: `The directory to write the transformed files to`
+					required: false,
+					description: `Optionally, the directory to write the transformed files to. Defaults to overwriting the matched input files`
 				}
 			},
 			options: {

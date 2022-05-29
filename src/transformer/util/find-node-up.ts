@@ -1,4 +1,4 @@
-import {TS} from "../../type/ts";
+import {TS} from "../../type/ts.js";
 
 export function findNodeUp<T extends TS.Node>(from: TS.Node, nodeCb: (node: TS.Node) => node is T, breakWhen?: (node: TS.Node) => boolean): T | undefined;
 export function findNodeUp<T extends TS.Node>(from: TS.Node, nodeCb: (node: TS.Node) => boolean, breakWhen?: (node: TS.Node) => boolean): T | undefined;

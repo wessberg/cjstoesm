@@ -1,5 +1,5 @@
-import {TS} from "../../type/ts";
-import {TaskOptions} from "../../shared/task/task-options";
+import {TS} from "../../type/ts.js";
+import {TaskOptions} from "../../shared/task/task-options.js";
 
 export function shouldDebug(debug: TaskOptions["debug"], sourceFile?: TS.SourceFile): boolean {
 	if (debug == null) return false;

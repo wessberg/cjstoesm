@@ -16,20 +16,29 @@ const SHARED_OPTIONS = {
 	]
 };
 
+const SHARED_OUTPUT_OPTIONS = {
+	sourcemap: true,
+	hoistTransitiveImports: false,
+	generatedCode: "es2015",
+	compact: false,
+	minifyInternalExports: false
+};
+
+
 export default [
 	{
 		input: "src/index.ts",
 		preserveEntrySignatures: true,
 		output: [
 			{
-				file: packageJson.main,
+				file: packageJson.exports.require,
 				format: "cjs",
-				sourcemap: true
+				...SHARED_OUTPUT_OPTIONS
 			},
 			{
-				file: packageJson.module,
+				file: packageJson.exports.import,
 				format: "esm",
-				sourcemap: true
+				...SHARED_OUTPUT_OPTIONS
 			}
 		],
 		...SHARED_OPTIONS
@@ -40,8 +49,8 @@ export default [
 		output: [
 			{
 				dir: "./dist/cli",
-				format: "cjs",
-				sourcemap: true
+				format: "esm",
+				...SHARED_OUTPUT_OPTIONS
 			}
 		],
 		...SHARED_OPTIONS

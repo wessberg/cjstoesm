@@ -1,7 +1,9 @@
-import {sync} from "resolve";
-import {SafeReadonlyFileSystem} from "../../shared/file-system/file-system";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import resolve from "resolve";
+import {SafeReadonlyFileSystem} from "../../shared/file-system/file-system.js";
 import path from "crosspath";
-import {isExternalLibrary} from "./path-util";
+import {isExternalLibrary} from "./path-util.js";
+import {isRecord} from "../../shared/util/util.js";
 
 export interface ResolveOptions {
 	cwd: string;
@@ -28,8 +30,8 @@ export function resolvePath({
 	id,
 	parent,
 	cwd,
-	prioritizedPackageKeys = ["es2015", "esm2015", "module", "jsnext:main", "main", "browser"],
-	prioritizedExtensions = ["", ".js", ".mjs", ".jsx", ".ts", ".tsx", ".json"],
+	prioritizedPackageKeys = ["exports", "es2015", "esm2015", "module", "jsnext:main", "main", "browser"],
+	prioritizedExtensions = ["", ".js", ".mjs", ".cjs", ".jsx", ".ts", ".tsx", ".json"],
 	moduleDirectory = "node_modules",
 	fileSystem,
 	resolveCache
@@ -53,6 +55,7 @@ export function resolvePath({
 	if (!isExternalLibrary(id)) {
 		const absolute = path.isAbsolute(id) ? path.normalize(id) : path.join(parent == null ? "" : path.dirname(parent), id);
 		const variants = [absolute, path.join(absolute, "index")];
+
 		for (const variant of variants) {
 			for (const ext of prioritizedExtensions) {
 				const withExtension = `${variant}${ext}`;
@@ -72,7 +75,7 @@ export function resolvePath({
 	// Otherwise, try to resolve it via node module resolution and put it in the cache
 	try {
 		const resolveResult = path.normalize(
-			sync(id, {
+			resolve.sync(id, {
 				basedir: path.normalize(cwd),
 				extensions: prioritizedExtensions,
 				moduleDirectory: moduleDirectory,
@@ -90,7 +93,22 @@ export function resolvePath({
 
 					// If a property was resolved, set the 'main' property to it (resolve will use the main property no matter what)
 					if (property != null) {
-						pkg.main = pkg[property];
+						let pickedProperty = pkg[property];
+						while (isRecord(pickedProperty)) {
+							if ("import" in pickedProperty) {
+								pickedProperty = (pickedProperty as any).import;
+							} else if ("." in pickedProperty) {
+								pickedProperty = pickedProperty["."];
+							} else if ("default" in pickedProperty) {
+								pickedProperty = (pickedProperty as any).default;
+							} else if ("require" in pickedProperty) {
+								pickedProperty = (pickedProperty as any).require;
+							} else {
+								pickedProperty = pickedProperty[Object.keys(pickedProperty)[0]];
+							}
+						}
+
+						pkg.main = pickedProperty;
 					}
 
 					// Return the package

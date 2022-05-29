@@ -1,12 +1,12 @@
-import {BeforeVisitorOptions} from "../before-visitor-options";
-import {visitImportDeclaration} from "./visit-import-declaration";
-import {visitExportDeclaration} from "./visit-export-declaration";
-import {visitExportAssignment} from "./visit-export-assignment";
-import {hasExportModifier} from "../../util/has-export-modifier";
-import {hasDefaultExportModifier} from "../../util/has-default-export-modifier";
-import {isDeclaration} from "../../util/is-declaration";
-import {getLocalsForBindingName} from "../../util/get-locals-for-binding-name";
-import {TS} from "../../../type/ts";
+import {BeforeVisitorOptions} from "../before-visitor-options.js";
+import {visitImportDeclaration} from "./visit-import-declaration.js";
+import {visitExportDeclaration} from "./visit-export-declaration.js";
+import {visitExportAssignment} from "./visit-export-assignment.js";
+import {hasExportModifier} from "../../util/has-export-modifier.js";
+import {hasDefaultExportModifier} from "../../util/has-default-export-modifier.js";
+import {isDeclaration} from "../../util/is-declaration.js";
+import {getLocalsForBindingName} from "../../util/get-locals-for-binding-name.js";
+import {TS} from "../../../type/ts.js";
 
 /**
  * Visits the given Node

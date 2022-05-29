@@ -1,7 +1,7 @@
 import test from "ava";
-import {withTypeScript} from "./util/ts-macro";
-import {formatCode} from "./util/format-code";
-import {executeRollup} from "./setup/execute-rollup";
+import {withTypeScript} from "./util/ts-macro.js";
+import {formatCode} from "./util/format-code.js";
+import {executeRollup} from "./setup/execute-rollup.js";
 
 test.serial("Can bundle Commonjs. #1", withTypeScript, async (t, {typescript}) => {
 	const bundle = await executeRollup(

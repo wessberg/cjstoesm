@@ -1,13 +1,13 @@
-import {BeforeVisitorOptions} from "../before-visitor-options";
-import {isRequireCall} from "../../util/is-require-call";
-import {findNodeUp} from "../../util/find-node-up";
-import {isStatementOrDeclaration} from "../../util/is-statement-or-declaration";
-import {isStatement} from "../../util/is-statement";
-import {generateNameFromModuleSpecifier} from "../../util/generate-name-from-module-specifier";
-import {getModuleExportsFromRequireDataInContext} from "../../util/get-module-exports-from-require-data-in-context";
-import {TS} from "../../../type/ts";
-import {shouldDebug} from "../../util/should-debug";
-import {walkThroughFillerNodes} from "../../util/walk-through-filler-nodes";
+import {BeforeVisitorOptions} from "../before-visitor-options.js";
+import {isRequireCall} from "../../util/is-require-call.js";
+import {findNodeUp} from "../../util/find-node-up.js";
+import {isStatementOrDeclaration} from "../../util/is-statement-or-declaration.js";
+import {isStatement} from "../../util/is-statement.js";
+import {generateNameFromModuleSpecifier} from "../../util/generate-name-from-module-specifier.js";
+import {getModuleExportsFromRequireDataInContext} from "../../util/get-module-exports-from-require-data-in-context.js";
+import {TS} from "../../../type/ts.js";
+import {shouldDebug} from "../../util/should-debug.js";
+import {walkThroughFillerNodes} from "../../util/walk-through-filler-nodes.js";
 
 /**
  * Visits the given CallExpression
@@ -57,7 +57,7 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 		if (expressionStatementParent != null) {
 			// Only add the import if there isn't already an import within the SourceFile of the entire module without any bindings
 			if (!context.isModuleSpecifierImportedWithoutLocals(moduleSpecifier)) {
-				context.addImport(factory.createImportDeclaration(undefined, undefined, undefined, factory.createStringLiteral(transformedModuleSpecifier)));
+				context.addImport(factory.createImportDeclaration(undefined, undefined, undefined, factory.createStringLiteral(transformedModuleSpecifier)), moduleSpecifier);
 			}
 
 			// Drop this CallExpression
@@ -76,7 +76,7 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 
 				const importClause = factory.createImportClause(false, identifier, undefined);
 
-				context.addImport(factory.createImportDeclaration(undefined, undefined, importClause, factory.createStringLiteral(transformedModuleSpecifier)));
+				context.addImport(factory.createImportDeclaration(undefined, undefined, importClause, factory.createStringLiteral(transformedModuleSpecifier)), moduleSpecifier);
 
 				// Replace the CallExpression by the identifier
 				return identifier;
@@ -140,7 +140,8 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 								: // Otherwise, import the entire namespace
 								  factory.createImportClause(false, undefined, factory.createNamespaceImport(identifier)),
 							factory.createStringLiteral(transformedModuleSpecifier)
-						)
+						),
+						moduleSpecifier
 					);
 				}
 
@@ -186,7 +187,7 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 
 					const importClause = factory.createImportClause(false, undefined, namedImports);
 
-					context.addImport(factory.createImportDeclaration(undefined, undefined, importClause, factory.createStringLiteral(transformedModuleSpecifier)));
+					context.addImport(factory.createImportDeclaration(undefined, undefined, importClause, factory.createStringLiteral(transformedModuleSpecifier)), moduleSpecifier);
 				}
 
 				// If the 'require(...)[<something>]' or 'require(...).<something>' expression is part of an ExpressionStatement
@@ -246,7 +247,8 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 							: // Otherwise, import the entire namespace
 							  factory.createImportClause(false, undefined, factory.createNamespaceImport(identifier)),
 						factory.createStringLiteral(transformedModuleSpecifier)
-					)
+					),
+					moduleSpecifier
 				);
 				return identifier;
 			}
@@ -338,7 +340,8 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 								: // Otherwise, import the entire namespace
 								  factory.createImportClause(false, undefined, factory.createNamespaceImport(identifier)),
 							factory.createStringLiteral(transformedModuleSpecifier)
-						)
+						),
+						moduleSpecifier
 					);
 					return identifier;
 				}
@@ -354,7 +357,8 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 							undefined,
 							factory.createImportClause(false, undefined, factory.createNamedImports(importSpecifiers)),
 							factory.createStringLiteral(transformedModuleSpecifier)
-						)
+						),
+						moduleSpecifier
 					);
 				}
 
@@ -408,7 +412,8 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 						: // Otherwise, import the entire namespace
 						  factory.createImportClause(false, undefined, factory.createNamespaceImport(identifier)),
 					factory.createStringLiteral(transformedModuleSpecifier)
-				)
+				),
+				moduleSpecifier
 			);
 			return identifier;
 		}
@@ -449,7 +454,8 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 						: // Otherwise, import the entire namespace
 						  factory.createImportClause(false, undefined, factory.createNamespaceImport(identifier)),
 					factory.createStringLiteral(transformedModuleSpecifier)
-				)
+				),
+				moduleSpecifier
 			);
 			return identifier;
 		}

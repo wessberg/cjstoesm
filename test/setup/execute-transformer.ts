@@ -1,9 +1,9 @@
-import {cjsToEsm} from "../../src/transformer/cjs-to-esm";
-import {TS} from "../../src/type/ts";
-import {createTestResult, TestResult} from "./test-result";
-import {TestFile} from "./test-file";
-import {TestContext} from "./test-context";
-import {createTestSetup} from "./test-setup";
+import {cjsToEsm} from "../../src/transformer/cjs-to-esm.js";
+import {TS} from "../../src/type/ts.js";
+import {createTestResult, TestResult} from "./test-result.js";
+import {TestFile} from "./test-file.js";
+import {TestContext} from "./test-context.js";
+import {createTestSetup} from "./test-setup.js";
 import {MaybeArray, PartialExcept} from "helpertypes";
 import path from "crosspath";
 
@@ -16,7 +16,7 @@ export function executeTransformer(inputFiles: MaybeArray<TestFile>, options: Pa
 		fileStructure: {files, dir},
 		fileSystem,
 		compilerHost
-	} = createTestSetup(inputFiles, {preserveModuleSpecifiers: "always", ...options});
+	} = createTestSetup(inputFiles, options);
 	const result = createTestResult(dir);
 
 	const {typescript} = context;

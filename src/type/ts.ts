@@ -1,2 +1,2 @@
-import * as TS from "typescript";
-export {TS};
+import type * as TS from "typescript";
+export type {TS};

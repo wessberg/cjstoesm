@@ -1,8 +1,9 @@
 {
 	"extends": "@wessberg/ts-config",
+	"include": ["src/**/*.*", "test/**/*.*"],
 	"compilerOptions": {
-		"module": "commonjs",
-		"target": "es2018",
+		"module": "esnext",
+		"target": "es2019",
 		"resolveJsonModule": true,
 		"allowJs": true
 	}

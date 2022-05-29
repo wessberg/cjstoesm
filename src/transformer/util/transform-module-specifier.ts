@@ -1,5 +1,5 @@
-import {ensureHasLeadingDotAndPosix, isExternalLibrary, setExtension} from "./path-util";
-import {VisitorContext} from "../visitor-context";
+import {ensureHasLeadingDotAndPosix, isExternalLibrary, setExtension} from "./path-util.js";
+import {VisitorContext} from "../visitor-context.js";
 import path from "crosspath";
 
 export interface TransformModuleSpecifierOptions {
@@ -15,6 +15,7 @@ function determineNewExtension(currentExtension: string): string {
 		case ".d.ts":
 		case ".js":
 		case ".jsx":
+		case ".cjs":
 			return ".js";
 		case ".mjs":
 		case ".mjsx":

@@ -1,5 +1,5 @@
-import {TS} from "../../type/ts";
-import {VisitorContext} from "../visitor-context";
+import {TS} from "../../type/ts.js";
+import {VisitorContext} from "../visitor-context.js";
 
 export function addExportModifier<T extends TS.ModifiersArray>(modifiers: T | undefined, context: VisitorContext): T extends TS.ModifiersArray ? TS.ModifiersArray : undefined {
 	const {factory, typescript} = context;

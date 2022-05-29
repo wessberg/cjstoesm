@@ -1,9 +1,9 @@
-import {TestFile} from "./test-file";
-import {TestContext} from "./test-context";
-import {createTestSetup} from "./test-setup";
-import {configureCommands} from "../../src/cli/configure-commands";
-import {shouldDebug} from "../../src/transformer/util/should-debug";
-import {createTestResult, TestResult} from "./test-result";
+import {TestFile} from "./test-file.js";
+import {TestContext} from "./test-context.js";
+import {createTestSetup} from "./test-setup.js";
+import {configureCommands} from "../../src/cli/configure-commands.js";
+import {shouldDebug} from "../../src/transformer/util/should-debug.js";
+import {createTestResult, TestResult} from "./test-result.js";
 import {MaybeArray, PartialExcept} from "helpertypes";
 import path from "crosspath";
 

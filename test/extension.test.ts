@@ -1,7 +1,7 @@
 import test from "ava";
-import {withTypeScript} from "./util/ts-macro";
-import {executeTransformer} from "./setup/execute-transformer";
-import {formatCode} from "./util/format-code";
+import {withTypeScript} from "./util/ts-macro.js";
+import {executeTransformer} from "./setup/execute-transformer.js";
+import {formatCode} from "./util/format-code.js";
 
 test.serial("Adds correct extensions for module specifiers for internal files when preserveModuleSpecifiers = 'external'. #1", withTypeScript, (t, {typescript}) => {
 	const bundle = executeTransformer(

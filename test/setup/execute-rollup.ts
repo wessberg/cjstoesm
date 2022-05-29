@@ -1,12 +1,13 @@
 import {rollup, RollupOptions, RollupOutput} from "rollup";
 import typescriptRollupPlugin from "rollup-plugin-ts";
 import nodeResolve from "@rollup/plugin-node-resolve";
-import {cjsToEsm} from "../../src/transformer/cjs-to-esm";
-import {TestFile} from "./test-file";
-import {TestContext} from "./test-context";
-import {createTestSetup} from "./test-setup";
+import {cjsToEsm} from "../../src/transformer/cjs-to-esm.js";
+import {TestFile} from "./test-file.js";
+import {TestContext} from "./test-context.js";
+import {createTestSetup} from "./test-setup.js";
 import {MaybeArray, PartialExcept} from "helpertypes";
 import path from "crosspath";
+import {setExtension} from "../../src/transformer/util/path-util.js";
 
 export interface RollupTestContext extends TestContext {
 	rollupOptions: Partial<RollupOptions>;
@@ -20,7 +21,7 @@ export async function executeRollup(inputFiles: MaybeArray<TestFile>, options: P
 		context,
 		fileStructure: {files, entry},
 		fileSystem
-	} = createTestSetup(inputFiles, {preserveModuleSpecifiers: "always", ...options});
+	} = createTestSetup(inputFiles, options);
 	const {typescript} = context;
 	const {rollupOptions = {}} = options;
 
@@ -32,10 +33,11 @@ export async function executeRollup(inputFiles: MaybeArray<TestFile>, options: P
 		const normalizedFileName = path.normalize(fileName);
 		const normalizedParent = parent == null ? undefined : path.normalize(parent);
 		const absolute = path.isAbsolute(normalizedFileName) ? normalizedFileName : path.join(normalizedParent == null ? "" : path.dirname(normalizedParent), normalizedFileName);
-		for (const ext of ["", ".ts", ".js", ".mjs"]) {
-			const withExtension = `${absolute}${ext}`;
-			const matchedFile = files.find(file => path.normalize(file.fileName) === path.normalize(withExtension));
-			if (matchedFile != null) return path.native.normalize(withExtension);
+		for (const ext of ["", ".ts", ".js", ".mjs", ".cjs"]) {
+			for (const withExtension of [`${absolute}${ext}`, setExtension(absolute, ext)]) {
+				const matchedFile = files.find(file => path.normalize(file.fileName) === path.normalize(withExtension));
+				if (matchedFile != null) return path.native.normalize(withExtension);
+			}
 		}
 		return null;
 	};

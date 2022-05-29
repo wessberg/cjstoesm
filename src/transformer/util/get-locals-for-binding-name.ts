@@ -1,4 +1,4 @@
-import {TS} from "../../type/ts";
+import {TS} from "../../type/ts.js";
 
 export function getLocalsForBindingName(name: TS.BindingName, typescript: typeof TS): string[] {
 	if (typescript.isIdentifier(name)) {

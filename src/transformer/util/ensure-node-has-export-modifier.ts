@@ -1,6 +1,6 @@
-import {BeforeVisitorContext} from "../visitor/before-visitor-context";
-import {TS} from "../../type/ts";
-import {shouldDebug} from "./should-debug";
+import {BeforeVisitorContext} from "../visitor/before-visitor-context.js";
+import {TS} from "../../type/ts.js";
+import {shouldDebug} from "./should-debug.js";
 
 export function ensureNodeHasExportModifier<T extends TS.NamedDeclaration>(node: T, context: BeforeVisitorContext): T {
 	const existingModifierKinds = node.modifiers == null ? [] : node.modifiers.map(m => m.kind);

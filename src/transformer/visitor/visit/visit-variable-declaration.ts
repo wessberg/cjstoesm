@@ -1,11 +1,11 @@
-import {BeforeVisitorOptions} from "../before-visitor-options";
-import {isRequireCall} from "../../util/is-require-call";
-import {walkThroughFillerNodes} from "../../util/walk-through-filler-nodes";
-import {getModuleExportsFromRequireDataInContext} from "../../util/get-module-exports-from-require-data-in-context";
-import {TS} from "../../../type/ts";
-import {willReassignIdentifier} from "../../util/will-be-reassigned";
-import {hasExportModifier} from "../../util/has-export-modifier";
-import {findNodeUp} from "../../util/find-node-up";
+import {BeforeVisitorOptions} from "../before-visitor-options.js";
+import {isRequireCall} from "../../util/is-require-call.js";
+import {walkThroughFillerNodes} from "../../util/walk-through-filler-nodes.js";
+import {getModuleExportsFromRequireDataInContext} from "../../util/get-module-exports-from-require-data-in-context.js";
+import {TS} from "../../../type/ts.js";
+import {willReassignIdentifier} from "../../util/will-be-reassigned.js";
+import {hasExportModifier} from "../../util/has-export-modifier.js";
+import {findNodeUp} from "../../util/find-node-up.js";
 
 /**
  * Visits the given VariableDeclaration
@@ -90,7 +90,8 @@ export function visitVariableDeclaration({node, childContinuation, sourceFile, c
 						undefined,
 						factory.createImportClause(false, undefined, factory.createNamespaceImport(factory.createIdentifier(node.name.text))),
 						moduleSpecifierExpression
-					)
+					),
+					moduleSpecifier
 				);
 				const exportClause = factory.createNamedExports([factory.createExportSpecifier(false, undefined, factory.createIdentifier(node.name.text))]);
 				context.addTrailingStatements(factory.createExportDeclaration(undefined, undefined, false, exportClause));
@@ -115,7 +116,8 @@ export function visitVariableDeclaration({node, childContinuation, sourceFile, c
 						: // Otherwise, import the entire namespace
 						  factory.createImportClause(false, undefined, factory.createNamespaceImport(factory.createIdentifier(newName))),
 					factory.createStringLiteral(transformedModuleSpecifier)
-				)
+				),
+				moduleSpecifier
 			);
 			if (willReassign) {
 				// Now, immediately add a local mutable variable with the correct name
@@ -177,7 +179,8 @@ export function visitVariableDeclaration({node, childContinuation, sourceFile, c
 				const namedImports = factory.createNamedImports([factory.createImportSpecifier(false, factory.createIdentifier(propertyName.text), factory.createIdentifier(newName))]);
 
 				context.addImport(
-					factory.createImportDeclaration(undefined, undefined, factory.createImportClause(false, undefined, namedImports), factory.createStringLiteral(transformedModuleSpecifier))
+					factory.createImportDeclaration(undefined, undefined, factory.createImportClause(false, undefined, namedImports), factory.createStringLiteral(transformedModuleSpecifier)),
+					moduleSpecifier
 				);
 
 				// Now, immediately add a local mutable variable with the correct name
@@ -199,7 +202,8 @@ export function visitVariableDeclaration({node, childContinuation, sourceFile, c
 						undefined,
 						factory.createImportClause(false, undefined, factory.createNamedImports(otherImportSpecifiers)),
 						factory.createStringLiteral(transformedModuleSpecifier)
-					)
+					),
+					moduleSpecifier
 				);
 			}
 

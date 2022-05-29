@@ -4,7 +4,7 @@
  */
 
 import {ElementOf} from "helpertypes";
-import {ModuleExports} from "../module-exports/module-exports";
+import {ModuleExports} from "../module-exports/module-exports.js";
 
 export const BUILT_IN_MODULE = new Set([
 	"assert",

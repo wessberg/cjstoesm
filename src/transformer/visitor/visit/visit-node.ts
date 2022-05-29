@@ -1,10 +1,10 @@
-import {BeforeVisitorOptions} from "../before-visitor-options";
-import {visitCallExpression} from "./visit-call-expression";
-import {visitBinaryExpression} from "./visit-binary-expression";
-import {visitVariableDeclaration} from "./visit-variable-declaration";
-import {visitVariableDeclarationList} from "./visit-variable-declaration-list";
-import {getBestBodyInScope} from "../../util/get-best-body-in-scope";
-import {TS} from "../../../type/ts";
+import {BeforeVisitorOptions} from "../before-visitor-options.js";
+import {visitCallExpression} from "./visit-call-expression.js";
+import {visitBinaryExpression} from "./visit-binary-expression.js";
+import {visitVariableDeclaration} from "./visit-variable-declaration.js";
+import {visitVariableDeclarationList} from "./visit-variable-declaration-list.js";
+import {getBestBodyInScope} from "../../util/get-best-body-in-scope.js";
+import {TS} from "../../../type/ts.js";
 
 /**
  * Visits the given Node

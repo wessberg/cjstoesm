@@ -1,17 +1,17 @@
-import {BeforeVisitorOptions} from "../before-visitor-options";
-import {getExportsData} from "../../util/get-exports-data";
-import {walkThroughFillerNodes} from "../../util/walk-through-filler-nodes";
-import {isNamedDeclaration} from "../../util/is-named-declaration";
-import {ensureNodeHasExportModifier} from "../../util/ensure-node-has-export-modifier";
-import {nodeContainsSuper} from "../../util/node-contains-super";
-import {addExportModifier} from "../../util/add-export-modifier";
-import {isRequireCall} from "../../util/is-require-call";
-import {getModuleExportsFromRequireDataInContext} from "../../util/get-module-exports-from-require-data-in-context";
-import {isExpression} from "../../util/is-expression";
-import {findNodeUp} from "../../util/find-node-up";
-import {getLocalsForBindingName} from "../../util/get-locals-for-binding-name";
-import {TS} from "../../../type/ts";
-import {shouldDebug} from "../../util/should-debug";
+import {BeforeVisitorOptions} from "../before-visitor-options.js";
+import {getExportsData} from "../../util/get-exports-data.js";
+import {walkThroughFillerNodes} from "../../util/walk-through-filler-nodes.js";
+import {isNamedDeclaration} from "../../util/is-named-declaration.js";
+import {ensureNodeHasExportModifier} from "../../util/ensure-node-has-export-modifier.js";
+import {nodeContainsSuper} from "../../util/node-contains-super.js";
+import {addExportModifier} from "../../util/add-export-modifier.js";
+import {isRequireCall} from "../../util/is-require-call.js";
+import {getModuleExportsFromRequireDataInContext} from "../../util/get-module-exports-from-require-data-in-context.js";
+import {isExpression} from "../../util/is-expression.js";
+import {findNodeUp} from "../../util/find-node-up.js";
+import {getLocalsForBindingName} from "../../util/get-locals-for-binding-name.js";
+import {TS} from "../../../type/ts.js";
+import {shouldDebug} from "../../util/should-debug.js";
 
 /**
  * Visits the given BinaryExpression
@@ -224,10 +224,10 @@ export function visitBinaryExpression({node, sourceFile, context, continuation}:
 				}
 
 				// Otherwise, spread out the things we know about the require call
-				const {moduleSpecifier} = requireData;
+				const {transformedModuleSpecifier} = requireData;
 
 				// If no module specifier could be determined, there's nothing we can do
-				if (moduleSpecifier == null) {
+				if (transformedModuleSpecifier == null) {
 					if (shouldDebug(context.debug)) {
 						throw new TypeError(`Could not handle re-export from require() call. The module specifier wasn't statically analyzable`);
 					} else {
@@ -238,13 +238,14 @@ export function visitBinaryExpression({node, sourceFile, context, continuation}:
 				// Otherwise, take the exports from that module
 				else {
 					const moduleExports = getModuleExportsFromRequireDataInContext(requireData, context);
-					const moduleSpecifierExpression = factory.createStringLiteral(moduleSpecifier);
+					const moduleSpecifierExpression = factory.createStringLiteral(transformedModuleSpecifier);
 
 					// If the module has a default export, or if we know nothing about it,
 					// export the default export from that module
 					if (!context.isDefaultExported && (moduleExports == null || moduleExports.hasDefaultExport)) {
 						context.markDefaultAsExported();
 						const namedExports = factory.createNamedExports([factory.createExportSpecifier(false, undefined, "default")]);
+
 						context.addTrailingStatements(factory.createExportDeclaration(undefined, undefined, false, namedExports, moduleSpecifierExpression));
 						return undefined;
 					}

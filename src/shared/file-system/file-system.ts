@@ -1,4 +1,4 @@
-import * as fs from "fs";
+import fs from "fs";
 
 export type ReadonlyFileSystem = Pick<typeof fs, "statSync" | "lstatSync" | "readFileSync" | "readdirSync">;
 
