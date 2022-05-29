@@ -1,7 +1,12 @@
 import semver from "semver";
-import pkg from "../../package.json" assert {type: "json"};
+import fs from "fs";
+import path from "crosspath";
 import type {ExecutionContext, OneOrMoreMacros, Macro} from "ava";
 import type {TS} from "../../src/type/ts.js";
+
+const currentFile = import.meta.url.replace(/file:\/{2,3}/, "");
+const currentDir = path.dirname(currentFile);
+const pkg = JSON.parse(fs.readFileSync(path.join(currentDir, "../../package.json"), "utf-8"));
 
 // ava macros
 export interface ExtendedImplementationArgumentOptions {
