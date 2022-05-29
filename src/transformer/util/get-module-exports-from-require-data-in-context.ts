@@ -2,6 +2,7 @@ import {IsRequireCallResult} from "./is-require-call.js";
 import {ModuleExports} from "../module-exports/module-exports.js";
 import {BUILT_IN_MODULE_MAP, isBuiltInModule} from "../built-in/built-in-module-map.js";
 import {BeforeVisitorContext} from "../visitor/before-visitor-context.js";
+import {isJsonModule} from "./path-util.js";
 
 /**
  * Tries to get or potentially parse module exports based on the given data in the given context
@@ -30,18 +31,27 @@ export function getModuleExportsFromRequireDataInContext(data: IsRequireCallResu
 
 	// Otherwise, if we could resolve a module, try to get the exports for it
 	else if (resolvedModuleSpecifier != null) {
-		// Try to get the ModuleExports for the resolved module, if we know them already
-		moduleExports = context.getModuleExportsForPath(resolvedModuleSpecifier);
+		// Treat JSON modules as ones with a single default export
+		if (isJsonModule(resolvedModuleSpecifier)) {
+			moduleExports = {
+				assert: "json",
+				hasDefaultExport: true,
+				namedExports: new Set()
+			};
+		} else {
+			// Try to get the ModuleExports for the resolved module, if we know them already
+			moduleExports = context.getModuleExportsForPath(resolvedModuleSpecifier);
 
-		// If that wasn't possible, generate a new SourceFile and parse it
-		if (moduleExports == null && resolvedModuleSpecifierText != null) {
-			moduleExports = context.transformSourceFile(
-				typescript.createSourceFile(resolvedModuleSpecifier, resolvedModuleSpecifierText, typescript.ScriptTarget.ESNext, true, typescript.ScriptKind.TS),
-				{
-					...context,
-					onlyExports: true
-				}
-			).exports;
+			// If that wasn't possible, generate a new SourceFile and parse it
+			if (moduleExports == null && resolvedModuleSpecifierText != null) {
+				moduleExports = context.transformSourceFile(
+					typescript.createSourceFile(resolvedModuleSpecifier, resolvedModuleSpecifierText, typescript.ScriptTarget.ESNext, true, typescript.ScriptKind.TS),
+					{
+						...context,
+						onlyExports: true
+					}
+				).exports;
+			}
 		}
 	}
 	return moduleExports;

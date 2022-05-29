@@ -229,6 +229,18 @@ $ npx -p typescript -p cjstoesm cjstoesm
 
 `cjstoesm` requires Node.js v14.19.0 or newer to function correctly.
 
+## File extension handling
+
+The default behavior is to add file extensions to module specifiers to align with the implementation in [node.js](https://nodejs.org/dist/latest/docs/api/esm.html#esm_mandatory_file_extensions) and across browsers.
+
+You can customize this with the `--preserve-module-specifiers` command line option, or with the `preserveModuleSpecifiers` API option. See the [API Options](#api-options) for documentation for the possible values you can pass to it.
+
+## Import Assertion handling
+
+The default behavior is to add Import Assertions to Import Declarations when necessary and relevant, such as for when referencing JSON files. This aligns with the implementation in [node.js](https://nodejs.org/dist/latest/docs/api/esm.html#import-assertions) and across browsers.
+
+You can customize this with the `--import-assertions` command line option, or with the `importAssertions` API option. See the [API Options](#api-options) for documentation for the possible values you can pass to it.
+
 <!-- SHADOW_SECTION_USAGE_START -->
 
 ## Usage
@@ -273,12 +285,10 @@ Options:
   -s, --silent [arg]                      Whether to not print anything
   -c, --cwd [arg]                         Optionally which directory to use as the current working directory
   -p, --preserve-module-specifiers [arg]  Determines whether or not module specifiers are preserved. Possible values are: "external", "internal", "always", and "never" (default: "external")
+  -a, --import-assertions [arg]           Determines whether or not Import Assertions are included where they are relevant. Possible values are: true and false (default: true)
   -m, --dry [arg]                         If true, no files will be written to disk
   -h, --help                              display help for command
 ```
-
-The default behavior is to add file extensions to module specifiers to align with the implementation in [node.js](https://nodejs.org/dist/latest-v12.x/docs/api/esm.html#esm_mandatory_file_extensions) and across browsers.
-You can customize this with the `--preserve-module-specifiers` command line option. See the [API Options](#api-options) for documentation for the possible values you can pass for it.
 
 ### API Usage
 
@@ -348,6 +358,15 @@ interface TransformOptions {
 	 * It can also take a function that is invoked with a module specifier and returns a boolean determining whether or not it should be preserved
 	 */
 	preserveModuleSpecifiers: "always" | "never" | "external" | "internal" | ((specifier: string) => boolean);
+
+	/**
+	 * Determines whether or not to include import assertions when converting require() calls referencing JSON files to ESM.
+	 * - true (default): Import assertions will always be added when relevant.
+	 * - false: Import assertions will never be added.
+	 * It can also take a function that is invoked with a module specifier and returns a boolean determining whether or not an import assertion should be added
+	 */
+	importAssertions: boolean | ((specifier: string) => boolean);
+
 	/**
 	 * If given, a specific TypeScript version to use
 	 */
@@ -526,6 +545,7 @@ You can provide options to the `cjsToEsm` Custom Transformer to configure its be
 | `debug` _(optional)_                    | If `true`, errors will be thrown if unexpected or unhandled cases are encountered. Additionally, debugging information will be printed during transpilation.                    |
 | `fileSystem` _(optional)_               | If given, the file system to use. Useful if you are using `cjstoesm` inside a virtual file system.                                                                              |
 | `preserveModuleSpecifiers` _(optional)_ | Determines whether or not module specifiers are preserved. Possible values are: "external", "internal", "always", and "never". See [API options](#api-options) for more details |
+| `importAssertions` _(optional)_         | Determines whether or not Import Assertions are included where relevant. Possible values are: true and false. See [API options](#api-options) for more details                  |
 | `typescript` _(optional)_               | If given, the TypeScript version to use internally for all operations.                                                                                                          |
 | `cwd` _(optional)_                      | The directory to use as the current working directory.                                                                                                                          |
 

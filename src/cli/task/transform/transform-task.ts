@@ -14,12 +14,12 @@ import {TEMPORARY_SUBFOLDER_NAME} from "../../../shared/constant.js";
  * Executes the 'generate' task
  */
 export async function transformTask(options: TransformTaskOptions): Promise<TransformResult> {
-	let {logger, input, cwd, outDir, fileSystem, write, typescript, debug, preserveModuleSpecifiers, hooks} = options;
+	let {logger, input, cwd, outDir, fileSystem, write, typescript, debug, preserveModuleSpecifiers, importAssertions, hooks} = options;
 
 	logger.debug(
 		"Options:",
 		inspect(
-			{input, outDir, cwd, write, debug, preserveModuleSpecifiers},
+			{input, outDir, cwd, write, debug, preserveModuleSpecifiers, importAssertions},
 			{
 				colors: true,
 				depth: Infinity,

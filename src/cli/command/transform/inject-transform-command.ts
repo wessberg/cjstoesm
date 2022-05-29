@@ -51,6 +51,12 @@ export function injectTransformCommand(options: InjectCommandOptions): void {
 					defaultValue: "external",
 					description: `Determines whether or not module specifiers are preserved. Possible values are: "external", "internal", "always", and "never"`
 				},
+				"import-assertions": {
+					shortHand: "a",
+					type: "boolean",
+					defaultValue: true,
+					description: `Determines whether or not Import Assertions are included where they are relevant. Possible values are: true and false`
+				},
 				dry: {
 					shortHand: "m",
 					type: "boolean",

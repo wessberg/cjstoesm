@@ -4,10 +4,11 @@ import {PartialExcept} from "helpertypes";
 
 export interface TestContext extends PartialExcept<TransformTaskOptions, "typescript" | "cwd"> {}
 
-export function createTestContext({preserveModuleSpecifiers, debug = isInDebugMode(), typescript, cwd = process.cwd()}: PartialExcept<TestContext, "typescript">): TestContext {
+export function createTestContext({preserveModuleSpecifiers, importAssertions, debug = isInDebugMode(), typescript, cwd = process.cwd()}: PartialExcept<TestContext, "typescript">): TestContext {
 	return {
 		debug,
 		preserveModuleSpecifiers,
+		importAssertions,
 		typescript,
 		cwd
 	};

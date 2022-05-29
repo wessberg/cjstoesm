@@ -10,6 +10,7 @@ export function createTaskOptions({
 	debug = false,
 	cwd = process.cwd(),
 	preserveModuleSpecifiers = "external",
+	importAssertions = true,
 	logger = new Logger(debug !== false ? LogLevelKind.DEBUG : LogLevelKind.NONE)
 }: Partial<TaskOptions> = {}): TaskOptions {
 	return {
@@ -18,6 +19,7 @@ export function createTaskOptions({
 		debug,
 		cwd,
 		preserveModuleSpecifiers,
+		importAssertions,
 		logger
 	};
 }

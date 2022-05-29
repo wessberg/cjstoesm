@@ -43,3 +43,7 @@ export function setExtension(file: string, extension: string): string {
 export function isExternalLibrary(p: string): boolean {
 	return !p.startsWith(".") && !p.startsWith("/");
 }
+
+export function isJsonModule (p: string): boolean {
+	return p.endsWith(`.json`);
+}

@@ -8,12 +8,10 @@ import {getModuleExportsFromRequireDataInContext} from "../../util/get-module-ex
 import {TS} from "../../../type/ts.js";
 import {shouldDebug} from "../../util/should-debug.js";
 import {walkThroughFillerNodes} from "../../util/walk-through-filler-nodes.js";
+import {maybeGenerateAssertClause} from "../../util/maybe-generate-assert-clause.js";
 
 /**
  * Visits the given CallExpression
- *
- * @param options
- * @returns
  */
 export function visitCallExpression({node, childContinuation, sourceFile, context}: BeforeVisitorOptions<TS.CallExpression>): TS.VisitResult<TS.Node> {
 	if (context.onlyExports) {
@@ -57,7 +55,16 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 		if (expressionStatementParent != null) {
 			// Only add the import if there isn't already an import within the SourceFile of the entire module without any bindings
 			if (!context.isModuleSpecifierImportedWithoutLocals(moduleSpecifier)) {
-				context.addImport(factory.createImportDeclaration(undefined, undefined, undefined, factory.createStringLiteral(transformedModuleSpecifier)), moduleSpecifier);
+				context.addImport(
+					factory.createImportDeclaration(
+						undefined,
+						undefined,
+						undefined,
+						factory.createStringLiteral(transformedModuleSpecifier),
+						maybeGenerateAssertClause(context, transformedModuleSpecifier, moduleExports?.assert)
+					),
+					moduleSpecifier
+				);
 			}
 
 			// Drop this CallExpression
@@ -76,7 +83,16 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 
 				const importClause = factory.createImportClause(false, identifier, undefined);
 
-				context.addImport(factory.createImportDeclaration(undefined, undefined, importClause, factory.createStringLiteral(transformedModuleSpecifier)), moduleSpecifier);
+				context.addImport(
+					factory.createImportDeclaration(
+						undefined,
+						undefined,
+						importClause,
+						factory.createStringLiteral(transformedModuleSpecifier),
+						maybeGenerateAssertClause(context, transformedModuleSpecifier, moduleExports?.assert)
+					),
+					moduleSpecifier
+				);
 
 				// Replace the CallExpression by the identifier
 				return identifier;
@@ -139,7 +155,8 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 								  factory.createImportClause(false, identifier, undefined)
 								: // Otherwise, import the entire namespace
 								  factory.createImportClause(false, undefined, factory.createNamespaceImport(identifier)),
-							factory.createStringLiteral(transformedModuleSpecifier)
+							factory.createStringLiteral(transformedModuleSpecifier),
+							maybeGenerateAssertClause(context, transformedModuleSpecifier, moduleExports?.assert)
 						),
 						moduleSpecifier
 					);
@@ -187,7 +204,16 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 
 					const importClause = factory.createImportClause(false, undefined, namedImports);
 
-					context.addImport(factory.createImportDeclaration(undefined, undefined, importClause, factory.createStringLiteral(transformedModuleSpecifier)), moduleSpecifier);
+					context.addImport(
+						factory.createImportDeclaration(
+							undefined,
+							undefined,
+							importClause,
+							factory.createStringLiteral(transformedModuleSpecifier),
+							maybeGenerateAssertClause(context, transformedModuleSpecifier, moduleExports?.assert)
+						),
+						moduleSpecifier
+					);
 				}
 
 				// If the 'require(...)[<something>]' or 'require(...).<something>' expression is part of an ExpressionStatement
@@ -246,7 +272,8 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 							  factory.createImportClause(false, identifier, undefined)
 							: // Otherwise, import the entire namespace
 							  factory.createImportClause(false, undefined, factory.createNamespaceImport(identifier)),
-						factory.createStringLiteral(transformedModuleSpecifier)
+						factory.createStringLiteral(transformedModuleSpecifier),
+						maybeGenerateAssertClause(context, transformedModuleSpecifier, moduleExports?.assert)
 					),
 					moduleSpecifier
 				);
@@ -339,7 +366,8 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 								  factory.createImportClause(false, identifier, undefined)
 								: // Otherwise, import the entire namespace
 								  factory.createImportClause(false, undefined, factory.createNamespaceImport(identifier)),
-							factory.createStringLiteral(transformedModuleSpecifier)
+							factory.createStringLiteral(transformedModuleSpecifier),
+							maybeGenerateAssertClause(context, transformedModuleSpecifier, moduleExports?.assert)
 						),
 						moduleSpecifier
 					);
@@ -356,7 +384,8 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 							undefined,
 							undefined,
 							factory.createImportClause(false, undefined, factory.createNamedImports(importSpecifiers)),
-							factory.createStringLiteral(transformedModuleSpecifier)
+							factory.createStringLiteral(transformedModuleSpecifier),
+							maybeGenerateAssertClause(context, transformedModuleSpecifier, moduleExports?.assert)
 						),
 						moduleSpecifier
 					);
@@ -411,7 +440,8 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 						  factory.createImportClause(false, identifier, undefined)
 						: // Otherwise, import the entire namespace
 						  factory.createImportClause(false, undefined, factory.createNamespaceImport(identifier)),
-					factory.createStringLiteral(transformedModuleSpecifier)
+					factory.createStringLiteral(transformedModuleSpecifier),
+					maybeGenerateAssertClause(context, transformedModuleSpecifier, moduleExports?.assert)
 				),
 				moduleSpecifier
 			);
@@ -453,7 +483,8 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 						  factory.createImportClause(false, identifier, undefined)
 						: // Otherwise, import the entire namespace
 						  factory.createImportClause(false, undefined, factory.createNamespaceImport(identifier)),
-					factory.createStringLiteral(transformedModuleSpecifier)
+					factory.createStringLiteral(transformedModuleSpecifier),
+					maybeGenerateAssertClause(context, transformedModuleSpecifier, moduleExports?.assert)
 				),
 				moduleSpecifier
 			);

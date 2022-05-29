@@ -6,6 +6,7 @@ import {TS} from "../../../type/ts.js";
 import {willReassignIdentifier} from "../../util/will-be-reassigned.js";
 import {hasExportModifier} from "../../util/has-export-modifier.js";
 import {findNodeUp} from "../../util/find-node-up.js";
+import {maybeGenerateAssertClause} from "../../util/maybe-generate-assert-clause.js";
 
 /**
  * Visits the given VariableDeclaration
@@ -89,7 +90,8 @@ export function visitVariableDeclaration({node, childContinuation, sourceFile, c
 						undefined,
 						undefined,
 						factory.createImportClause(false, undefined, factory.createNamespaceImport(factory.createIdentifier(node.name.text))),
-						moduleSpecifierExpression
+						moduleSpecifierExpression,
+						maybeGenerateAssertClause(context, transformedModuleSpecifier, moduleExports?.assert)
 					),
 					moduleSpecifier
 				);
@@ -115,7 +117,8 @@ export function visitVariableDeclaration({node, childContinuation, sourceFile, c
 						  factory.createImportClause(false, factory.createIdentifier(newName), undefined)
 						: // Otherwise, import the entire namespace
 						  factory.createImportClause(false, undefined, factory.createNamespaceImport(factory.createIdentifier(newName))),
-					factory.createStringLiteral(transformedModuleSpecifier)
+					factory.createStringLiteral(transformedModuleSpecifier),
+					maybeGenerateAssertClause(context, transformedModuleSpecifier, moduleExports?.assert)
 				),
 				moduleSpecifier
 			);
@@ -179,7 +182,13 @@ export function visitVariableDeclaration({node, childContinuation, sourceFile, c
 				const namedImports = factory.createNamedImports([factory.createImportSpecifier(false, factory.createIdentifier(propertyName.text), factory.createIdentifier(newName))]);
 
 				context.addImport(
-					factory.createImportDeclaration(undefined, undefined, factory.createImportClause(false, undefined, namedImports), factory.createStringLiteral(transformedModuleSpecifier)),
+					factory.createImportDeclaration(
+						undefined,
+						undefined,
+						factory.createImportClause(false, undefined, namedImports),
+						factory.createStringLiteral(transformedModuleSpecifier),
+						maybeGenerateAssertClause(context, transformedModuleSpecifier, moduleExports?.assert)
+					),
 					moduleSpecifier
 				);
 
@@ -201,7 +210,8 @@ export function visitVariableDeclaration({node, childContinuation, sourceFile, c
 						undefined,
 						undefined,
 						factory.createImportClause(false, undefined, factory.createNamedImports(otherImportSpecifiers)),
-						factory.createStringLiteral(transformedModuleSpecifier)
+						factory.createStringLiteral(transformedModuleSpecifier),
+						maybeGenerateAssertClause(context, transformedModuleSpecifier, moduleExports?.assert)
 					),
 					moduleSpecifier
 				);
