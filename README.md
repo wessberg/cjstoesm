@@ -112,6 +112,20 @@ const {
 
 As you can see, this transformer will attempt to produce code that generates as granular imports and exports as possible.
 
+It includs Import Assertions too! And out of the box, these are added where relevant and necessary:
+
+**Input**
+
+```typescript
+const pkg = require("./package.json");
+```
+
+**Output**
+
+```typescript
+import pkg from "./package.json" assert {type: "json"};
+```
+
 <!-- SHADOW_SECTION_FEATURES_START -->
 
 ### Features
