@@ -112,7 +112,7 @@ const {
 
 As you can see, this transformer will attempt to produce code that generates as granular imports and exports as possible.
 
-It includs Import Assertions too! And out of the box, these are added where relevant and necessary:
+It includes Import Assertions too! And out of the box, these are added where relevant and necessary:
 
 **Input**
 
