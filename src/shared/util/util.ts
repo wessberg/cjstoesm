@@ -1,4 +1,5 @@
 import path from "crosspath";
+import fs from "fs";
 import {IgnoredLookupValue} from "helpertypes";
 export interface RandomPathOptions {
 	extension: string;
@@ -7,6 +8,21 @@ export interface RandomPathOptions {
 }
 export function generateRandomPath({extension = "", prefix = "__#auto-generated-", suffix = String(Math.floor(Math.random() * 100000))}: Partial<RandomPathOptions> = {}) {
 	return `${prefix}${suffix}${extension}`;
+}
+
+export function getNearestPackageJson(from = import.meta.url): Record<string, unknown> | undefined {
+	// There may be a file protocol in from of the path
+	const normalizedFrom = from.replace(/file:\/{2,3}/, "");
+	const currentDir = path.dirname(normalizedFrom);
+
+	const pkgPath = path.join(currentDir, "package.json");
+	if (fs.existsSync(pkgPath)) {
+		return JSON.parse(fs.readFileSync(pkgPath, "utf-8"));
+	} else if (currentDir !== normalizedFrom) {
+		return getNearestPackageJson(currentDir);
+	} else {
+		return undefined;
+	}
 }
 
 /**
