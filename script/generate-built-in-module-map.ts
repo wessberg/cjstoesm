@@ -105,7 +105,7 @@ async function generateBuiltInModuleMapContents(moduleName: string): Promise<str
 		}`;
 }
 
-const CURRENT_DIR = path.dirname(import.meta.url.replace(/file:\/{2,3}/, ``));
+const CURRENT_DIR = path.dirname(path.urlToFilename(import.meta.url));
 const DESTINATION_DIR = path.join(CURRENT_DIR, "../src/transformer/built-in");
 const DESTINATION = path.join(DESTINATION_DIR, "built-in-module-map.ts");
 

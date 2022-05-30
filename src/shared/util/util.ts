@@ -1,6 +1,7 @@
 import path from "crosspath";
 import fs from "fs";
 import {IgnoredLookupValue} from "helpertypes";
+
 export interface RandomPathOptions {
 	extension: string;
 	prefix: string;
@@ -12,7 +13,7 @@ export function generateRandomPath({extension = "", prefix = "__#auto-generated-
 
 export function getNearestPackageJson(from = import.meta.url): Record<string, unknown> | undefined {
 	// There may be a file protocol in from of the path
-	const normalizedFrom = from.replace(/file:\/{2,3}/, "");
+	const normalizedFrom = path.urlToFilename(from);
 	const currentDir = path.dirname(normalizedFrom);
 
 	const pkgPath = path.join(currentDir, "package.json");
@@ -73,7 +74,8 @@ export function normalizeGlob(glob: string): string {
 	return path.extname(glob) === "" && !glob.endsWith("*") ? `${glob}/*` : glob;
 }
 
-export function isRecord<T>(value: T): value is Exclude<T, IgnoredLookupValue | unknown[]> & Record<string, unknown> {
+// eslint-disable-next-line @typescript-eslint/ban-types
+export function isRecord<T>(value: T): value is Exclude<T, IgnoredLookupValue | unknown[]> & {} {
 	return (
 		!Array.isArray(value) &&
 		typeof value === "object" &&
