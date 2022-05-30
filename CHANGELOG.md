@@ -1,3 +1,12 @@
+## [2.1.1](https://github.com/wessberg/cjstoesm/compare/v2.1.0...v2.1.1) (2022-05-30)
+
+
+### Bug Fixes
+
+* handle .cts and .mts extensions ([c772152](https://github.com/wessberg/cjstoesm/commit/c772152946a74c06cdde65b33666f719b8b4f7a4))
+
+
+
 # [2.1.0](https://github.com/wessberg/cjstoesm/compare/v2.0.0...v2.1.0) (2022-05-29)
 
 
