@@ -31,7 +31,7 @@ export function resolvePath({
 	parent,
 	cwd,
 	prioritizedPackageKeys = ["exports", "es2015", "esm2015", "module", "jsnext:main", "main", "browser"],
-	prioritizedExtensions = ["", ".js", ".mjs", ".cjs", ".jsx", ".ts", ".tsx", ".json"],
+	prioritizedExtensions = ["", ".js", ".mjs", ".cjs", ".jsx", ".ts", ".mts", ".cts", ".tsx", ".json"],
 	moduleDirectory = "node_modules",
 	fileSystem,
 	resolveCache

@@ -81,7 +81,7 @@ export function createCompilerHost({cwd, fileSystem, typescript}: CreateCompiler
 const getScriptKindFromPath = (p: string, typescript: typeof TS): TS.ScriptKind => {
 	if (p.endsWith(".js")) {
 		return typescript.ScriptKind.JS;
-	} else if (p.endsWith(".ts")) {
+	} else if (p.endsWith(".ts") || p.endsWith(".mts") || p.endsWith(".cts")) {
 		return typescript.ScriptKind.TS;
 	} else if (p.endsWith(".tsx")) {
 		return typescript.ScriptKind.TSX;

@@ -33,7 +33,7 @@ export async function executeRollup(inputFiles: MaybeArray<TestFile>, options: P
 		const normalizedFileName = path.normalize(fileName);
 		const normalizedParent = parent == null ? undefined : path.normalize(parent);
 		const absolute = path.isAbsolute(normalizedFileName) ? normalizedFileName : path.join(normalizedParent == null ? "" : path.dirname(normalizedParent), normalizedFileName);
-		for (const ext of ["", ".ts", ".js", ".mjs", ".cjs"]) {
+		for (const ext of ["", ".ts", ".mts", ".cts", ".js", ".mjs", ".cjs"]) {
 			for (const withExtension of [`${absolute}${ext}`, setExtension(absolute, ext)]) {
 				const matchedFile = files.find(file => path.normalize(file.fileName) === path.normalize(withExtension));
 				if (matchedFile != null) return path.native.normalize(withExtension);

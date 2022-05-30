@@ -13,12 +13,17 @@ function determineNewExtension(currentExtension: string): string {
 		case ".ts":
 		case ".tsx":
 		case ".d.ts":
+		case ".d.mts":
 		case ".js":
 		case ".jsx":
 		case ".cjs":
+		case ".cjsx":
+		case ".cts":
 			return ".js";
 		case ".mjs":
+		case ".mts":
 		case ".mjsx":
+		case ".d.cts":
 			return ".mjs";
 		default:
 			return currentExtension;
