@@ -5,7 +5,7 @@ import {TS} from "../../../type/ts.js";
 import {cjsToEsm} from "../../../transformer/cjs-to-esm.js";
 import {createCompilerHost} from "../../../shared/compiler-host/create-compiler-host.js";
 import {TransformResult} from "../../../shared/task/transform-result.js";
-import chalk from "chalk";
+import color from "ansi-colors";
 import {ensureArray, getFolderClosestToRoot, normalizeGlob} from "../../../shared/util/util.js";
 import path from "crosspath";
 import {TEMPORARY_SUBFOLDER_NAME} from "../../../shared/constant.js";
@@ -99,7 +99,7 @@ export async function transformTask(options: TransformTaskOptions): Promise<Tran
 				fileSystem.mkdirSync(path.native.dirname(nativeNormalizedFileName), {recursive: true});
 				fileSystem.writeFileSync(nativeNormalizedFileName, text);
 			}
-			logger.info(`${chalk.green("✔")} ${path.native.relative(cwd, nativeNormalizedFileName)}`);
+			logger.info(`${color.green("✔")} ${path.native.relative(cwd, nativeNormalizedFileName)}`);
 		},
 		undefined,
 		false,
