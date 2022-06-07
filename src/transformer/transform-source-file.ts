@@ -12,7 +12,6 @@ import {shouldDebug} from "./util/should-debug.js";
 import path from "crosspath";
 import {VisitorContext} from "./visitor-context.js";
 
-
 export function transformSourceFile(sourceFile: TS.SourceFile, context: VisitorContext): BeforeTransformerSourceFileStepResult {
 	// Take a fast path of the text of the SourceFile doesn't contain anything that can be transformed
 	if (!context.onlyExports && !sourceFile.text.includes("require") && !sourceFile.text.includes("exports")) {

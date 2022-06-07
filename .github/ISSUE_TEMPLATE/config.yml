@@ -1,0 +1,6 @@
+---
+blank_issues_enabled: true
+contact_links:
+  - about: "Please check the FAQ before filing new issues"
+    name: "FAQ"
+    url: "https://github.com/wessberg/cjstoesm#faq"

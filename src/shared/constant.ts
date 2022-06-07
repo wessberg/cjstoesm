@@ -1,1 +1,1 @@
-export const TEMPORARY_SUBFOLDER_NAME = "__$$temporary_subfolder$$__"
+export const TEMPORARY_SUBFOLDER_NAME = "__$$temporary_subfolder$$__";

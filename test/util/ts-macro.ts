@@ -1,7 +1,7 @@
 import semver from "semver";
 import type {ExecutionContext, OneOrMoreMacros, Macro} from "ava";
 import type {TS} from "../../src/type/ts.js";
-import { getNearestPackageJson } from "../../src/shared/util/util.js";
+import {getNearestPackageJson} from "../../src/shared/util/util.js";
 
 const pkg = getNearestPackageJson(import.meta.url);
 
