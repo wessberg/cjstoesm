@@ -167,35 +167,35 @@ import pkg from "./package.json" assert {type: "json"};
 ## Table of Contents
 
 - [Description](#description)
-  - [Features](#features)
+	- [Features](#features)
 - [Backers](#backers)
-  - [Patreon](#patreon)
+	- [Patreon](#patreon)
 - [Table of Contents](#table-of-contents)
 - [Install](#install)
-  - [npm](#npm)
-  - [Yarn](#yarn)
-  - [pnpm](#pnpm)
-  - [Run once with npx](#run-once-with-npx)
-  - [Peer Dependencies](#peer-dependencies)
+	- [npm](#npm)
+	- [Yarn](#yarn)
+	- [pnpm](#pnpm)
+	- [Run once with npx](#run-once-with-npx)
+	- [Peer Dependencies](#peer-dependencies)
 - [Engine](#engine)
 - [File extension handling](#file-extension-handling)
 - [Import Assertion handling](#import-assertion-handling)
 - [Usage](#usage)
-  - [CLI usage](#cli-usage)
-  - [API Usage](#api-usage)
-    - [API options](#api-options)
-  - [Usage with TypeScript's Compiler APIs](#usage-with-typescripts-compiler-apis)
-  - [Usage with Rollup](#usage-with-rollup)
-    - [Usage with rollup-plugin-ts](#usage-with-rollup-plugin-ts)
-    - [Usage with rollup-plugin-typescript2](#usage-with-rollup-plugin-typescript2)
-  - [Usage with Webpack](#usage-with-webpack)
-    - [Usage with awesome-typescript-loader](#usage-with-awesome-typescript-loader)
-    - [Usage with ts-loader](#usage-with-ts-loader)
-  - [Custom Transformer Options](#custom-transformer-options)
+	- [CLI usage](#cli-usage)
+	- [API Usage](#api-usage)
+		- [API options](#api-options)
+	- [Usage with TypeScript's Compiler APIs](#usage-with-typescripts-compiler-apis)
+	- [Usage with Rollup](#usage-with-rollup)
+		- [Usage with rollup-plugin-ts](#usage-with-rollup-plugin-ts)
+		- [Usage with rollup-plugin-typescript2](#usage-with-rollup-plugin-typescript2)
+	- [Usage with Webpack](#usage-with-webpack)
+		- [Usage with awesome-typescript-loader](#usage-with-awesome-typescript-loader)
+		- [Usage with ts-loader](#usage-with-ts-loader)
+	- [Custom Transformer Options](#custom-transformer-options)
 - [Contributing](#contributing)
 - [Maintainers](#maintainers)
 - [FAQ](#faq)
-  - [Is conditional require(...) syntax converted into dynamic imports?](#is-conditional-require-syntax-converted-into-dynamic-imports)
+	- [Is conditional require(...) syntax converted into dynamic imports?](#is-conditional-require-syntax-converted-into-dynamic-imports)
 - [License](#license)
 
 <!-- SHADOW_SECTION_TOC_END -->
@@ -233,8 +233,10 @@ $ npx cjstoesm
 You can also run `cjstoesm` along with its peer dependencies in one combined command:
 
 ```
-$ npx -p typescript -p cjstoesm cjstoesm
+$ npx -p typescript@4.9.5 -p cjstoesm cjstoesm
 ```
+
+Note that `cjstoesm` is not compatible with TypeScript versions newer than 4.x.
 
 ### Peer Dependencies
 
