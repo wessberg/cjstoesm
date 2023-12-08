@@ -9,7 +9,7 @@ import {TS} from "../../../type/ts.js";
 /**
  * Visits the given Node
  */
-export function visitNode<T extends TS.Node>(options: BeforeVisitorOptions<T>): TS.VisitResult<TS.Node> {
+export function visitNode<T extends TS.Node>(options: BeforeVisitorOptions<T>): TS.VisitResult<TS.Node|undefined> {
 	const {typescript} = options.context;
 	const bestNode = getBestBodyInScope(options);
 	if (bestNode != null && bestNode !== options.node) {

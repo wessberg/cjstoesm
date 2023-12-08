@@ -11,8 +11,7 @@ export function walkThroughFillerNodes(expression: TS.Expression, typescript: ty
 	if (
 		typescript.isParenthesizedExpression(expression) ||
 		typescript.isAsExpression(expression) ||
-		typescript.isTypeAssertionExpression?.(expression) ||
-		typescript.isTypeAssertion?.(expression) ||
+		isTypeAssertion(typescript)(expression) ||
 		typescript.isNonNullExpression(expression) ||
 		typescript.isExpressionWithTypeArguments(expression)
 	) {
@@ -20,4 +19,16 @@ export function walkThroughFillerNodes(expression: TS.Expression, typescript: ty
 	}
 
 	return expression;
+}
+
+function isTypeAssertion(typescript: typeof TS) {
+	const t = typescript as (
+		// modern
+		| {isTypeAssertionExpression: typeof TS.isTypeAssertionExpression}
+		// legacy
+		| {isTypeAssertion: typeof TS.isTypeAssertionExpression}
+	)
+	return 'isTypeAssertionExpression' in t
+		? t.isTypeAssertionExpression
+		: t.isTypeAssertion
 }

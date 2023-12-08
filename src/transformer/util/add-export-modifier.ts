@@ -1,16 +1,22 @@
 import {TS} from "../../type/ts.js";
 import {VisitorContext} from "../visitor-context.js";
 
-export function addExportModifier<T extends TS.ModifiersArray>(modifiers: T | undefined, context: VisitorContext): T extends TS.ModifiersArray ? TS.ModifiersArray : undefined {
+export function addExportModifier<T extends TS.ModifierLike>(
+	modifiers: TS.NodeArray<T>|undefined,
+	context: VisitorContext
+): TS.NodeArray<T | TS.ExportKeyword> {
 	const {factory, typescript} = context;
-	if (modifiers == null) {
-		modifiers = factory.createNodeArray() as T;
+	if (!modifiers) {
+		modifiers = factory.createNodeArray<T>()
 	} else if (modifiers.some(m => m.kind === typescript.SyntaxKind.ExportKeyword)) {
-		return modifiers as unknown as T extends TS.ModifiersArray ? TS.ModifiersArray : undefined;
+		return modifiers
 	}
 
 	return factory.createNodeArray([
 		factory.createModifier(typescript.SyntaxKind.ExportKeyword),
-		...modifiers.map(m => factory.createModifier(m.kind))
-	]) as T extends TS.ModifiersArray ? TS.ModifiersArray : undefined;
+		...modifiers.map(m => (m.kind === typescript.SyntaxKind.Decorator
+				? factory.createDecorator(m.expression)
+				: factory.createModifier(m.kind)
+		) as T)
+	])
 }

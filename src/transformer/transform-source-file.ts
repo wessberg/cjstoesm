@@ -280,6 +280,9 @@ export function transformSourceFile(sourceFile: TS.SourceFile, context: VisitorC
 		namedExports: new Set()
 	};
 
+	function hasModifiers<T extends TS.Node>(node: T): node is T & {modifiers: readonly TS.ModifierLike[]} {
+		return Boolean('modifiers' in node && node.modifiers)
+	}
 	for (const statement of updatedSourceFile.statements) {
 		if (typescript.isExportDeclaration(statement) && statement.exportClause != null && typescript.isNamedExports(statement.exportClause)) {
 			for (const element of statement.exportClause.elements) {
@@ -287,8 +290,8 @@ export function transformSourceFile(sourceFile: TS.SourceFile, context: VisitorC
 			}
 		} else if (typescript.isExportAssignment(statement)) {
 			moduleExports.hasDefaultExport = true;
-		} else if (statement.modifiers != null && statement.modifiers.some((m: TS.Modifier) => m.kind === typescript.SyntaxKind.ExportKeyword)) {
-			if (statement.modifiers.some((m: TS.Modifier) => m.kind === typescript.SyntaxKind.DefaultKeyword)) {
+		} else if (hasModifiers(statement) && statement.modifiers.some((m) => m.kind === typescript.SyntaxKind.ExportKeyword)) {
+			if (statement.modifiers.some((m) => m.kind === typescript.SyntaxKind.DefaultKeyword)) {
 				moduleExports.hasDefaultExport = true;
 			} else if (typescript.isVariableStatement(statement)) {
 				for (const declaration of statement.declarationList.declarations) {

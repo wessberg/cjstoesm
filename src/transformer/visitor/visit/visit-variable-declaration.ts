@@ -7,11 +7,12 @@ import {willReassignIdentifier} from "../../util/will-be-reassigned.js";
 import {hasExportModifier} from "../../util/has-export-modifier.js";
 import {findNodeUp} from "../../util/find-node-up.js";
 import {maybeGenerateAssertClause} from "../../util/maybe-generate-assert-clause.js";
+import { tsFactoryDecoratorsInterop } from '../../util/decorators-interop.js'
 
 /**
  * Visits the given VariableDeclaration
  */
-export function visitVariableDeclaration({node, childContinuation, sourceFile, context}: BeforeVisitorOptions<TS.VariableDeclaration>): TS.VisitResult<TS.Node> {
+export function visitVariableDeclaration({node, childContinuation, sourceFile, context}: BeforeVisitorOptions<TS.VariableDeclaration>): TS.VisitResult<TS.Node|undefined> {
 	if (context.onlyExports || node.initializer == null) {
 		return childContinuation(node);
 	}
@@ -72,22 +73,35 @@ export function visitVariableDeclaration({node, childContinuation, sourceFile, c
 					factory.createExportSpecifier(false, node.name.text === "default" ? undefined : factory.createIdentifier("default"), factory.createIdentifier(node.name.text))
 				]);
 
-				context.addTrailingStatements(factory.createExportDeclaration(undefined, undefined, false, exportClause, moduleSpecifierExpression));
+				context.addTrailingStatements(
+					tsFactoryDecoratorsInterop(context, factory.createExportDeclaration)(
+						undefined,
+						false,
+						exportClause,
+						moduleSpecifierExpression,
+					),
+				);
 				return undefined;
 			}
 			// Otherwise, if the TypeScript version supports named namespace exports
 			else if (factory.createNamespaceExport != null) {
 				const exportClause = factory.createNamespaceExport(factory.createIdentifier(node.name.text));
 
-				context.addTrailingStatements(factory.createExportDeclaration(undefined, undefined, false, exportClause, moduleSpecifierExpression));
+				context.addTrailingStatements(
+					tsFactoryDecoratorsInterop(context, factory.createExportDeclaration)(
+						undefined,
+						false,
+						exportClause,
+						moduleSpecifierExpression,
+					),
+				);
 				return undefined;
 			}
 
 			// Otherwise, for older TypeScript versions, we'll have to first import and then re-export the namespace
 			else {
 				context.addImport(
-					factory.createImportDeclaration(
-						undefined,
+					tsFactoryDecoratorsInterop(context, factory.createImportDeclaration)(
 						undefined,
 						factory.createImportClause(false, undefined, factory.createNamespaceImport(factory.createIdentifier(node.name.text))),
 						moduleSpecifierExpression,
@@ -96,7 +110,13 @@ export function visitVariableDeclaration({node, childContinuation, sourceFile, c
 					moduleSpecifier
 				);
 				const exportClause = factory.createNamedExports([factory.createExportSpecifier(false, undefined, factory.createIdentifier(node.name.text))]);
-				context.addTrailingStatements(factory.createExportDeclaration(undefined, undefined, false, exportClause));
+				context.addTrailingStatements(
+					tsFactoryDecoratorsInterop(context, factory.createExportDeclaration)(
+						undefined,
+						false,
+						exportClause,
+					),
+				);
 				return undefined;
 			}
 		}
@@ -108,8 +128,7 @@ export function visitVariableDeclaration({node, childContinuation, sourceFile, c
 			const newName = willReassign ? context.getFreeIdentifier(node.name.text, true) : node.name.text;
 
 			context.addImport(
-				factory.createImportDeclaration(
-					undefined,
+				tsFactoryDecoratorsInterop(context, factory.createImportDeclaration)(
 					undefined,
 
 					moduleExports == null || moduleExports.hasDefaultExport
@@ -182,8 +201,7 @@ export function visitVariableDeclaration({node, childContinuation, sourceFile, c
 				const namedImports = factory.createNamedImports([factory.createImportSpecifier(false, factory.createIdentifier(propertyName.text), factory.createIdentifier(newName))]);
 
 				context.addImport(
-					factory.createImportDeclaration(
-						undefined,
+					tsFactoryDecoratorsInterop(context, factory.createImportDeclaration)(
 						undefined,
 						factory.createImportClause(false, undefined, namedImports),
 						factory.createStringLiteral(transformedModuleSpecifier),
@@ -206,8 +224,7 @@ export function visitVariableDeclaration({node, childContinuation, sourceFile, c
 
 			if (otherImportSpecifiers.length > 0) {
 				context.addImport(
-					factory.createImportDeclaration(
-						undefined,
+					tsFactoryDecoratorsInterop(context, factory.createImportDeclaration)(
 						undefined,
 						factory.createImportClause(false, undefined, factory.createNamedImports(otherImportSpecifiers)),
 						factory.createStringLiteral(transformedModuleSpecifier),

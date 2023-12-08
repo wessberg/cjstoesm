@@ -1,11 +1,12 @@
 import {BeforeVisitorOptions} from "../before-visitor-options.js";
 import {isNotEmittedStatement} from "./is-not-emitted-statement.js";
 import {TS} from "../../../type/ts.js";
+import { isNodeArray } from '../../util/is-node-array.js'
 
 /**
  * Visits the given VariableDeclarationList
  */
-export function visitVariableDeclarationList({node, childContinuation, context}: BeforeVisitorOptions<TS.VariableDeclarationList>): TS.VisitResult<TS.Node> {
+export function visitVariableDeclarationList({node, childContinuation, context}: BeforeVisitorOptions<TS.VariableDeclarationList>): TS.VisitResult<TS.Node|undefined> {
 	if (context.onlyExports) {
 		return childContinuation(node);
 	}
@@ -14,7 +15,7 @@ export function visitVariableDeclarationList({node, childContinuation, context}:
 	const continuationResult = childContinuation(node);
 
 	// If the result isn't a new VariableDeclarationList, return that result
-	if (continuationResult == null || Array.isArray(continuationResult) || !typescript.isVariableDeclarationList(continuationResult)) {
+	if (continuationResult == null || isNodeArray(continuationResult) || !typescript.isVariableDeclarationList(continuationResult)) {
 		return continuationResult;
 	}
 

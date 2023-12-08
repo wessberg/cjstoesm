@@ -9,11 +9,12 @@ import {TS} from "../../../type/ts.js";
 import {shouldDebug} from "../../util/should-debug.js";
 import {walkThroughFillerNodes} from "../../util/walk-through-filler-nodes.js";
 import {maybeGenerateAssertClause} from "../../util/maybe-generate-assert-clause.js";
+import { tsFactoryDecoratorsInterop } from '../../util/decorators-interop.js'
 
 /**
  * Visits the given CallExpression
  */
-export function visitCallExpression({node, childContinuation, sourceFile, context}: BeforeVisitorOptions<TS.CallExpression>): TS.VisitResult<TS.Node> {
+export function visitCallExpression({node, childContinuation, sourceFile, context}: BeforeVisitorOptions<TS.CallExpression>): TS.VisitResult<TS.Node|undefined> {
 	if (context.onlyExports) {
 		return childContinuation(node);
 	}
@@ -56,8 +57,7 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 			// Only add the import if there isn't already an import within the SourceFile of the entire module without any bindings
 			if (!context.isModuleSpecifierImportedWithoutLocals(moduleSpecifier)) {
 				context.addImport(
-					factory.createImportDeclaration(
-						undefined,
+					tsFactoryDecoratorsInterop(context, factory.createImportDeclaration)(
 						undefined,
 						undefined,
 						factory.createStringLiteral(transformedModuleSpecifier),
@@ -84,8 +84,7 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 				const importClause = factory.createImportClause(false, identifier, undefined);
 
 				context.addImport(
-					factory.createImportDeclaration(
-						undefined,
+					tsFactoryDecoratorsInterop(context, factory.createImportDeclaration)(
 						undefined,
 						importClause,
 						factory.createStringLiteral(transformedModuleSpecifier),
@@ -146,8 +145,7 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 					identifier = factory.createIdentifier(context.getFreeIdentifier(generateNameFromModuleSpecifier(moduleSpecifier)));
 
 					context.addImport(
-						factory.createImportDeclaration(
-							undefined,
+						tsFactoryDecoratorsInterop(context, factory.createImportDeclaration)(
 							undefined,
 
 							moduleExports.hasDefaultExport
@@ -205,8 +203,7 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 					const importClause = factory.createImportClause(false, undefined, namedImports);
 
 					context.addImport(
-						factory.createImportDeclaration(
-							undefined,
+						tsFactoryDecoratorsInterop(context, factory.createImportDeclaration)(
 							undefined,
 							importClause,
 							factory.createStringLiteral(transformedModuleSpecifier),
@@ -263,8 +260,7 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 			else {
 				const identifier = factory.createIdentifier(context.getFreeIdentifier(generateNameFromModuleSpecifier(moduleSpecifier)));
 				context.addImport(
-					factory.createImportDeclaration(
-						undefined,
+					tsFactoryDecoratorsInterop(context, factory.createImportDeclaration)(
 						undefined,
 
 						moduleExports.hasDefaultExport
@@ -357,8 +353,7 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 				else {
 					const identifier = factory.createIdentifier(context.getFreeIdentifier(generateNameFromModuleSpecifier(moduleSpecifier)));
 					context.addImport(
-						factory.createImportDeclaration(
-							undefined,
+						tsFactoryDecoratorsInterop(context, factory.createImportDeclaration)(
 							undefined,
 
 							moduleExports.hasDefaultExport
@@ -380,8 +375,7 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 			else {
 				if (importSpecifiers.length > 0) {
 					context.addImport(
-						factory.createImportDeclaration(
-							undefined,
+						tsFactoryDecoratorsInterop(context, factory.createImportDeclaration)(
 							undefined,
 							factory.createImportClause(false, undefined, factory.createNamedImports(importSpecifiers)),
 							factory.createStringLiteral(transformedModuleSpecifier),
@@ -431,8 +425,7 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 		else {
 			const identifier = factory.createIdentifier(context.getFreeIdentifier(generateNameFromModuleSpecifier(moduleSpecifier)));
 			context.addImport(
-				factory.createImportDeclaration(
-					undefined,
+				tsFactoryDecoratorsInterop(context, factory.createImportDeclaration)(
 					undefined,
 
 					moduleExports.hasDefaultExport
@@ -474,8 +467,7 @@ export function visitCallExpression({node, childContinuation, sourceFile, contex
 		else {
 			const identifier = factory.createIdentifier(context.getFreeIdentifier(generateNameFromModuleSpecifier(moduleSpecifier)));
 			context.addImport(
-				factory.createImportDeclaration(
-					undefined,
+				tsFactoryDecoratorsInterop(context, factory.createImportDeclaration)(
 					undefined,
 
 					moduleExports.hasDefaultExport

@@ -4,7 +4,7 @@ import {TS} from "../../../type/ts.js";
 /**
  * Visits the given ExportDeclaration
  */
-export function visitExportDeclaration({node, context}: BeforeVisitorOptions<TS.ExportDeclaration>): TS.VisitResult<TS.Node> {
+export function visitExportDeclaration({node, context}: BeforeVisitorOptions<TS.ExportDeclaration>): TS.VisitResult<TS.Node|undefined> {
 	if (node.exportClause != null && context.typescript.isNamedExports(node.exportClause)) {
 		for (const element of node.exportClause.elements) {
 			// If the name is 'default' that name is considered special since it represents the default export

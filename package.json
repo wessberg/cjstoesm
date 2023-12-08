@@ -9,7 +9,7 @@
 		"clean": "rimraf dist",
 		"lint": "tsc --noEmit && eslint \"src/**/*.ts\" --color",
 		"prettier": "prettier --write \"{src,test,documentation}/**/*.{js,ts,json,html,xml,css,md}\"",
-		"test": "ava",
+		"test": "NODE_OPTIONS='--loader=tsx' ava",
 		"prebuild": "pnpm run clean",
 		"build": "pnpm run prebuild && pnpm run rollup",
 		"build:built_in_module_map": "ts-node --esm script/generate-built-in-module-map.ts",
@@ -62,13 +62,13 @@
 		"@types/reserved-words": "^0.1.0",
 		"@types/resolve": "1.20.0",
 		"@types/semver": "^7.3.9",
-		"@typescript-eslint/eslint-plugin": "^5.27.1",
-		"@typescript-eslint/parser": "^5.27.1",
+		"@typescript-eslint/eslint-plugin": "^6.13.2",
+		"@typescript-eslint/parser": "^6.13.2",
 		"@wessberg/ts-config": "2.0.3",
 		"@wessberg/prettier-config": "1.0.0",
-		"rollup-plugin-ts": "3.0.2",
+		"rollup-plugin-ts": "3.4.5",
 		"ava": "3.15.0",
-		"eslint": "^8.17.0",
+		"eslint": "^8.55.0",
 		"eslint-config-prettier": "^8.5.0",
 		"eslint-plugin-import": "^2.26.0",
 		"eslint-plugin-jsdoc": "^39.3.2",
@@ -84,9 +84,9 @@
 		"sandhog": "^2.0.2",
 		"semver": "7.3.7",
 		"standard-changelog": "^2.0.27",
-		"ts-node": "^10.8.1",
 		"tslib": "^2.4.0",
-		"typescript": "4.7.3",
+		"tsx": "^4.6.2",
+		"typescript": "5.3.3",
 		"typescript-3-2-1": "npm:typescript@4.2.3",
 		"typescript-3-3-1": "npm:typescript@4.2.3",
 		"typescript-3-4-1": "npm:typescript@3.4.1",
@@ -101,7 +101,8 @@
 		"typescript-4-3-5": "npm:typescript@4.3.5",
 		"typescript-4-4-2": "npm:typescript@4.4.2",
 		"typescript-4-5-4": "npm:typescript@4.5.4",
-		"typescript-4-6-4": "npm:typescript@4.6.4"
+		"typescript-4-6-4": "npm:typescript@4.6.4",
+		"typescript-4-7-3": "npm:typescript@4.7.3"
 	},
 	"dependencies": {
 		"@wessberg/stringutil": "^1.0.19",
@@ -149,7 +150,7 @@
 			"ts": "module"
 		},
 		"nodeArguments": [
-			"--loader=ts-node/esm"
+			"--loader=tsx"
 		],
 		"environmentVariables": {
 			"FORCE_COLOR": "3"

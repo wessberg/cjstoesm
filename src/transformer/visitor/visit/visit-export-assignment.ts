@@ -7,7 +7,7 @@ import {TS} from "../../../type/ts.js";
  * @param options
  * @returns
  */
-export function visitExportAssignment({context}: BeforeVisitorOptions<TS.ExportAssignment>): TS.VisitResult<TS.Node> {
+export function visitExportAssignment({context}: BeforeVisitorOptions<TS.ExportAssignment>): TS.VisitResult<TS.Node|undefined> {
 	context.markDefaultAsExported();
 	return undefined;
 }

@@ -14,7 +14,7 @@ import {TS} from "../../../type/ts.js";
  * @param options
  * @returns
  */
-export function visitImportAndExportDeclarations<T extends TS.Node>(options: BeforeVisitorOptions<T>): TS.VisitResult<TS.Node> {
+export function visitImportAndExportDeclarations<T extends TS.Node>(options: BeforeVisitorOptions<T>): TS.VisitResult<TS.Node|undefined> {
 	const {typescript} = options.context;
 	if (typescript.isImportDeclaration(options.node)) {
 		return visitImportDeclaration(options as unknown as BeforeVisitorOptions<TS.ImportDeclaration>);
