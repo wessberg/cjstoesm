@@ -110,7 +110,7 @@
 		"@wessberg/stringutil": "^1.0.19",
 		"ansi-colors": "^4.1.3",
 		"commander": "^12.1.0",
-		"compatfactory": "^4.0.3",
+		"compatfactory": "^4.0.4",
 		"crosspath": "^2.0.0",
 		"fast-glob": "^3.3.2",
 		"helpertypes": "^0.0.19",

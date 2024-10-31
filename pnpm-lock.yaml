@@ -18,8 +18,8 @@ importers:
         specifier: ^12.1.0
         version: 12.1.0
       compatfactory:
-        specifier: ^4.0.3
-        version: 4.0.3(typescript@5.6.3)
+        specifier: ^4.0.4
+        version: 4.0.4(typescript@5.6.3)
       crosspath:
         specifier: ^2.0.0
         version: 2.0.0
@@ -118,11 +118,11 @@ importers:
         specifier: ^5.6.3
         version: 5.6.3
       typescript-3-2-1:
-        specifier: npm:typescript@4.2.3
-        version: typescript@4.2.3
+        specifier: npm:typescript@3.2.1
+        version: typescript@3.2.1
       typescript-3-3-1:
-        specifier: npm:typescript@4.2.3
-        version: typescript@4.2.3
+        specifier: npm:typescript@3.3.1
+        version: typescript@3.3.1
       typescript-3-4-1:
         specifier: npm:typescript@3.4.1
         version: typescript@3.4.1
@@ -1198,8 +1198,8 @@ packages:
   compare-func@2.0.0:
     resolution: {integrity: sha512-zHig5N+tPWARooBnb0Zx1MFcdfpyJrfTJ3Y5L+IFvUm8rM74hHz66z0gw0x4tijh5CorKkKUCnW82R2vmpeCRA==}
 
-  compatfactory@4.0.3:
-    resolution: {integrity: sha512-QZ1tcY8DAXRBoO8MDMwmm2kT/NsvQkgxfZmHZbgYHNMIg1bN47Q1Z6AEDcTtSbKn8PKjVcmf6D0ZaFCOvQBMkQ==}
+  compatfactory@4.0.4:
+    resolution: {integrity: sha512-r2CkPUf5jiFWYBwpsn8bZlJeVsJhNPLlqDFEP5XVsqslyXLwz/fp71t+AaY37UQndJbGDVnXCg2WVety6KKxNw==}
     engines: {node: '>=18.20.0'}
     peerDependencies:
       typescript: '>=3.x || >= 4.x || >= 5.x'
@@ -2926,6 +2926,16 @@ packages:
       typescript:
         optional: true
 
+  typescript@3.2.1:
+    resolution: {integrity: sha512-jw7P2z/h6aPT4AENXDGjcfHTu5CSqzsbZc6YlUIebTyBAq8XaKp78x7VcSh30xwSCcsu5irZkYZUSFP1MrAMbg==}
+    engines: {node: '>=4.2.0'}
+    hasBin: true
+
+  typescript@3.3.1:
+    resolution: {integrity: sha512-cTmIDFW7O0IHbn1DPYjkiebHxwtCMU+eTy30ZtJNBPF9j2O1ITu5XH2YnBeVRKWHqF+3JQwWJv0Q0aUgX8W7IA==}
+    engines: {node: '>=4.2.0'}
+    hasBin: true
+
   typescript@3.4.1:
     resolution: {integrity: sha512-3NSMb2VzDQm8oBTLH6Nj55VVtUEpe/rgkIzMir0qVoLyjDZlnMBva0U6vDiV3IH+sl/Yu6oP5QwsAQtHPmDd2Q==}
     engines: {node: '>=4.2.0'}
@@ -2963,11 +2973,6 @@ packages:
 
   typescript@4.1.2:
     resolution: {integrity: sha512-thGloWsGH3SOxv1SoY7QojKi0tc+8FnOmiarEGMbd/lar7QOEd3hvlx3Fp5y6FlDUGl9L+pd4n2e+oToGMmhRQ==}
-    engines: {node: '>=4.2.0'}
-    hasBin: true
-
-  typescript@4.2.3:
-    resolution: {integrity: sha512-qOcYwxaByStAWrBf4x0fibwZvMRG+r4cQoTjbPtUlrWjBHbmCAww1i448U0GJ+3cNNEtebDteo/cHOR3xJ4wEw==}
     engines: {node: '>=4.2.0'}
     hasBin: true
 
@@ -3989,7 +3994,7 @@ snapshots:
       array-ify: 1.0.0
       dot-prop: 5.3.0
 
-  compatfactory@4.0.3(typescript@5.6.3):
+  compatfactory@4.0.4(typescript@5.6.3):
     dependencies:
       helpertypes: 0.0.19
       typescript: 5.6.3
@@ -5800,6 +5805,10 @@ snapshots:
       - eslint
       - supports-color
 
+  typescript@3.2.1: {}
+
+  typescript@3.3.1: {}
+
   typescript@3.4.1: {}
 
   typescript@3.5.1: {}
@@ -5815,8 +5824,6 @@ snapshots:
   typescript@4.0.3: {}
 
   typescript@4.1.2: {}
-
-  typescript@4.2.3: {}
 
   typescript@4.2.4: {}
 
