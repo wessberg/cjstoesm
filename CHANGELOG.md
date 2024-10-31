@@ -1,3 +1,13 @@
+# [3.0.0](https://github.com/wessberg/cjstoesm/compare/v2.1.2...v3.0.0) (2024-10-31)
+
+
+### Features
+
+* add TypeScript 5.6 support ([91dff3b](https://github.com/wessberg/cjstoesm/commit/91dff3bc90839214015c8702eeb560ae3baa2b54))
+* add TypeScript 5.6 support ([06c2198](https://github.com/wessberg/cjstoesm/commit/06c2198d02bb8434060c2899ada3a5d37c0a82dd))
+
+
+
 ## [2.1.2](https://github.com/wessberg/cjstoesm/compare/v2.1.1...v2.1.2) (2022-05-31)
 
 
