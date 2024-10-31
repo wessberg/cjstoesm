@@ -267,19 +267,19 @@ You can use this library as a CLI to convert your project files from using Commo
 The following command transforms all files matched by the glob `**/*.*` and overwrites them in-place:
 
 ```
-cjstoesm **/*.*
+cjstoesm "**/*.*"
 ```
 
 You can also just pass in a folder name, in which case all direct descendents of that folder will be transformed and overwritten:
 
 ```
-cjstoesm src
+cjstoesm "src"
 ```
 
 You can also pass in a second argument, `outDir`, to avoid overwriting the source files. The following command transforms all files matched by the glob `**/*.*` and emits them to the folder `dist` from the current working directory:
 
 ```
-cjstoesm **/*.* dist
+cjstoesm "**/*.*" dist
 ```
 
 Here's an overview of the options that can be passed via the CLI:
