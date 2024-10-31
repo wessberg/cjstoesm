@@ -1,8 +1,8 @@
 import {getExportsData} from "./get-exports-data.js";
 import {isExpression} from "./is-expression.js";
 import {walkThroughFillerNodes} from "./walk-through-filler-nodes.js";
-import {BeforeVisitorOptions} from "../visitor/before-visitor-options.js";
-import {TS} from "../../type/ts.js";
+import type {BeforeVisitorOptions} from "../visitor/before-visitor-options.js";
+import type {TS} from "../../type/ts.js";
 
 function hasExportAssignments(node: TS.Node, exportsName: string, typescript: typeof TS): boolean {
 	const result = typescript.forEachChild<boolean>(node, nextNode => {
@@ -16,7 +16,7 @@ function hasExportAssignments(node: TS.Node, exportsName: string, typescript: ty
 		return;
 	});
 
-	return result != null ? result : false;
+	return result ?? false;
 }
 
 export function getBestBodyInScope({node, context}: BeforeVisitorOptions<TS.Node>): TS.Node | undefined {
@@ -26,7 +26,7 @@ export function getBestBodyInScope({node, context}: BeforeVisitorOptions<TS.Node
 	}
 
 	const [firstStatement] = node.statements;
-	if (!typescript.isExpressionStatement(firstStatement)) return node;
+	if (firstStatement == null || !typescript.isExpressionStatement(firstStatement)) return node;
 	const expression = walkThroughFillerNodes(firstStatement.expression, typescript);
 
 	if (!typescript.isCallExpression(expression)) return node;
@@ -34,11 +34,14 @@ export function getBestBodyInScope({node, context}: BeforeVisitorOptions<TS.Node
 	if (!typescript.isFunctionExpression(expressionExpression)) return node;
 	if (expression.arguments.length < 2) return node;
 	let [, secondArgument] = expression.arguments;
+	if (secondArgument == null) return node;
+
 	secondArgument = walkThroughFillerNodes(secondArgument, typescript);
 	if (!typescript.isFunctionExpression(secondArgument)) return node;
 	if (secondArgument.parameters.length < 1) return node;
 	const [firstBodyParameter] = secondArgument.parameters;
-	if (!typescript.isIdentifier(firstBodyParameter.name)) return node;
+
+	if (firstBodyParameter == null || !typescript.isIdentifier(firstBodyParameter.name)) return node;
 	if (hasExportAssignments(secondArgument.body, firstBodyParameter.name.text, typescript)) {
 		context.exportsName = firstBodyParameter.name.text;
 

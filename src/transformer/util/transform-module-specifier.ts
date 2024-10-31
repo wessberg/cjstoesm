@@ -1,5 +1,5 @@
 import {ensureHasLeadingDotAndPosix, isExternalLibrary, setExtension} from "./path-util.js";
-import {VisitorContext} from "../visitor-context.js";
+import type {VisitorContext} from "../visitor-context.js";
 import path from "crosspath";
 
 export interface TransformModuleSpecifierOptions {

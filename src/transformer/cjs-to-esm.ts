@@ -1,5 +1,5 @@
-import {TS} from "../type/ts.js";
-import {CjsToEsmOptions} from "./cjs-to-esm-options.js";
+import type {TS} from "../type/ts.js";
+import type {CjsToEsmOptions} from "./cjs-to-esm-options.js";
 import {cjsToEsmTransformer} from "./cjs-to-esm-transformer.js";
 
 /**

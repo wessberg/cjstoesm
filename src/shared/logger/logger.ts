@@ -1,6 +1,6 @@
 import {LogLevelKind} from "./log-level-kind.js";
 import color from "ansi-colors";
-import {Loggable} from "./loggable.js";
+import type {Loggable} from "./loggable.js";
 
 /**
  * A logger that can print to the console

@@ -1,3 +1,3 @@
-import {TaskOptions} from "../shared/task/task-options.js";
+import type {TaskOptions} from "../shared/task/task-options.js";
 
 export interface CjsToEsmOptions extends TaskOptions {}

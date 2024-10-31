@@ -1,15 +1,15 @@
-import {BeforeVisitorOptions} from "../before-visitor-options.js";
+import type {BeforeVisitorOptions} from "../before-visitor-options.js";
 import {visitCallExpression} from "./visit-call-expression.js";
 import {visitBinaryExpression} from "./visit-binary-expression.js";
 import {visitVariableDeclaration} from "./visit-variable-declaration.js";
 import {visitVariableDeclarationList} from "./visit-variable-declaration-list.js";
 import {getBestBodyInScope} from "../../util/get-best-body-in-scope.js";
-import {TS} from "../../../type/ts.js";
+import type {TS} from "../../../type/ts.js";
 
 /**
  * Visits the given Node
  */
-export function visitNode<T extends TS.Node>(options: BeforeVisitorOptions<T>): TS.VisitResult<TS.Node> {
+export function visitNode<T extends TS.Node>(options: BeforeVisitorOptions<T>): TS.VisitResult<TS.Node | undefined> {
 	const {typescript} = options.context;
 	const bestNode = getBestBodyInScope(options);
 	if (bestNode != null && bestNode !== options.node) {

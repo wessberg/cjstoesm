@@ -3,31 +3,32 @@ import {executeTransformer} from "./setup/execute-transformer.js";
 import {formatCode} from "./util/format-code.js";
 import assert from "node:assert";
 
-test("Generates an import with a default import binding from JSON modules. #1", "*", (_, {typescript}) => {
+test("Adds correct import attributes for module specifiers when importAttriutes are enabled. #1", ">=5.3", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
 				entry: true,
-				fileName: "index.ts",
+				fileName: "index.js",
 				text: `
 				const foo = require("./foo.json");
 			`
 			},
 			{
-				entry: true,
+				entry: false,
 				fileName: "foo.json",
 				text: `
 				{}
 			`
 			}
 		],
-		{typescript, importAttributes: false}
+		{typescript, importAttributes: true}
 	);
-	const [file] = bundle.files;
+	const file = bundle.files.find(file => file.fileName.endsWith("index.js"));
+
 	assert.deepEqual(
 		formatCode(file!.text),
 		formatCode(`\
-		import foo from "./foo.json";
+			import foo from "./foo.json" with {type: "json"};
 		`)
 	);
 });

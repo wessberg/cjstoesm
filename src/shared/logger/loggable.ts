@@ -1,4 +1,4 @@
-import {LogLevelKind} from "./log-level-kind.js";
+import type {LogLevelKind} from "./log-level-kind.js";
 
 export interface Loggable {
 	/**

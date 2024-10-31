@@ -1,6 +1,6 @@
 import {Command} from "commander";
 import {injectTransformCommand} from "./command/transform/inject-transform-command.js";
-import {InjectCommandOptions} from "./command/inject-command/inject-command-options.js";
+import type {InjectCommandOptions} from "./command/inject-command/inject-command-options.js";
 
 export interface ConfigureCommandsOptions extends Omit<InjectCommandOptions, "program"> {
 	commandLoaders: ((options: InjectCommandOptions) => void)[];

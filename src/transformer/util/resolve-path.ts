@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import resolve from "resolve";
-import {SafeReadonlyFileSystem} from "../../shared/file-system/file-system.js";
+import type {SafeReadonlyFileSystem} from "../../shared/file-system/file-system.js";
 import path from "crosspath";
 import {isExternalLibrary} from "./path-util.js";
 import {isRecord} from "../../shared/util/util.js";
@@ -82,8 +84,8 @@ export function resolvePath({
 				readFileSync: p => fileSystem.readFileSync(p).toString(),
 				isFile: p => fileSystem.safeStatSync(p)?.isFile() ?? false,
 				isDirectory: p => fileSystem.safeStatSync(p)?.isDirectory() ?? false,
-				packageFilter(pkg: Record<string, string>): Record<string, string> {
-					let property: string | undefined | null | void;
+				packageFilter(pkg) {
+					let property: string | undefined | null;
 
 					//  Otherwise, or if no key was selected, use the prioritized list of fields and take the first matched one
 					if (property == null) {
@@ -104,11 +106,11 @@ export function resolvePath({
 							} else if ("require" in pickedProperty) {
 								pickedProperty = (pickedProperty as any).require;
 							} else {
-								pickedProperty = pickedProperty[Object.keys(pickedProperty)[0]];
+								pickedProperty = pickedProperty[Object.keys(pickedProperty)[0]!];
 							}
 						}
 
-						pkg.main = pickedProperty;
+						pkg.main = pickedProperty!;
 					}
 
 					// Return the package
@@ -122,7 +124,7 @@ export function resolvePath({
 
 		// Return it
 		return resolveResult;
-	} catch (ex) {
+	} catch {
 		// No file could be resolved. Set it in the cache as unresolvable and return void
 		resolveCache.set(cacheKey, null);
 

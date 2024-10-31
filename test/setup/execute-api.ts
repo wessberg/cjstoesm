@@ -1,9 +1,10 @@
-import {TestFile} from "./test-file.js";
-import {TestContext} from "./test-context.js";
+import type {TestFile} from "./test-file.js";
+import type {TestContext} from "./test-context.js";
 import {createTestSetup} from "./test-setup.js";
 import {transform} from "../../src/api/transform.js";
-import {createTestResult, TestResult} from "./test-result.js";
-import {MaybeArray, PartialExcept} from "helpertypes";
+import type {TestResult} from "./test-result.js";
+import {createTestResult} from "./test-result.js";
+import type {MaybeArray, PartialExcept} from "helpertypes";
 
 /**
  * Prepares a test via the transform function

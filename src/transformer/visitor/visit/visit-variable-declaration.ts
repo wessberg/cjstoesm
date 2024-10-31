@@ -1,17 +1,17 @@
-import {BeforeVisitorOptions} from "../before-visitor-options.js";
+import type {BeforeVisitorOptions} from "../before-visitor-options.js";
 import {isRequireCall} from "../../util/is-require-call.js";
 import {walkThroughFillerNodes} from "../../util/walk-through-filler-nodes.js";
 import {getModuleExportsFromRequireDataInContext} from "../../util/get-module-exports-from-require-data-in-context.js";
-import {TS} from "../../../type/ts.js";
+import type {TS} from "../../../type/ts.js";
 import {willReassignIdentifier} from "../../util/will-be-reassigned.js";
-import {hasExportModifier} from "../../util/has-export-modifier.js";
 import {findNodeUp} from "../../util/find-node-up.js";
-import {maybeGenerateAssertClause} from "../../util/maybe-generate-assert-clause.js";
+import {maybeGenerateImportAttributes} from "../../util/maybe-generate-import-attributes.js";
+import {hasExportModifier} from "../../../shared/util/util.js";
 
 /**
  * Visits the given VariableDeclaration
  */
-export function visitVariableDeclaration({node, childContinuation, sourceFile, context}: BeforeVisitorOptions<TS.VariableDeclaration>): TS.VisitResult<TS.Node> {
+export function visitVariableDeclaration({node, childContinuation, sourceFile, context}: BeforeVisitorOptions<TS.VariableDeclaration>): TS.VisitResult<TS.Node | undefined> {
 	if (context.onlyExports || node.initializer == null) {
 		return childContinuation(node);
 	}
@@ -72,14 +72,14 @@ export function visitVariableDeclaration({node, childContinuation, sourceFile, c
 					factory.createExportSpecifier(false, node.name.text === "default" ? undefined : factory.createIdentifier("default"), factory.createIdentifier(node.name.text))
 				]);
 
-				context.addTrailingStatements(factory.createExportDeclaration(undefined, undefined, false, exportClause, moduleSpecifierExpression));
+				context.addTrailingStatements(factory.createExportDeclaration(undefined, false, exportClause, moduleSpecifierExpression));
 				return undefined;
 			}
 			// Otherwise, if the TypeScript version supports named namespace exports
-			else if (factory.createNamespaceExport != null) {
+			else if ((factory as {createNamespaceExport?: typeof factory.createNamespaceExport}).createNamespaceExport != null) {
 				const exportClause = factory.createNamespaceExport(factory.createIdentifier(node.name.text));
 
-				context.addTrailingStatements(factory.createExportDeclaration(undefined, undefined, false, exportClause, moduleSpecifierExpression));
+				context.addTrailingStatements(factory.createExportDeclaration(undefined, false, exportClause, moduleSpecifierExpression));
 				return undefined;
 			}
 
@@ -88,15 +88,14 @@ export function visitVariableDeclaration({node, childContinuation, sourceFile, c
 				context.addImport(
 					factory.createImportDeclaration(
 						undefined,
-						undefined,
 						factory.createImportClause(false, undefined, factory.createNamespaceImport(factory.createIdentifier(node.name.text))),
 						moduleSpecifierExpression,
-						maybeGenerateAssertClause(context, transformedModuleSpecifier, moduleExports?.assert)
+						maybeGenerateImportAttributes(context, transformedModuleSpecifier, moduleExports.withValue)
 					),
 					moduleSpecifier
 				);
 				const exportClause = factory.createNamedExports([factory.createExportSpecifier(false, undefined, factory.createIdentifier(node.name.text))]);
-				context.addTrailingStatements(factory.createExportDeclaration(undefined, undefined, false, exportClause));
+				context.addTrailingStatements(factory.createExportDeclaration(undefined, false, exportClause));
 				return undefined;
 			}
 		}
@@ -110,15 +109,14 @@ export function visitVariableDeclaration({node, childContinuation, sourceFile, c
 			context.addImport(
 				factory.createImportDeclaration(
 					undefined,
-					undefined,
 
 					moduleExports == null || moduleExports.hasDefaultExport
 						? // Import the default if it has any (or if we don't know if it has)
-						  factory.createImportClause(false, factory.createIdentifier(newName), undefined)
+							factory.createImportClause(false, factory.createIdentifier(newName), undefined)
 						: // Otherwise, import the entire namespace
-						  factory.createImportClause(false, undefined, factory.createNamespaceImport(factory.createIdentifier(newName))),
+							factory.createImportClause(false, undefined, factory.createNamespaceImport(factory.createIdentifier(newName))),
 					factory.createStringLiteral(transformedModuleSpecifier),
-					maybeGenerateAssertClause(context, transformedModuleSpecifier, moduleExports?.assert)
+					maybeGenerateImportAttributes(context, transformedModuleSpecifier, moduleExports?.withValue)
 				),
 				moduleSpecifier
 			);
@@ -184,10 +182,9 @@ export function visitVariableDeclaration({node, childContinuation, sourceFile, c
 				context.addImport(
 					factory.createImportDeclaration(
 						undefined,
-						undefined,
 						factory.createImportClause(false, undefined, namedImports),
 						factory.createStringLiteral(transformedModuleSpecifier),
-						maybeGenerateAssertClause(context, transformedModuleSpecifier, moduleExports?.assert)
+						maybeGenerateImportAttributes(context, transformedModuleSpecifier, moduleExports.withValue)
 					),
 					moduleSpecifier
 				);
@@ -208,10 +205,9 @@ export function visitVariableDeclaration({node, childContinuation, sourceFile, c
 				context.addImport(
 					factory.createImportDeclaration(
 						undefined,
-						undefined,
 						factory.createImportClause(false, undefined, factory.createNamedImports(otherImportSpecifiers)),
 						factory.createStringLiteral(transformedModuleSpecifier),
-						maybeGenerateAssertClause(context, transformedModuleSpecifier, moduleExports?.assert)
+						maybeGenerateImportAttributes(context, transformedModuleSpecifier, moduleExports.withValue)
 					),
 					moduleSpecifier
 				);

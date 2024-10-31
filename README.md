@@ -58,11 +58,11 @@ Here's another example:
 
 ```typescript
 module.exports = {
-	foo() {
-		return 2 + 2;
-	},
-	bar: 3,
-	baz: new RegExp("")
+  foo() {
+    return 2 + 2;
+  },
+  bar: 3,
+  baz: new RegExp("")
 };
 ```
 
@@ -70,7 +70,7 @@ module.exports = {
 
 ```typescript
 export function foo() {
-	return 2 + 2;
+  return 2 + 2;
 }
 export const bar = 3;
 export const baz = new RegExp("");
@@ -97,7 +97,7 @@ And for complex require calls such as:
 
 ```typescript
 const {
-	foo: {bar: baz}
+  foo: {bar: baz}
 } = require("./my-module").something("bar");
 ```
 
@@ -106,13 +106,13 @@ const {
 ```typescript
 import {something} from "./my-module.js";
 const {
-	foo: {bar: baz}
+  foo: {bar: baz}
 } = {something}.something("bar");
 ```
 
 As you can see, this transformer will attempt to produce code that generates as granular imports and exports as possible.
 
-It includes Import Assertions too! And out of the box, these are added where relevant and necessary:
+It includes Import Attributes too! And out of the box, these are added where relevant and necessary:
 
 **Input**
 
@@ -123,7 +123,7 @@ const pkg = require("./package.json");
 **Output**
 
 ```typescript
-import pkg from "./package.json" assert {type: "json"};
+import pkg from "./package.json" with {type: "json"};
 ```
 
 <!-- SHADOW_SECTION_FEATURES_START -->
@@ -136,7 +136,7 @@ import pkg from "./package.json" assert {type: "json"};
 - Tree-shaking friendly
 - Clean, idiomatic output
 - Automatic and configurable addition of file extensions to module specifiers
-- Automatic and configurable addition of import assertions to relevant import declarations
+- Automatic and configurable addition of import attributes to relevant import declarations
 - No wrappers
 - Low-level implementation that can be used as the foundation for other tools such as Loaders, Plugins, CLIs, and Linters.
 - CLI integration, enabling you to convert a project from CJS to ESM from the command line.
@@ -151,10 +151,6 @@ import pkg from "./package.json" assert {type: "json"};
 <!-- SHADOW_SECTION_BACKERS_START -->
 
 ## Backers
-
-| <a href="https://usebubbles.com"><img alt="Bubbles" src="https://uploads-ssl.webflow.com/5d682047c28b217055606673/5e5360be16879c1d0dca6514_icon-thin-128x128%402x.png" height="70"   /></a> | <a href="https://github.com/cblanc"><img alt="Christopher Blanchard" src="https://avatars0.githubusercontent.com/u/2160685?s=400&v=4" height="70"   /></a> | <a href="https://github.com/ideal-postcodes"><img alt="Ideal Postcodes" src="https://avatars.githubusercontent.com/u/4996310?s=200&v=4" height="70"   /></a> | <a href="https://www.xerox.com"><img alt="Xerox" src="https://avatars.githubusercontent.com/u/9158512?s=200&v=4" height="70"   /></a> | <a href="https://changelog.me"><img alt="Trent Raymond" src="https://avatars.githubusercontent.com/u/1509616?v=4" height="70"   /></a> | <a href="https://scrubtheweb.com"><img alt="scrubtheweb" src="https://avatars.githubusercontent.com/u/41668218?v=4" height="70"   /></a> | <a href="https://github.com/hjoelh"><img alt="Joel" src="https://avatars.githubusercontent.com/u/68335961?v=4" height="70"   /></a> |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| [Bubbles](https://usebubbles.com)<br><strong>Twitter</strong>: [@usebubbles](https://twitter.com/usebubbles)                                                                                | [Christopher Blanchard](https://github.com/cblanc)                                                                                                         | [Ideal Postcodes](https://github.com/ideal-postcodes)                                                                                                        | [Xerox](https://www.xerox.com)                                                                                                        | [Trent Raymond](https://changelog.me)                                                                                                  | [scrubtheweb](https://scrubtheweb.com)                                                                                                   | [Joel](https://github.com/hjoelh)                                                                                                   |
 
 ### Patreon
 
@@ -179,21 +175,19 @@ import pkg from "./package.json" assert {type: "json"};
   - [Peer Dependencies](#peer-dependencies)
 - [Engine](#engine)
 - [File extension handling](#file-extension-handling)
-- [Import Assertion handling](#import-assertion-handling)
+- [Import Attributes handling](#import-attributes-handling)
 - [Usage](#usage)
   - [CLI usage](#cli-usage)
   - [API Usage](#api-usage)
     - [API options](#api-options)
   - [Usage with TypeScript's Compiler APIs](#usage-with-typescripts-compiler-apis)
   - [Usage with Rollup](#usage-with-rollup)
-    - [Usage with rollup-plugin-ts](#usage-with-rollup-plugin-ts)
-    - [Usage with rollup-plugin-typescript2](#usage-with-rollup-plugin-typescript2)
+    - [Usage with @rollup/plugin-typescript](#usage-with-rollupplugin-typescript)
   - [Usage with Webpack](#usage-with-webpack)
     - [Usage with awesome-typescript-loader](#usage-with-awesome-typescript-loader)
     - [Usage with ts-loader](#usage-with-ts-loader)
   - [Custom Transformer Options](#custom-transformer-options)
 - [Contributing](#contributing)
-- [Maintainers](#maintainers)
 - [FAQ](#faq)
   - [Is conditional require(...) syntax converted into dynamic imports?](#is-conditional-require-syntax-converted-into-dynamic-imports)
 - [License](#license)
@@ -252,11 +246,11 @@ The default behavior is to add file extensions to module specifiers to align wit
 
 You can customize this with the `--preserve-module-specifiers` command line option, or with the `preserveModuleSpecifiers` API option. See the [API Options](#api-options) for documentation for the possible values you can pass to it.
 
-## Import Assertion handling
+## Import Attributes handling
 
-The default behavior is to add Import Assertions to Import Declarations when necessary and relevant, such as for when referencing JSON files. This aligns with the implementation in [node.js](https://nodejs.org/dist/latest/docs/api/esm.html#import-assertions) and across browsers.
+The default behavior is to add Import Attributes to Import Declarations when necessary and relevant, such as for when referencing JSON files. This aligns with the implementation in [node.js](https://nodejs.org/dist/latest/docs/api/esm.html#import-attributes) and across browsers.
 
-You can customize this with the `--import-assertions` command line option, or with the `importAssertions` API option. See the [API Options](#api-options) for documentation for the possible values you can pass to it.
+You can customize this with the `--import-attributes` command line option, or with the `importAttributes` API option. See the [API Options](#api-options) for documentation for the possible values you can pass to it.
 
 <!-- SHADOW_SECTION_USAGE_START -->
 
@@ -302,7 +296,7 @@ Options:
   -s, --silent [arg]                      Whether to not print anything
   -c, --cwd [arg]                         Optionally which directory to use as the current working directory
   -p, --preserve-module-specifiers [arg]  Determines whether or not module specifiers are preserved. Possible values are: "external", "internal", "always", and "never" (default: "external")
-  -a, --import-assertions [arg]           Determines whether or not Import Assertions are included where they are relevant. Possible values are: true and false (default: true)
+  -a, --import-attributes [arg]           Determines whether or not Import Attributes are included where they are relevant. Possible values are: true and false (default: true)
   -m, --dry [arg]                         If true, no files will be written to disk
   -h, --help                              display help for command
 ```
@@ -315,8 +309,8 @@ You can also use this library programmatically:
 import {transform} from "cjstoesm";
 
 await transform({
-	input: "src/**/*.*",
-	outDir: "dist"
+  input: "src/**/*.*",
+  outDir: "dist"
 });
 ```
 
@@ -328,13 +322,13 @@ import {transform} from "cjstoesm";
 import {writeFileSync} from "fs";
 
 const result = await transform({
-	input: "src/**/*.*",
-	write: false
+  input: "src/**/*.*",
+  write: false
 });
 
 // Write to disk
 for (const {fileName, text} of result.files) {
-	writeFileSync(fileName, text);
+  writeFileSync(fileName, text);
 }
 ```
 
@@ -342,57 +336,62 @@ for (const {fileName, text} of result.files) {
 
 ```typescript
 interface TransformOptions {
-	/**
-	 * The input glob(s) to match against the file system
-	 */
-	input: string[] | string;
-	/**
-	 * Optionally, the output directory to use. Defaults to inheriting that of the matched input files`
-	 */
-	outDir?: string;
-	/**
-	 * If write is false, no files will be written to disk
-	 */
-	write: boolean;
-	/**
-	 * The FileSystem to use. Useful if you want to work with a virtual file system. Defaults to using the "fs" module
-	 */
-	fileSystem: FileSystem;
-	/**
-	 * A logger that can print messages of varying severity depending on the log level
-	 */
-	logger: Loggable;
-	/**
-	 * The base directory (defaults to process.cwd())
-	 */
-	cwd: string;
-	/**
-	 * Determines how module specifiers are treated.
-	 * - external (default): CommonJS module specifiers identifying libraries or built-in modules are preserved (default)
-	 * - internal: CommonJS module specifiers identifying anything else than libraries or built-in modules are preserved
-	 * - always: CommonJS module specifiers are never transformed.
-	 * - never: CommonJS module specifiers are always transformed
-	 * It can also take a function that is invoked with a module specifier and returns a boolean determining whether or not it should be preserved
-	 */
-	preserveModuleSpecifiers: "always" | "never" | "external" | "internal" | ((specifier: string) => boolean);
+  /**
+   * The input glob(s) to match against the file system
+   */
+  input: string[] | string;
+  /**
+   * Optionally, the output directory to use. Defaults to inheriting that of the matched input files`
+   */
+  outDir?: string;
+  /**
+   * If write is false, no files will be written to disk
+   */
+  write: boolean;
+  /**
+   * The FileSystem to use. Useful if you want to work with a virtual file system. Defaults to using the "fs" module
+   */
+  fileSystem: FileSystem;
+  /**
+   * A logger that can print messages of varying severity depending on the log level
+   */
+  logger: Loggable;
+  /**
+   * The base directory (defaults to process.cwd())
+   */
+  cwd: string;
+  /**
+   * Determines how module specifiers are treated.
+   * - external (default): CommonJS module specifiers identifying libraries or built-in modules are preserved (default)
+   * - internal: CommonJS module specifiers identifying anything else than libraries or built-in modules are preserved
+   * - always: CommonJS module specifiers are never transformed.
+   * - never: CommonJS module specifiers are always transformed
+   * It can also take a function that is invoked with a module specifier and returns a boolean determining whether or not it should be preserved
+   */
+  preserveModuleSpecifiers:
+    | "always"
+    | "never"
+    | "external"
+    | "internal"
+    | ((specifier: string) => boolean);
 
-	/**
-	 * Determines whether or not to include import assertions when converting require() calls referencing JSON files to ESM.
-	 * - true (default): Import assertions will always be added when relevant.
-	 * - false: Import assertions will never be added.
-	 * It can also take a function that is invoked with a module specifier and returns a boolean determining whether or not an import assertion should be added
-	 */
-	importAssertions: boolean | ((specifier: string) => boolean);
+  /**
+   * Determines whether or not to include import attributes when converting require() calls referencing JSON files to ESM.
+   * - true (default): Import attributes will always be added when relevant.
+   * - false: Import attributes will never be added.
+   * It can also take a function that is invoked with a module specifier and returns a boolean determining whether or not import attributes should be added
+   */
+  importAttributes: boolean | ((specifier: string) => boolean);
 
-	/**
-	 * If given, a specific TypeScript version to use
-	 */
-	typescript: typeof TS;
-	/**
-	 * If true, debug information will be printed. If a function is provided, it will be invoked for each file name. Returning true from the function
-	 * determines that debug information will be printed related to that file
-	 */
-	debug: boolean | string | ((file: string) => boolean);
+  /**
+   * If given, a specific TypeScript version to use
+   */
+  typescript: typeof TS;
+  /**
+   * If true, debug information will be printed. If a function is provided, it will be invoked for each file name. Returning true from the function
+   * determines that debug information will be printed related to that file
+   */
+  debug: boolean | string | ((file: string) => boolean);
 }
 ```
 
@@ -408,10 +407,10 @@ import {ModuleKind, transpileModule} from "typescript";
 import {cjsToEsm} from "cjstoesm";
 
 const result = transpileModule(`const {join} = require("path");`, {
-	transformers: cjsToEsm(),
-	compilerOptions: {
-		module: ModuleKind.ESNext
-	}
+  transformers: cjsToEsm(),
+  compilerOptions: {
+    module: ModuleKind.ESNext
+  }
 });
 
 // 'import { join } from "path"' is printed to the console
@@ -425,18 +424,18 @@ import {ModuleKind, transpileModule} from "typescript";
 import {cjsToEsmTransformerFactory} from "cjstoesm";
 
 transpileModule(`const {join} = require("path");`, {
-	transformers: {
-		before: [cjsToEsmTransformerFactory(), someOtherTransformerFactory()],
-		after: [
-			// ...
-		],
-		afterDeclarations: [
-			// ...
-		]
-	},
-	compilerOptions: {
-		module: ModuleKind.ESNext
-	}
+  transformers: {
+    before: [cjsToEsmTransformerFactory(), someOtherTransformerFactory()],
+    after: [
+      // ...
+    ],
+    afterDeclarations: [
+      // ...
+    ]
+  },
+  compilerOptions: {
+    module: ModuleKind.ESNext
+  }
 });
 ```
 
@@ -448,55 +447,35 @@ import {cjsToEsm} from "cjstoesm";
 
 const options = getDefaultCompilerOptions();
 const program = createProgram({
-	options,
-	rootNames: ["my-file.js", "my-other-file.ts"],
-	host: createCompilerHost(options)
+  options,
+  rootNames: ["my-file.js", "my-other-file.ts"],
+  host: createCompilerHost(options)
 });
 program.emit(undefined, undefined, undefined, undefined, cjsToEsm());
 ```
 
 ### Usage with Rollup
 
-There are two popular TypeScript plugins for Rollup that support Custom Transformers:
+There are a few TypeScript plugins for Rollup that support Custom Transformers, and this tool can be easily integrated with them.
 
-- [rollup-plugin-ts](https://github.com/wessberg/rollup-plugin-ts)
-- [rollup-plugin-typescript2](https://github.com/ezolenko/rollup-plugin-typescript2)
+#### Usage with @rollup/plugin-typescript
 
-#### Usage with rollup-plugin-ts
+Here's how you may integrate this tool with [@rollup/plugin-typescript](https://www.npmjs.com/package/@rollup/plugin-typescript):
 
 ```typescript
-import ts from "rollup-plugin-ts";
+import ts from "@rollup/plugin-typescript";
 import {cjsToEsm} from "cjstoesm";
 
 export default {
-	input: "...",
-	output: [
-		/* ... */
-	],
-	plugins: [
-		ts({
-			transformers: [cjsToEsm()]
-		})
-	]
-};
-```
-
-#### Usage with rollup-plugin-typescript2
-
-```typescript
-import ts from "rollup-plugin-typescript2";
-import {cjsToEsm} from "cjstoesm";
-
-export default {
-	input: "...",
-	output: [
-		/* ... */
-	],
-	plugins: [
-		ts({
-			transformers: [() => cjsToEsm()]
-		})
-	]
+  input: "...",
+  output: [
+    /* ... */
+  ],
+  plugins: [
+    ts({
+      transformers: program => cjsToEsm({program})
+    })
+  ]
 };
 ```
 
@@ -512,21 +491,21 @@ There are two popular TypeScript loaders for Webpack that support Custom Transfo
 ```typescript
 import {cjsToEsm} from "cjstoesm";
 const config = {
-	// ...
-	module: {
-		rules: [
-			{
-				// Match .mjs, .js, .jsx, and .tsx files
-				test: /(\.mjs)|(\.[jt]sx?)$/,
-				loader: "awesome-typescript-loader",
-				options: {
-					// ...
-					getCustomTransformers: () => cjsToEsm()
-				}
-			}
-		]
-	}
-	// ...
+  // ...
+  module: {
+    rules: [
+      {
+        // Match .mjs, .js, .jsx, and .tsx files
+        test: /(\.mjs)|(\.[jt]sx?)$/,
+        loader: "awesome-typescript-loader",
+        options: {
+          // ...
+          getCustomTransformers: () => cjsToEsm()
+        }
+      }
+    ]
+  }
+  // ...
 };
 ```
 
@@ -535,21 +514,21 @@ const config = {
 ```typescript
 import {cjsToEsm} from "cjstoesm";
 const config = {
-	// ...
-	module: {
-		rules: [
-			{
-				// Match .mjs, .js, .jsx, and .tsx files
-				test: /(\.mjs)|(\.[jt]sx?)$/,
-				loader: "ts-loader",
-				options: {
-					// ...
-					getCustomTransformers: () => cjsToEsm
-				}
-			}
-		]
-	}
-	// ...
+  // ...
+  module: {
+    rules: [
+      {
+        // Match .mjs, .js, .jsx, and .tsx files
+        test: /(\.mjs)|(\.[jt]sx?)$/,
+        loader: "ts-loader",
+        options: {
+          // ...
+          getCustomTransformers: () => cjsToEsm
+        }
+      }
+    ]
+  }
+  // ...
 };
 ```
 
@@ -562,7 +541,7 @@ You can provide options to the `cjsToEsm` Custom Transformer to configure its be
 | `debug` _(optional)_                    | If `true`, errors will be thrown if unexpected or unhandled cases are encountered. Additionally, debugging information will be printed during transpilation.                    |
 | `fileSystem` _(optional)_               | If given, the file system to use. Useful if you are using `cjstoesm` inside a virtual file system.                                                                              |
 | `preserveModuleSpecifiers` _(optional)_ | Determines whether or not module specifiers are preserved. Possible values are: "external", "internal", "always", and "never". See [API options](#api-options) for more details |
-| `importAssertions` _(optional)_         | Determines whether or not Import Assertions are included where relevant. Possible values are: true and false. See [API options](#api-options) for more details                  |
+| `importAttributes` _(optional)_         | Determines whether or not Import Attributes are included where relevant. Possible values are: true and false. See [API options](#api-options) for more details                  |
 | `typescript` _(optional)_               | If given, the TypeScript version to use internally for all operations.                                                                                                          |
 | `cwd` _(optional)_                      | The directory to use as the current working directory.                                                                                                                          |
 
@@ -575,12 +554,6 @@ Do you want to contribute? Awesome! Please follow [these recommendations](./CONT
 <!-- SHADOW_SECTION_CONTRIBUTING_END -->
 
 <!-- SHADOW_SECTION_MAINTAINERS_START -->
-
-## Maintainers
-
-| <a href="mailto:frederikwessberg@hotmail.com"><img alt="Frederik Wessberg" src="https://avatars2.githubusercontent.com/u/20454213?s=460&v=4" height="70"   /></a>                                                                |
-| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [Frederik Wessberg](mailto:frederikwessberg@hotmail.com)<br><strong>Twitter</strong>: [@FredWessberg](https://twitter.com/FredWessberg)<br><strong>Github</strong>: [@wessberg](https://github.com/wessberg)<br>_Lead Developer_ |
 
 <!-- SHADOW_SECTION_MAINTAINERS_END -->
 
@@ -614,6 +587,6 @@ However, these return `Promises` and as such cannot be transformed equivalently.
 
 ## License
 
-MIT © [Frederik Wessberg](mailto:frederikwessberg@hotmail.com) ([@FredWessberg](https://twitter.com/FredWessberg)) ([Website](https://github.com/wessberg))
+MIT ©
 
 <!-- SHADOW_SECTION_LICENSE_END -->

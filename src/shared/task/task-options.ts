@@ -1,6 +1,6 @@
-import {ReadonlyFileSystem} from "../file-system/file-system.js";
-import {Loggable} from "../logger/loggable.js";
-import {TS} from "../../type/ts.js";
+import type {ReadonlyFileSystem} from "../file-system/file-system.js";
+import type {Loggable} from "../logger/loggable.js";
+import type {TS} from "../../type/ts.js";
 
 export interface TaskOptions {
 	/**
@@ -29,12 +29,12 @@ export interface TaskOptions {
 	preserveModuleSpecifiers: "always" | "never" | "external" | "internal" | ((specifier: string) => boolean);
 
 	/**
-	 * Determines whether or not to include import assertions when converting require() calls referencing JSON files to ESM.
-	 * - true (default): Import assertions will always be added when relevant.
-	 * - false: Import assertions will never be added.
-	 * It can also take a function that is invoked with a module specifier and returns a boolean determining whether or not an import assertion should be added
+	 * Determines whether or not to include import attributes when converting require() calls referencing JSON files to ESM.
+	 * - true (default): Import attributes will always be added when relevant.
+	 * - false: Import attributes will never be added.
+	 * It can also take a function that is invoked with a module specifier and returns a boolean determining whether or not import attributes should be added
 	 */
-	importAssertions: boolean | ((specifier: string) => boolean);
+	importAttributes: boolean | ((specifier: string) => boolean);
 
 	/**
 	 * If given, a specific TypeScript version to use

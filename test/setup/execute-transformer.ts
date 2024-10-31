@@ -1,10 +1,11 @@
 import {cjsToEsm} from "../../src/transformer/cjs-to-esm.js";
-import {TS} from "../../src/type/ts.js";
-import {createTestResult, TestResult} from "./test-result.js";
-import {TestFile} from "./test-file.js";
-import {TestContext} from "./test-context.js";
+import type {TS} from "../../src/type/ts.js";
+import type {TestResult} from "./test-result.js";
+import {createTestResult} from "./test-result.js";
+import type {TestFile} from "./test-file.js";
+import type {TestContext} from "./test-context.js";
 import {createTestSetup} from "./test-setup.js";
-import {MaybeArray, PartialExcept} from "helpertypes";
+import type {MaybeArray, PartialExcept} from "helpertypes";
 import path from "crosspath";
 
 /**
@@ -24,13 +25,14 @@ export function executeTransformer(inputFiles: MaybeArray<TestFile>, options: Pa
 	const transformers = cjsToEsm({...context, cwd: dir.root, fileSystem});
 
 	const compilerOptions: TS.CompilerOptions = {
-		module: typescript.ModuleKind.ESNext,
 		target: typescript.ScriptTarget.ESNext,
 		allowJs: true,
 		sourceMap: false,
 		outDir: dir.dist,
 		rootDir: dir.root,
-		moduleResolution: typescript.ModuleResolutionKind.NodeJs
+		module: typescript.ModuleKind.ESNext,
+		// eslint-disable-next-line @typescript-eslint/no-deprecated, @typescript-eslint/naming-convention
+		moduleResolution: (typescript.ModuleResolutionKind as {Bundler?: TS.ModuleResolutionKind}).Bundler ?? typescript.ModuleResolutionKind.NodeJs
 	};
 
 	const program = typescript.createProgram({

@@ -1,6 +1,6 @@
 import {isStatement} from "./is-statement.js";
 import {isDeclaration} from "./is-declaration.js";
-import {TS} from "../../type/ts.js";
+import type {TS} from "../../type/ts.js";
 
 /**
  * Returns true if the given Node is a Statement is a Declaration

@@ -1,12 +1,11 @@
-import {BeforeVisitorOptions} from "../before-visitor-options.js";
+import type {BeforeVisitorOptions} from "../before-visitor-options.js";
 import {visitImportDeclaration} from "./visit-import-declaration.js";
 import {visitExportDeclaration} from "./visit-export-declaration.js";
 import {visitExportAssignment} from "./visit-export-assignment.js";
-import {hasExportModifier} from "../../util/has-export-modifier.js";
-import {hasDefaultExportModifier} from "../../util/has-default-export-modifier.js";
 import {isDeclaration} from "../../util/is-declaration.js";
 import {getLocalsForBindingName} from "../../util/get-locals-for-binding-name.js";
-import {TS} from "../../../type/ts.js";
+import type {TS} from "../../../type/ts.js";
+import {hasDefaultExportModifier, hasExportModifier} from "../../../shared/util/util.js";
 
 /**
  * Visits the given Node
@@ -14,7 +13,7 @@ import {TS} from "../../../type/ts.js";
  * @param options
  * @returns
  */
-export function visitImportAndExportDeclarations<T extends TS.Node>(options: BeforeVisitorOptions<T>): TS.VisitResult<TS.Node> {
+export function visitImportAndExportDeclarations<T extends TS.Node>(options: BeforeVisitorOptions<T>): TS.VisitResult<TS.Node | undefined> {
 	const {typescript} = options.context;
 	if (typescript.isImportDeclaration(options.node)) {
 		return visitImportDeclaration(options as unknown as BeforeVisitorOptions<TS.ImportDeclaration>);

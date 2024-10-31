@@ -1,3 +1,3 @@
-import {TS} from "../type/ts.js";
+import type {TS} from "../type/ts.js";
 
-export type VisitorContinuation<T extends TS.Node> = (node: T) => TS.VisitResult<T>;
+export type VisitorContinuation<T extends TS.Node> = (node: T) => TS.VisitResult<T | undefined>;

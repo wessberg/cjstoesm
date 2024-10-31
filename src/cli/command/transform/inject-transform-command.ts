@@ -1,5 +1,5 @@
 import {createCommand} from "../create-command/create-command.js";
-import {InjectCommandOptions} from "../inject-command/inject-command-options.js";
+import type {InjectCommandOptions} from "../inject-command/inject-command-options.js";
 import {LogLevelKind} from "../../../shared/logger/log-level-kind.js";
 import {Logger} from "../../../shared/logger/logger.js";
 import {createTransformTaskOptions} from "../../../shared/task/create-transform-task-options.js";
@@ -51,11 +51,11 @@ export function injectTransformCommand(options: InjectCommandOptions): void {
 					defaultValue: "external",
 					description: `Determines whether or not module specifiers are preserved. Possible values are: "external", "internal", "always", and "never"`
 				},
-				"import-assertions": {
+				"import-attributes": {
 					shortHand: "a",
 					type: "boolean",
 					defaultValue: true,
-					description: `Determines whether or not Import Assertions are included where they are relevant. Possible values are: true and false`
+					description: `Determines whether or not Import Attributes are included where they are relevant. Possible values are: true and false`
 				},
 				dry: {
 					shortHand: "m",

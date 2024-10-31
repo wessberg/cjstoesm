@@ -1,12 +1,12 @@
 import {isInDebugMode} from "../util/is-in-debug-mode.js";
-import {TransformTaskOptions} from "../../src/shared/task/transform-task-options.js";
-import {PartialExcept} from "helpertypes";
+import type {TransformTaskOptions} from "../../src/shared/task/transform-task-options.js";
+import type {PartialExcept} from "helpertypes";
 
 export interface TestContext extends PartialExcept<TransformTaskOptions, "typescript" | "cwd"> {}
 
 export function createTestContext({
 	preserveModuleSpecifiers,
-	importAssertions,
+	importAttributes,
 	debug = isInDebugMode(),
 	typescript,
 	cwd = process.cwd()
@@ -14,7 +14,7 @@ export function createTestContext({
 	return {
 		debug,
 		preserveModuleSpecifiers,
-		importAssertions,
+		importAttributes,
 		typescript,
 		cwd
 	};

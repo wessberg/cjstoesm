@@ -1,5 +1,5 @@
 import {walkThroughFillerNodes} from "./walk-through-filler-nodes.js";
-import {TS} from "../../type/ts.js";
+import type {TS} from "../../type/ts.js";
 
 export interface ExportsData {
 	property: string;

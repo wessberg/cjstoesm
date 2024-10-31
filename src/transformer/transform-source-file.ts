@@ -1,16 +1,17 @@
 import {visitNode} from "./visitor/visit/visit-node.js";
-import {BeforeTransformerSourceFileStepResult, BeforeVisitorContext} from "./visitor/before-visitor-context.js";
-import {BeforeVisitorOptions} from "./visitor/before-visitor-options.js";
+import type {BeforeTransformerSourceFileStepResult, BeforeVisitorContext} from "./visitor/before-visitor-context.js";
+import type {BeforeVisitorOptions} from "./visitor/before-visitor-options.js";
 import {check} from "reserved-words";
 import {isNamedDeclaration} from "./util/is-named-declaration.js";
 import {getLocalsForBindingName} from "./util/get-locals-for-binding-name.js";
 import {shouldSkipEmit} from "./util/should-skip-emit.js";
-import {ModuleExports} from "./module-exports/module-exports.js";
+import type {ModuleExports} from "./module-exports/module-exports.js";
 import {visitImportAndExportDeclarations} from "./visitor/visit/visit-import-and-export-declarations.js";
-import {TS} from "../type/ts.js";
+import type {TS} from "../type/ts.js";
 import {shouldDebug} from "./util/should-debug.js";
 import path from "crosspath";
-import {VisitorContext} from "./visitor-context.js";
+import type {VisitorContext} from "./visitor-context.js";
+import {hasDefaultExportModifier, hasExportModifier} from "../shared/util/util.js";
 
 export function transformSourceFile(sourceFile: TS.SourceFile, context: VisitorContext): BeforeTransformerSourceFileStepResult {
 	// Take a fast path of the text of the SourceFile doesn't contain anything that can be transformed
@@ -22,10 +23,10 @@ export function transformSourceFile(sourceFile: TS.SourceFile, context: VisitorC
 
 	// Prepare a VisitorContext
 	const visitorContext = ((): BeforeVisitorContext => {
-		const imports: Map<TS.ImportDeclaration, {originalModuleSpecifier: string; noEmit: boolean}> = new Map();
+		const imports = new Map<TS.ImportDeclaration, {originalModuleSpecifier: string; noEmit: boolean}>();
 		const leadingStatements: TS.Statement[] = [];
 		const trailingStatements: TS.Statement[] = [];
-		const moduleExportsMap: Map<string, ModuleExports> = new Map();
+		const moduleExportsMap = new Map<string, ModuleExports>();
 		const localsMap = (sourceFile as {locals?: Map<string, symbol>}).locals;
 		const locals = localsMap == null ? new Set() : new Set(localsMap.keys());
 		const exportedLocals = new Set<string>();
@@ -61,7 +62,7 @@ export function transformSourceFile(sourceFile: TS.SourceFile, context: VisitorC
 		const getLocalForDefaultImportFromModule = (moduleSpecifier: string): string | undefined => {
 			const matchingDeclaration = getImportDeclarationWithModuleSpecifier(moduleSpecifier);
 			if (matchingDeclaration == null) return undefined;
-			if (matchingDeclaration.importClause == null || matchingDeclaration.importClause.name == null) return undefined;
+			if (matchingDeclaration.importClause?.name == null) return undefined;
 			return matchingDeclaration.importClause.name.text;
 		};
 
@@ -72,11 +73,7 @@ export function transformSourceFile(sourceFile: TS.SourceFile, context: VisitorC
 			if (matchingDeclaration == null) {
 				return undefined;
 			}
-			if (
-				matchingDeclaration.importClause == null ||
-				matchingDeclaration.importClause.namedBindings == null ||
-				!typescript.isNamespaceImport(matchingDeclaration.importClause.namedBindings)
-			) {
+			if (matchingDeclaration.importClause?.namedBindings == null || !typescript.isNamespaceImport(matchingDeclaration.importClause.namedBindings)) {
 				return undefined;
 			}
 			return matchingDeclaration.importClause.namedBindings.name.text;
@@ -87,11 +84,7 @@ export function transformSourceFile(sourceFile: TS.SourceFile, context: VisitorC
 		const getLocalForNamedImportPropertyNameFromModule = (propertyName: string, moduleSpecifier: string): string | undefined => {
 			const matchingDeclaration = getImportDeclarationWithModuleSpecifier(moduleSpecifier);
 			if (matchingDeclaration == null) return undefined;
-			if (
-				matchingDeclaration.importClause == null ||
-				matchingDeclaration.importClause.namedBindings == null ||
-				!typescript.isNamedImports(matchingDeclaration.importClause.namedBindings)
-			) {
+			if (matchingDeclaration.importClause?.namedBindings == null || !typescript.isNamedImports(matchingDeclaration.importClause.namedBindings)) {
 				return undefined;
 			}
 			for (const element of matchingDeclaration.importClause.namedBindings.elements) {
@@ -132,7 +125,7 @@ export function transformSourceFile(sourceFile: TS.SourceFile, context: VisitorC
 			}
 
 			while (true) {
-				const currentCandidate = candidate + suffix + counter;
+				const currentCandidate = candidate + suffix + String(counter);
 				if (!isIdentifierFree(currentCandidate)) {
 					counter++;
 				} else {
@@ -287,8 +280,8 @@ export function transformSourceFile(sourceFile: TS.SourceFile, context: VisitorC
 			}
 		} else if (typescript.isExportAssignment(statement)) {
 			moduleExports.hasDefaultExport = true;
-		} else if (statement.modifiers != null && statement.modifiers.some((m: TS.Modifier) => m.kind === typescript.SyntaxKind.ExportKeyword)) {
-			if (statement.modifiers.some((m: TS.Modifier) => m.kind === typescript.SyntaxKind.DefaultKeyword)) {
+		} else if (hasExportModifier(statement, typescript)) {
+			if (hasDefaultExportModifier(statement, typescript)) {
 				moduleExports.hasDefaultExport = true;
 			} else if (typescript.isVariableStatement(statement)) {
 				for (const declaration of statement.declarationList.declarations) {

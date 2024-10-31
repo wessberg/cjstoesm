@@ -1,9 +1,9 @@
 import {realFileSystem} from "../file-system/file-system.js";
-import {TransformTaskOptions} from "./transform-task-options.js";
+import type {TransformTaskOptions} from "./transform-task-options.js";
 import {createTaskOptions} from "./create-task-options.js";
 import path from "crosspath";
 import {ensureArray} from "../util/util.js";
-import {PartialExcept} from "helpertypes";
+import type {PartialExcept} from "helpertypes";
 
 export function createTransformTaskOptions({
 	fileSystem = realFileSystem,
@@ -13,6 +13,7 @@ export function createTransformTaskOptions({
 	outDir,
 	...rest
 }: PartialExcept<TransformTaskOptions, "input" | "outDir">): TransformTaskOptions {
+	// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 	if (input == null) {
 		throw new ReferenceError(`Missing required argument: 'input'`);
 	}

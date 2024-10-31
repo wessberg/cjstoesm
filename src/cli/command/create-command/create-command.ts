@@ -1,6 +1,5 @@
-import {CliProgram, CommandAction, CommandActionOptions, CommandOptionType, CreateCommandOptions} from "./create-command-options.js";
-
-// tslint:disable:no-any
+import type {Command} from "commander";
+import type {CommandAction, CommandActionOptions, CommandOptionType, CreateCommandOptions} from "./create-command-options.js";
 
 /**
  * Coerces the given option value into an acceptable data type
@@ -10,6 +9,7 @@ function coerceOptionValue(type: CommandOptionType, value: unknown): typeof type
 		case "string":
 			if (value === null) return "null";
 			else if (value === undefined) return "undefined";
+			// eslint-disable-next-line @typescript-eslint/no-base-to-string
 			return String(value);
 
 		case "number":
@@ -53,7 +53,7 @@ function formatCommandNameWithArgs<T extends CreateCommandOptions>(options: T): 
 /**
  * Creates a new command
  */
-export function createCommand<T extends CreateCommandOptions>(program: CliProgram, options: T, action: CommandAction<T>): void {
+export function createCommand<T extends CreateCommandOptions>(program: Command, options: T, action: CommandAction<T>): void {
 	// Add the command to the program
 	const result = program
 		.command(formatCommandNameWithArgs(options), {

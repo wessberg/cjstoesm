@@ -1,7 +1,7 @@
 import path from "crosspath";
-import {TestContext} from "./test-context.js";
+import type {TestContext} from "./test-context.js";
 import {ensureArray, generateRandomPath} from "../../src/shared/util/util.js";
-import {MaybeArray} from "helpertypes";
+import type {MaybeArray} from "helpertypes";
 
 export interface TestFileRecord {
 	fileName: string;
@@ -38,7 +38,7 @@ export function createTestFileStructure(input: MaybeArray<TestFile>, context: Te
 						text: file,
 						fileName: generateRandomPath({extension: ".ts"}),
 						entry: true
-				  }
+					}
 				: file
 		)
 		.map(file => ({...file, fileName: path.join(src, file.fileName)}));

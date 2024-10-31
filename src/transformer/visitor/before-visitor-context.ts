@@ -1,6 +1,6 @@
-import {VisitorContext} from "../visitor-context.js";
-import {ModuleExports} from "../module-exports/module-exports.js";
-import {TS} from "../../type/ts.js";
+import type {VisitorContext} from "../visitor-context.js";
+import type {ModuleExports} from "../module-exports/module-exports.js";
+import type {TS} from "../../type/ts.js";
 
 export interface BeforeTransformerSourceFileStepResult {
 	sourceFile: TS.SourceFile;

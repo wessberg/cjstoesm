@@ -1,8 +1,11 @@
-import Module from "module";
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+import Module from "node:module";
 import path from "crosspath";
-import {existsSync, mkdirSync, writeFileSync} from "fs";
+import {existsSync, mkdirSync, writeFileSync} from "node:fs";
 import {format, type RequiredOptions} from "prettier";
-import prettierConfig from "@wessberg/prettier-config" assert {type: "json"};
+import prettierConfig from "@wessberg/prettier-config" with {type: "json"};
 
 const IGNORED_MODULE_NAMES = new Set([
 	"_http_agent",
@@ -53,8 +56,8 @@ async function generateBuiltInModule(): Promise<string> {
  * @file This file is auto-generated. Do not change its contents.
  */
 
-import {ElementOf} from "helpertypes";
-import {ModuleExports} from "../module-exports/module-exports.js";
+import type {ElementOf} from "helpertypes";
+import type {ModuleExports} from "../module-exports/module-exports.js";
 
 export const BUILT_IN_MODULE = new Set([
 	${generateBuiltInModuleInnerContents()}
@@ -96,7 +99,7 @@ function filterAndFormatModuleKeys(keys: string[]): string {
 
 async function generateBuiltInModuleMapContents(moduleName: string): Promise<string> {
 	let loadedModule = await import(moduleName);
-	loadedModule ="default" in loadedModule ? loadedModule.default : loadedModule;
+	loadedModule = "default" in loadedModule ? loadedModule.default : loadedModule;
 
 	return `\
 		${moduleName.includes("/") ? `"${moduleName}"` : moduleName}: {

@@ -1,7 +1,7 @@
-import {IsRequireCallResult} from "./is-require-call.js";
-import {ModuleExports} from "../module-exports/module-exports.js";
+import type {IsRequireCallResult} from "./is-require-call.js";
+import type {ModuleExports} from "../module-exports/module-exports.js";
 import {BUILT_IN_MODULE_MAP, isBuiltInModule} from "../built-in/built-in-module-map.js";
-import {BeforeVisitorContext} from "../visitor/before-visitor-context.js";
+import type {BeforeVisitorContext} from "../visitor/before-visitor-context.js";
 import {isJsonModule} from "./path-util.js";
 
 /**
@@ -34,7 +34,7 @@ export function getModuleExportsFromRequireDataInContext(data: IsRequireCallResu
 		// Treat JSON modules as ones with a single default export
 		if (isJsonModule(resolvedModuleSpecifier)) {
 			moduleExports = {
-				assert: "json",
+				withValue: "json",
 				hasDefaultExport: true,
 				namedExports: new Set()
 			};
@@ -43,7 +43,7 @@ export function getModuleExportsFromRequireDataInContext(data: IsRequireCallResu
 			moduleExports = context.getModuleExportsForPath(resolvedModuleSpecifier);
 
 			// If that wasn't possible, generate a new SourceFile and parse it
-			if (moduleExports == null && resolvedModuleSpecifierText != null) {
+			if (moduleExports == null) {
 				moduleExports = context.transformSourceFile(
 					typescript.createSourceFile(resolvedModuleSpecifier, resolvedModuleSpecifierText, typescript.ScriptTarget.ESNext, true, typescript.ScriptKind.TS),
 					{

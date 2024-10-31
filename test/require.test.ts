@@ -1,10 +1,10 @@
-import test from "ava";
-import {withTypeScript} from "./util/ts-macro.js";
+import {test} from "./util/test-runner.js";
 import {executeTransformer} from "./setup/execute-transformer.js";
 import {formatCode} from "./util/format-code.js";
 import semver from "semver";
+import assert from "node:assert";
 
-test.serial("Converts ObjectBindingPatterns to NamedImportBindings. #1", withTypeScript, (t, {typescript}) => {
+test("Converts ObjectBindingPatterns to NamedImportBindings. #1", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -25,14 +25,14 @@ test.serial("Converts ObjectBindingPatterns to NamedImportBindings. #1", withTyp
 		{typescript}
 	);
 	const [file] = bundle.files;
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		import {readFileSync} from "./foo.js";`)
 	);
 });
 
-test.serial("Converts ObjectBindingPatterns to NamedImportBindings. #2", withTypeScript, (t, {typescript}) => {
+test("Converts ObjectBindingPatterns to NamedImportBindings. #2", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -53,15 +53,15 @@ test.serial("Converts ObjectBindingPatterns to NamedImportBindings. #2", withTyp
 		{typescript}
 	);
 	const [file] = bundle.files;
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		import {readFileSync as _foo} from "./foo.js";
 		`)
 	);
 });
 
-test.serial("Handles complex binding patterns by using the first level as an import and the remaining levels as new VariableStatements #1", withTypeScript, (t, {typescript}) => {
+test("Handles complex binding patterns by using the first level as an import and the remaining levels as new VariableStatements #1", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -83,8 +83,8 @@ test.serial("Handles complex binding patterns by using the first level as an imp
 	);
 	const [file] = bundle.files;
 
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		import {foo} from "./foo.js";
 		const {foo: {bar: baz}} = {foo};
@@ -92,7 +92,7 @@ test.serial("Handles complex binding patterns by using the first level as an imp
 	);
 });
 
-test.serial("Converts require calls wrapped in ElementAccessExpressions to NamedImportBindings. #1", withTypeScript, (t, {typescript}) => {
+test("Converts require calls wrapped in ElementAccessExpressions to NamedImportBindings. #1", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -113,8 +113,8 @@ test.serial("Converts require calls wrapped in ElementAccessExpressions to Named
 		{typescript}
 	);
 	const [file] = bundle.files;
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		import {BAR as BAR$0} from "./foo.js";
 		const BAR = {BAR: BAR$0}["BAR"];
@@ -122,7 +122,7 @@ test.serial("Converts require calls wrapped in ElementAccessExpressions to Named
 	);
 });
 
-test.serial("Converts require calls wrapped in ElementAccessExpressions to NamedImportBindings. #2", withTypeScript, (t, {typescript}) => {
+test("Converts require calls wrapped in ElementAccessExpressions to NamedImportBindings. #2", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -143,8 +143,8 @@ test.serial("Converts require calls wrapped in ElementAccessExpressions to Named
 		{typescript}
 	);
 	const [file] = bundle.files;
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		import {BAR} from "./foo.js";
 		const foo = {BAR}["BAR"];
@@ -152,7 +152,7 @@ test.serial("Converts require calls wrapped in ElementAccessExpressions to Named
 	);
 });
 
-test.serial("Converts require calls wrapped in ElementAccessExpressions to NamedImportBindings. #3", withTypeScript, (t, {typescript}) => {
+test("Converts require calls wrapped in ElementAccessExpressions to NamedImportBindings. #3", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -173,8 +173,8 @@ test.serial("Converts require calls wrapped in ElementAccessExpressions to Named
 		{typescript}
 	);
 	const [file] = bundle.files;
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		import {BAR} from "./foo.js";
 		const {foo} = {BAR}["BAR"];
@@ -182,7 +182,7 @@ test.serial("Converts require calls wrapped in ElementAccessExpressions to Named
 	);
 });
 
-test.serial("Converts require calls wrapped in ElementAccessExpressions to NamedImportBindings. #4", withTypeScript, (t, {typescript}) => {
+test("Converts require calls wrapped in ElementAccessExpressions to NamedImportBindings. #4", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -203,8 +203,8 @@ test.serial("Converts require calls wrapped in ElementAccessExpressions to Named
 		{typescript}
 	);
 	const [file] = bundle.files;
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		import {BAR} from "./foo.js";
 		const {foo} = ({BAR}["BAR"]);
@@ -212,7 +212,7 @@ test.serial("Converts require calls wrapped in ElementAccessExpressions to Named
 	);
 });
 
-test.serial("Converts require calls wrapped in non-statically analyzable ElementAccessExpressions to Namespace ImportDeclarations. #1", withTypeScript, (t, {typescript}) => {
+test("Converts require calls wrapped in non-statically analyzable ElementAccessExpressions to Namespace ImportDeclarations. #1", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -234,8 +234,8 @@ test.serial("Converts require calls wrapped in non-statically analyzable Element
 	);
 	const [file] = bundle.files;
 
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		import * as foo$0 from "./foo.js";
 		const foo = foo$0[BAR];
@@ -243,7 +243,7 @@ test.serial("Converts require calls wrapped in non-statically analyzable Element
 	);
 });
 
-test.serial("Converts require calls wrapped in non-statically analyzable ElementAccessExpressions to Namespace ImportDeclarations. #2", withTypeScript, (t, {typescript}) => {
+test("Converts require calls wrapped in non-statically analyzable ElementAccessExpressions to Namespace ImportDeclarations. #2", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -264,8 +264,8 @@ test.serial("Converts require calls wrapped in non-statically analyzable Element
 		{typescript}
 	);
 	const [file] = bundle.files;
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		import * as foo$0 from "./foo.js";
 		const {foo} = foo$0[BAR];
@@ -273,7 +273,7 @@ test.serial("Converts require calls wrapped in non-statically analyzable Element
 	);
 });
 
-test.serial("Converts require calls wrapped in non-statically analyzable ElementAccessExpressions to Namespace ImportDeclarations. #3", withTypeScript, (t, {typescript}) => {
+test("Converts require calls wrapped in non-statically analyzable ElementAccessExpressions to Namespace ImportDeclarations. #3", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -294,8 +294,8 @@ test.serial("Converts require calls wrapped in non-statically analyzable Element
 		{typescript}
 	);
 	const [file] = bundle.files;
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		import * as foo from "./foo.js";
 		myFunction(foo);
@@ -303,7 +303,7 @@ test.serial("Converts require calls wrapped in non-statically analyzable Element
 	);
 });
 
-test.serial("Converts default imports from modules that has none into namespace imports. #1", withTypeScript, (t, {typescript}) => {
+test("Converts default imports from modules that has none into namespace imports. #1", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -324,15 +324,15 @@ test.serial("Converts default imports from modules that has none into namespace 
 		{typescript}
 	);
 	const [file] = bundle.files;
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		import * as foo from "./foo.js";
 		`)
 	);
 });
 
-test.serial("Converts require calls wrapped in PropertyAccessExpressions to NamedImportBindings. #1", withTypeScript, (t, {typescript}) => {
+test("Converts require calls wrapped in PropertyAccessExpressions to NamedImportBindings. #1", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -353,8 +353,8 @@ test.serial("Converts require calls wrapped in PropertyAccessExpressions to Name
 		{typescript}
 	);
 	const [file] = bundle.files;
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		import {BAR as BAR$0} from "./foo.js";
 		const BAR = {BAR: BAR$0}.BAR
@@ -362,7 +362,7 @@ test.serial("Converts require calls wrapped in PropertyAccessExpressions to Name
 	);
 });
 
-test.serial("Converts require calls wrapped in PropertyAccessExpressions to NamedImportBindings. #2", withTypeScript, (t, {typescript}) => {
+test("Converts require calls wrapped in PropertyAccessExpressions to NamedImportBindings. #2", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -383,8 +383,8 @@ test.serial("Converts require calls wrapped in PropertyAccessExpressions to Name
 		{typescript}
 	);
 	const [file] = bundle.files;
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		import {BAR} from "./foo.js";
 		const foo = {BAR}.BAR;
@@ -392,7 +392,7 @@ test.serial("Converts require calls wrapped in PropertyAccessExpressions to Name
 	);
 });
 
-test.serial("Converts require calls wrapped in PropertyAccessExpressions to NamedImportBindings. #3", withTypeScript, (t, {typescript}) => {
+test("Converts require calls wrapped in PropertyAccessExpressions to NamedImportBindings. #3", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -413,8 +413,8 @@ test.serial("Converts require calls wrapped in PropertyAccessExpressions to Name
 		{typescript}
 	);
 	const [file] = bundle.files;
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		import {BAR} from "./foo.js";
 		const {foo} = {BAR}.BAR;
@@ -422,7 +422,7 @@ test.serial("Converts require calls wrapped in PropertyAccessExpressions to Name
 	);
 });
 
-test.serial("Converts require calls wrapped in PropertyAccessExpressions to NamedImportBindings. #4", withTypeScript, (t, {typescript}) => {
+test("Converts require calls wrapped in PropertyAccessExpressions to NamedImportBindings. #4", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -443,8 +443,8 @@ test.serial("Converts require calls wrapped in PropertyAccessExpressions to Name
 		{typescript}
 	);
 	const [file] = bundle.files;
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		import {BAR} from "./foo.js";
 		const {foo} = ({BAR}.BAR);
@@ -452,7 +452,7 @@ test.serial("Converts require calls wrapped in PropertyAccessExpressions to Name
 	);
 });
 
-test.serial("Can handle immediately-invoked require calls. #1", withTypeScript, (t, {typescript}) => {
+test("Can handle immediately-invoked require calls. #1", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		const foo = require('foo')("bar");
@@ -460,8 +460,8 @@ test.serial("Can handle immediately-invoked require calls. #1", withTypeScript, 
 		{typescript}
 	);
 	const [file] = bundle.files;
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		import foo$0 from "foo";
 		const foo = foo$0("bar");
@@ -469,7 +469,7 @@ test.serial("Can handle immediately-invoked require calls. #1", withTypeScript, 
 	);
 });
 
-test.serial("Can handle immediately-invoked require calls. #2", withTypeScript, (t, {typescript}) => {
+test("Can handle immediately-invoked require calls. #2", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -490,8 +490,8 @@ test.serial("Can handle immediately-invoked require calls. #2", withTypeScript, 
 		{typescript}
 	);
 	const [file] = bundle.files;
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		import {bar as bar$0} from "./foo.js";
 		const bar = {bar: bar$0}.bar("bar");
@@ -499,7 +499,7 @@ test.serial("Can handle immediately-invoked require calls. #2", withTypeScript, 
 	);
 });
 
-test.serial("Can handle immediately-invoked require calls. #3", withTypeScript, (t, {typescript}) => {
+test("Can handle immediately-invoked require calls. #3", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -520,8 +520,8 @@ test.serial("Can handle immediately-invoked require calls. #3", withTypeScript, 
 		{typescript}
 	);
 	const [file] = bundle.files;
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		import {bar} from "./foo.js";
 		const foo = {bar}.bar("bar");
@@ -529,7 +529,7 @@ test.serial("Can handle immediately-invoked require calls. #3", withTypeScript, 
 	);
 });
 
-test.serial("Can handle immediately-invoked require calls. #4", withTypeScript, (t, {typescript}) => {
+test("Can handle immediately-invoked require calls. #4", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -551,8 +551,8 @@ test.serial("Can handle immediately-invoked require calls. #4", withTypeScript, 
 		{typescript}
 	);
 	const [file] = bundle.files;
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		import {bar as bar$0} from "./foo.js";
 		const foo = {bar: bar$0}.bar("bar");
@@ -561,7 +561,7 @@ test.serial("Can handle immediately-invoked require calls. #4", withTypeScript, 
 	);
 });
 
-test.serial("Converts Identifiers to default imports. #1", withTypeScript, (t, {typescript}) => {
+test("Converts Identifiers to default imports. #1", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		const foo = require("foo");
@@ -569,15 +569,15 @@ test.serial("Converts Identifiers to default imports. #1", withTypeScript, (t, {
 		{typescript}
 	);
 	const [file] = bundle.files;
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		import foo from "foo";
 		`)
 	);
 });
 
-test.serial("Handles multiple require() calls inside one VariableStatement. #1", withTypeScript, (t, {typescript}) => {
+test("Handles multiple require() calls inside one VariableStatement. #1", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		const foo = require("foo"), bar = require("bar");
@@ -585,8 +585,8 @@ test.serial("Handles multiple require() calls inside one VariableStatement. #1",
 		{typescript}
 	);
 	const [file] = bundle.files;
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		import foo from "foo";
 		import bar from "bar";
@@ -594,7 +594,7 @@ test.serial("Handles multiple require() calls inside one VariableStatement. #1",
 	);
 });
 
-test.serial("Handles multiple require() calls inside one VariableStatement mixed with other content. #1", withTypeScript, (t, {typescript}) => {
+test("Handles multiple require() calls inside one VariableStatement mixed with other content. #1", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		const foo = require("foo"), bar = require("bar"), baz = 2;
@@ -603,8 +603,8 @@ test.serial("Handles multiple require() calls inside one VariableStatement mixed
 	);
 	const [file] = bundle.files;
 
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		import foo from "foo";
 		import bar from "bar";
@@ -613,7 +613,7 @@ test.serial("Handles multiple require() calls inside one VariableStatement mixed
 	);
 });
 
-test.serial("Places imports in top of the SourceFile in the order they were parsed in from top to bottom. #1", withTypeScript, (t, {typescript}) => {
+test("Places imports in top of the SourceFile in the order they were parsed in from top to bottom. #1", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		const foo = 2;
@@ -623,8 +623,8 @@ test.serial("Places imports in top of the SourceFile in the order they were pars
 	);
 	const [file] = bundle.files;
 
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		import bar from "bar";
 		const foo = 2;
@@ -632,7 +632,7 @@ test.serial("Places imports in top of the SourceFile in the order they were pars
 	);
 });
 
-test.serial("Handles anonymous require calls. #1", withTypeScript, (t, {typescript}) => {
+test("Handles anonymous require calls. #1", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		myFunction(require("foo"));
@@ -641,8 +641,8 @@ test.serial("Handles anonymous require calls. #1", withTypeScript, (t, {typescri
 	);
 	const [file] = bundle.files;
 
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		import foo from "foo";
 		myFunction(foo);
@@ -650,7 +650,7 @@ test.serial("Handles anonymous require calls. #1", withTypeScript, (t, {typescri
 	);
 });
 
-test.serial("Handles anonymous require calls. #2", withTypeScript, (t, {typescript}) => {
+test("Handles anonymous require calls. #2", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		myFunction(require("foo").bar);
@@ -659,8 +659,8 @@ test.serial("Handles anonymous require calls. #2", withTypeScript, (t, {typescri
 	);
 	const [file] = bundle.files;
 
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		import foo from "foo";
 		myFunction(foo.bar);
@@ -668,7 +668,7 @@ test.serial("Handles anonymous require calls. #2", withTypeScript, (t, {typescri
 	);
 });
 
-test.serial("Handles anonymous require calls. #3", withTypeScript, (t, {typescript}) => {
+test("Handles anonymous require calls. #3", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		myFunction(require("foo")["bar"]);
@@ -677,8 +677,8 @@ test.serial("Handles anonymous require calls. #3", withTypeScript, (t, {typescri
 	);
 	const [file] = bundle.files;
 
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		import foo from "foo";
 		myFunction(foo["bar"]);
@@ -686,7 +686,7 @@ test.serial("Handles anonymous require calls. #3", withTypeScript, (t, {typescri
 	);
 });
 
-test.serial("Handles anonymous require calls. #4", withTypeScript, (t, {typescript}) => {
+test("Handles anonymous require calls. #4", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		require("foo");
@@ -695,15 +695,15 @@ test.serial("Handles anonymous require calls. #4", withTypeScript, (t, {typescri
 	);
 	const [file] = bundle.files;
 
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		import "foo";
 		`)
 	);
 });
 
-test.serial("Handles anonymous require calls. #5", withTypeScript, (t, {typescript}) => {
+test("Handles anonymous require calls. #5", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			`require('./foo')({foo: "bar"});`,
@@ -717,8 +717,8 @@ test.serial("Handles anonymous require calls. #5", withTypeScript, (t, {typescri
 	);
 	const [file] = bundle.files;
 
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		import foo from "./foo.js";
 		foo({foo: "bar"});
@@ -726,7 +726,7 @@ test.serial("Handles anonymous require calls. #5", withTypeScript, (t, {typescri
 	);
 });
 
-test.serial("Handles anonymous require calls. #6", withTypeScript, (t, {typescript}) => {
+test("Handles anonymous require calls. #6", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -748,8 +748,8 @@ test.serial("Handles anonymous require calls. #6", withTypeScript, (t, {typescri
 	);
 	const [file] = bundle.files;
 
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		import {bar} from "./foo.js";
 		({bar}.bar({foo: "bar"}));
@@ -757,7 +757,7 @@ test.serial("Handles anonymous require calls. #6", withTypeScript, (t, {typescri
 	);
 });
 
-test.serial("Handles anonymous require calls. #7", withTypeScript, (t, {typescript}) => {
+test("Handles anonymous require calls. #7", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -779,8 +779,8 @@ test.serial("Handles anonymous require calls. #7", withTypeScript, (t, {typescri
 	);
 	const [file] = bundle.files;
 
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		import foo$0 from "./foo.js";
 		const foo = foo$0 ? true : false;
@@ -788,7 +788,7 @@ test.serial("Handles anonymous require calls. #7", withTypeScript, (t, {typescri
 	);
 });
 
-test.serial("Deconflicts named imports for anonymous require calls. #1", withTypeScript, (t, {typescript}) => {
+test("Deconflicts named imports for anonymous require calls. #1", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		const foo = 2;
@@ -798,8 +798,8 @@ test.serial("Deconflicts named imports for anonymous require calls. #1", withTyp
 	);
 	const [file] = bundle.files;
 
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		import foo$0 from "foo";
 		const foo = 2;
@@ -808,7 +808,7 @@ test.serial("Deconflicts named imports for anonymous require calls. #1", withTyp
 	);
 });
 
-test.serial("Deconflicts named imports for anonymous require calls. #2", withTypeScript, (t, {typescript}) => {
+test("Deconflicts named imports for anonymous require calls. #2", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		const bar = 2;
@@ -818,8 +818,8 @@ test.serial("Deconflicts named imports for anonymous require calls. #2", withTyp
 	);
 	const [file] = bundle.files;
 
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		import foo from "foo";
 		const bar = 2;
@@ -828,7 +828,7 @@ test.serial("Deconflicts named imports for anonymous require calls. #2", withTyp
 	);
 });
 
-test.serial("Deconflicts named imports for anonymous require calls. #3", withTypeScript, (t, {typescript}) => {
+test("Deconflicts named imports for anonymous require calls. #3", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		const bar = 2;
@@ -838,8 +838,8 @@ test.serial("Deconflicts named imports for anonymous require calls. #3", withTyp
 	);
 	const [file] = bundle.files;
 
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		import foo from "foo";
 		const bar = 2;
@@ -848,7 +848,7 @@ test.serial("Deconflicts named imports for anonymous require calls. #3", withTyp
 	);
 });
 
-test.serial("Deconflicts named imports for anonymous require calls. #4", withTypeScript, (t, {typescript}) => {
+test("Deconflicts named imports for anonymous require calls. #4", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -869,8 +869,8 @@ test.serial("Deconflicts named imports for anonymous require calls. #4", withTyp
 	);
 	const [file] = bundle.files;
 
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		import {foo as foo$0} from "./foo.js";
 		const foo = 2;
@@ -879,7 +879,7 @@ test.serial("Deconflicts named imports for anonymous require calls. #4", withTyp
 	);
 });
 
-test.serial("Won't use reserved identifiers as generated names for import bindings. #1", withTypeScript, (t, {typescript}) => {
+test("Won't use reserved identifiers as generated names for import bindings. #1", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		require("export")("foo");
@@ -888,8 +888,8 @@ test.serial("Won't use reserved identifiers as generated names for import bindin
 	);
 	const [file] = bundle.files;
 
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		import export$0 from "export";
 		export$0("foo");
@@ -897,7 +897,7 @@ test.serial("Won't use reserved identifiers as generated names for import bindin
 	);
 });
 
-test.serial("Won't generate NamedImports when the module that is being imported from has none. #1", withTypeScript, (t, {typescript}) => {
+test("Won't generate NamedImports when the module that is being imported from has none. #1", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -916,8 +916,8 @@ test.serial("Won't generate NamedImports when the module that is being imported 
 		{typescript}
 	);
 	const [file] = bundle.files;
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		import foo from "./foo.js";
 		const {Reflect} = foo.bar;
@@ -925,7 +925,7 @@ test.serial("Won't generate NamedImports when the module that is being imported 
 	);
 });
 
-test.serial("Won't generate NamedImports when the module that is being imported from has none. #2", withTypeScript, (t, {typescript}) => {
+test("Won't generate NamedImports when the module that is being imported from has none. #2", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			`require('./foo').bar({foo: "bar"});`,
@@ -939,8 +939,8 @@ test.serial("Won't generate NamedImports when the module that is being imported 
 	);
 	const [file] = bundle.files;
 
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		import foo from "./foo.js";
 		foo.bar({foo: "bar"});
@@ -948,7 +948,7 @@ test.serial("Won't generate NamedImports when the module that is being imported 
 	);
 });
 
-test.serial("Won't generate NamedImports when the module that is being imported from has none. #3", withTypeScript, (t, {typescript}) => {
+test("Won't generate NamedImports when the module that is being imported from has none. #3", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		const foo = require('foo').bar("bar");
@@ -958,8 +958,8 @@ test.serial("Won't generate NamedImports when the module that is being imported 
 	);
 	const [file] = bundle.files;
 
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		import foo$0 from "foo";
 		const foo = foo$0.bar("bar");
@@ -968,7 +968,7 @@ test.serial("Won't generate NamedImports when the module that is being imported 
 	);
 });
 
-test.serial("Won't generate NamedImports when the module that is being imported from has none. #4", withTypeScript, (t, {typescript}) => {
+test("Won't generate NamedImports when the module that is being imported from has none. #4", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		const foo = 2;
@@ -978,8 +978,8 @@ test.serial("Won't generate NamedImports when the module that is being imported 
 	);
 	const [file] = bundle.files;
 
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		import foo$0 from "foo";
 		const foo = 2;
@@ -988,7 +988,7 @@ test.serial("Won't generate NamedImports when the module that is being imported 
 	);
 });
 
-test.serial("Won't generate NamedImports when the module that is being imported from has none. #5", withTypeScript, (t, {typescript}) => {
+test("Won't generate NamedImports when the module that is being imported from has none. #5", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		const foo = require('foo').bar("bar");
@@ -996,8 +996,8 @@ test.serial("Won't generate NamedImports when the module that is being imported 
 		{typescript}
 	);
 	const [file] = bundle.files;
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		import foo$0 from "foo";
 		const foo = foo$0.bar("bar");
@@ -1005,7 +1005,7 @@ test.serial("Won't generate NamedImports when the module that is being imported 
 	);
 });
 
-test.serial("Won't generate NamedImports when the module that is being imported from has none. #6", withTypeScript, (t, {typescript}) => {
+test("Won't generate NamedImports when the module that is being imported from has none. #6", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			`const {foo} = (require("./foo").BAR);`,
@@ -1018,8 +1018,8 @@ test.serial("Won't generate NamedImports when the module that is being imported 
 		{typescript}
 	);
 	const [file] = bundle.files;
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		import foo$0 from "./foo.js";
 		const {foo} = (foo$0.BAR);
@@ -1027,7 +1027,7 @@ test.serial("Won't generate NamedImports when the module that is being imported 
 	);
 });
 
-test.serial("Won't generate NamedImports when the module that is being imported from has none. #7", withTypeScript, (t, {typescript}) => {
+test("Won't generate NamedImports when the module that is being imported from has none. #7", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			`const bar = require('./foo').bar("bar");`,
@@ -1040,8 +1040,8 @@ test.serial("Won't generate NamedImports when the module that is being imported 
 		{typescript}
 	);
 	const [file] = bundle.files;
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		import foo from "./foo.js";
 		const bar = foo.bar("bar");
@@ -1049,7 +1049,7 @@ test.serial("Won't generate NamedImports when the module that is being imported 
 	);
 });
 
-test.serial("Won't generate NamedImports when the module that is being imported from has none. #8", withTypeScript, (t, {typescript}) => {
+test("Won't generate NamedImports when the module that is being imported from has none. #8", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			`const foo = require("./foo")[BAR];`,
@@ -1062,8 +1062,8 @@ test.serial("Won't generate NamedImports when the module that is being imported 
 		{typescript}
 	);
 	const [file] = bundle.files;
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		import foo$0 from "./foo.js";
 		const foo = foo$0[BAR];
@@ -1071,7 +1071,7 @@ test.serial("Won't generate NamedImports when the module that is being imported 
 	);
 });
 
-test.serial("Won't generate NamedImports when the module that is being imported from has none. #9", withTypeScript, (t, {typescript}) => {
+test("Won't generate NamedImports when the module that is being imported from has none. #9", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			`const {foo} = require("./foo")[BAR];`,
@@ -1084,8 +1084,8 @@ test.serial("Won't generate NamedImports when the module that is being imported 
 		{typescript}
 	);
 	const [file] = bundle.files;
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		import foo$0 from "./foo.js";
 		const {foo} = foo$0[BAR];
@@ -1093,7 +1093,7 @@ test.serial("Won't generate NamedImports when the module that is being imported 
 	);
 });
 
-test.serial("Won't generate NamedImports when the module that is being imported from has none. #10", withTypeScript, (t, {typescript}) => {
+test("Won't generate NamedImports when the module that is being imported from has none. #10", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			`const {foo: {bar: baz}} = require("./foo");`,
@@ -1108,8 +1108,8 @@ test.serial("Won't generate NamedImports when the module that is being imported 
 	);
 	const [file] = bundle.files;
 
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		import foo from "./foo.js";
 		const {foo: {bar: baz}} = foo;
@@ -1117,7 +1117,7 @@ test.serial("Won't generate NamedImports when the module that is being imported 
 	);
 });
 
-test.serial("Won't generate NamedImports when the module that is being imported from has none. #11", withTypeScript, (t, {typescript}) => {
+test("Won't generate NamedImports when the module that is being imported from has none. #11", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			`const {readFileSync: _foo} = require("./foo");`,
@@ -1132,8 +1132,8 @@ test.serial("Won't generate NamedImports when the module that is being imported 
 	);
 	const [file] = bundle.files;
 
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		import foo from "./foo.js";
 		const {readFileSync: _foo} = foo;
@@ -1141,7 +1141,7 @@ test.serial("Won't generate NamedImports when the module that is being imported 
 	);
 });
 
-test.serial("Can import named bindings from built in Node modules. #1", withTypeScript, (t, {typescript}) => {
+test("Can import named bindings from built in Node modules. #1", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		const {join} = require("path");`,
@@ -1149,15 +1149,15 @@ test.serial("Can import named bindings from built in Node modules. #1", withType
 	);
 	const [file] = bundle.files;
 
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		import {join} from "path";
 		`)
 	);
 });
 
-test.serial("Won't duplicate imports of the same module without an ImportClause. #1", withTypeScript, (t, {typescript}) => {
+test("Won't duplicate imports of the same module without an ImportClause. #1", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		import "foo";
@@ -1167,15 +1167,15 @@ test.serial("Won't duplicate imports of the same module without an ImportClause.
 	);
 	const [file] = bundle.files;
 
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		import "foo";
 		`)
 	);
 });
 
-test.serial("Won't duplicate imports of the same module without an ImportClause. #2", withTypeScript, (t, {typescript}) => {
+test("Won't duplicate imports of the same module without an ImportClause. #2", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		require("foo");
@@ -1185,15 +1185,15 @@ test.serial("Won't duplicate imports of the same module without an ImportClause.
 	);
 	const [file] = bundle.files;
 
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		import "foo";
 		`)
 	);
 });
 
-test.serial("Won't duplicate imports of the same default export. #1", withTypeScript, (t, {typescript}) => {
+test("Won't duplicate imports of the same default export. #1", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		myFunction(require("foo"));
@@ -1203,8 +1203,8 @@ test.serial("Won't duplicate imports of the same default export. #1", withTypeSc
 	);
 	const [file] = bundle.files;
 
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		import foo from "foo";
 		myFunction(foo);
@@ -1213,7 +1213,7 @@ test.serial("Won't duplicate imports of the same default export. #1", withTypeSc
 	);
 });
 
-test.serial("Won't duplicate imports of the same default export. #2", withTypeScript, (t, {typescript}) => {
+test("Won't duplicate imports of the same default export. #2", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		const foo = require("foo");
@@ -1223,8 +1223,8 @@ test.serial("Won't duplicate imports of the same default export. #2", withTypeSc
 	);
 	const [file] = bundle.files;
 
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		import foo from "foo";
 		const bar = foo;
@@ -1232,7 +1232,7 @@ test.serial("Won't duplicate imports of the same default export. #2", withTypeSc
 	);
 });
 
-test.serial("Won't duplicate imports of the same default export. #3", withTypeScript, (t, {typescript}) => {
+test("Won't duplicate imports of the same default export. #3", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		const foo = require("foo").foo;
@@ -1242,8 +1242,8 @@ test.serial("Won't duplicate imports of the same default export. #3", withTypeSc
 	);
 	const [file] = bundle.files;
 
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		import foo$0 from "foo";
 		const foo = foo$0.foo;
@@ -1252,7 +1252,7 @@ test.serial("Won't duplicate imports of the same default export. #3", withTypeSc
 	);
 });
 
-test.serial("Won't duplicate imports of the same Namespace. #1", withTypeScript, (t, {typescript}) => {
+test("Won't duplicate imports of the same Namespace. #1", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -1275,15 +1275,15 @@ test.serial("Won't duplicate imports of the same Namespace. #1", withTypeScript,
 	);
 	const [file] = bundle.files;
 
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		import "./foo.js";
 		`)
 	);
 });
 
-test.serial("Won't duplicate imports of the same Namespace. #2", withTypeScript, (t, {typescript}) => {
+test("Won't duplicate imports of the same Namespace. #2", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -1306,8 +1306,8 @@ test.serial("Won't duplicate imports of the same Namespace. #2", withTypeScript,
 	);
 	const [file] = bundle.files;
 
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		import * as foo from "./foo.js";
 		const bar = foo;
@@ -1315,7 +1315,7 @@ test.serial("Won't duplicate imports of the same Namespace. #2", withTypeScript,
 	);
 });
 
-test.serial("Won't duplicate imports of the same Named import. #1", withTypeScript, (t, {typescript}) => {
+test("Won't duplicate imports of the same Named import. #1", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -1338,8 +1338,8 @@ test.serial("Won't duplicate imports of the same Named import. #1", withTypeScri
 	);
 	const [file] = bundle.files;
 
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		import {foo} from "./foo.js";
 		const bar = {foo}.foo;
@@ -1348,7 +1348,7 @@ test.serial("Won't duplicate imports of the same Named import. #1", withTypeScri
 	);
 });
 
-test.serial("Takes deep require() calls and places them in top of the file. #1", withTypeScript, (t, {typescript}) => {
+test("Takes deep require() calls and places them in top of the file. #1", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		(async () => {
@@ -1359,8 +1359,8 @@ test.serial("Takes deep require() calls and places them in top of the file. #1",
 	);
 	const [file] = bundle.files;
 
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		import foo from "bar";
 		(async () => {
@@ -1369,7 +1369,7 @@ test.serial("Takes deep require() calls and places them in top of the file. #1",
 	);
 });
 
-test.serial("Takes deep require() calls and places them in top of the file. #2", withTypeScript, (t, {typescript}) => {
+test("Takes deep require() calls and places them in top of the file. #2", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -1394,8 +1394,8 @@ test.serial("Takes deep require() calls and places them in top of the file. #2",
 	);
 	const [file] = bundle.files;
 
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		import {foo} from "./foo.js";
 		function fooBarBaz () {
@@ -1405,7 +1405,7 @@ test.serial("Takes deep require() calls and places them in top of the file. #2",
 	);
 });
 
-test.serial("Handles CommonJS-based barrel exports. #1", withTypeScript, (t, {typescript}) => {
+test("Handles CommonJS-based barrel exports. #1", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -1427,8 +1427,8 @@ test.serial("Handles CommonJS-based barrel exports. #1", withTypeScript, (t, {ty
 	);
 	const [file] = bundle.files;
 
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 			import * as constants from "./constants.js";
 			export { constants };
@@ -1436,7 +1436,7 @@ test.serial("Handles CommonJS-based barrel exports. #1", withTypeScript, (t, {ty
 	);
 });
 
-test.serial("Handles CommonJS-based barrel exports. #2", withTypeScript, (t, {typescript}) => {
+test("Handles CommonJS-based barrel exports. #2", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -1458,8 +1458,8 @@ test.serial("Handles CommonJS-based barrel exports. #2", withTypeScript, (t, {ty
 	);
 	const [file] = bundle.files;
 
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 			import constants from "./constants.js";
 			export { constants };
@@ -1467,7 +1467,7 @@ test.serial("Handles CommonJS-based barrel exports. #2", withTypeScript, (t, {ty
 	);
 });
 
-test.serial("Handles CommonJS-based barrel exports. #3", withTypeScript, (t, {typescript}) => {
+test("Handles CommonJS-based barrel exports. #3", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -1489,8 +1489,8 @@ test.serial("Handles CommonJS-based barrel exports. #3", withTypeScript, (t, {ty
 	);
 	const [file] = bundle.files;
 
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 			import constants$0 from "./constants.js";
 			const constants = constants$0;
@@ -1499,7 +1499,7 @@ test.serial("Handles CommonJS-based barrel exports. #3", withTypeScript, (t, {ty
 	);
 });
 
-test.serial("Handles named CommonJS-based barrel exports. #1", withTypeScript, (t, {typescript}) => {
+test("Handles named CommonJS-based barrel exports. #1", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -1514,15 +1514,15 @@ test.serial("Handles named CommonJS-based barrel exports. #1", withTypeScript, (
 	);
 	const [file] = bundle.files;
 
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 			export { default as SomeLib } from "lib-2";
 		`)
 	);
 });
 
-test.serial("Handles named CommonJS-based barrel exports. #2", withTypeScript, (t, {typescript}) => {
+test("Handles named CommonJS-based barrel exports. #2", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -1546,16 +1546,16 @@ test.serial("Handles named CommonJS-based barrel exports. #2", withTypeScript, (
 
 	// Older versions of TypeScript doesn't support named Namespace exports, so another strategy is used there
 	if (semver.lt(typescript.version, "3.8.0")) {
-		t.deepEqual(
-			formatCode(file.text),
+		assert.deepEqual(
+			formatCode(file!.text),
 			formatCode(`\
 			import * as SomeLib from "./foo.js";
 			export {SomeLib};
 		`)
 		);
 	} else {
-		t.deepEqual(
-			formatCode(file.text),
+		assert.deepEqual(
+			formatCode(file!.text),
 			formatCode(`\
 			export * as SomeLib from "./foo.js";
 		`)
@@ -1563,7 +1563,7 @@ test.serial("Handles named CommonJS-based barrel exports. #2", withTypeScript, (
 	}
 });
 
-test.serial("Handles named CommonJS-based barrel exports. #3", withTypeScript, (t, {typescript}) => {
+test("Handles named CommonJS-based barrel exports. #3", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -1579,8 +1579,8 @@ test.serial("Handles named CommonJS-based barrel exports. #3", withTypeScript, (
 	);
 	const [file] = bundle.files;
 
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 			import lib2 from "lib-2";
 			export const SomeLibVar = lib2.someVar;
@@ -1589,7 +1589,7 @@ test.serial("Handles named CommonJS-based barrel exports. #3", withTypeScript, (
 	);
 });
 
-test.serial("Deconflicts local bindings. #1", withTypeScript, (t, {typescript}) => {
+test("Deconflicts local bindings. #1", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -1619,8 +1619,8 @@ test.serial("Deconflicts local bindings. #1", withTypeScript, (t, {typescript}) 
 	);
 	const [file] = bundle.files;
 
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 			import { f } from "./a.js";
 			import { f as f$0 } from "./b.js";

@@ -1,5 +1,5 @@
-import {TransformedFile} from "../../src/shared/task/transform-result.js";
-import {TestFileDirectories} from "./test-file.js";
+import type {TransformedFile} from "../../src/shared/task/transform-result.js";
+import type {TestFileDirectories} from "./test-file.js";
 import path from "crosspath";
 import {rewriteFilenamePath} from "../../src/shared/util/util.js";
 

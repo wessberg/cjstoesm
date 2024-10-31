@@ -1,6 +1,6 @@
-import {TS} from "../type/ts.js";
-import {SafeReadonlyFileSystem} from "../shared/file-system/file-system.js";
-import {TaskOptions} from "../shared/task/task-options.js";
+import type {TS} from "../type/ts.js";
+import type {SafeReadonlyFileSystem} from "../shared/file-system/file-system.js";
+import type {TaskOptions} from "../shared/task/task-options.js";
 
 export interface VisitorContext extends TaskOptions {
 	onlyExports: boolean;

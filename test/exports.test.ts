@@ -1,9 +1,9 @@
-import test from "ava";
-import {withTypeScript} from "./util/ts-macro.js";
+import {test} from "./util/test-runner.js";
 import {executeTransformer} from "./setup/execute-transformer.js";
 import {formatCode} from "./util/format-code.js";
+import assert from "node:assert";
 
-test.serial("Converts 'exports = ...' syntax into an ExportAssignment. #1", withTypeScript, (t, {typescript}) => {
+test("Converts 'exports = ...' syntax into an ExportAssignment. #1", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		function foo () {}
@@ -12,8 +12,8 @@ test.serial("Converts 'exports = ...' syntax into an ExportAssignment. #1", with
 		{typescript}
 	);
 	const [file] = bundle.files;
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		function foo () {}
 		export default foo;
@@ -21,7 +21,7 @@ test.serial("Converts 'exports = ...' syntax into an ExportAssignment. #1", with
 	);
 });
 
-test.serial("Converts 'exports = ...' syntax into an ExportAssignment. #2", withTypeScript, (t, {typescript}) => {
+test("Converts 'exports = ...' syntax into an ExportAssignment. #2", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		function foo () {}
@@ -30,8 +30,8 @@ test.serial("Converts 'exports = ...' syntax into an ExportAssignment. #2", with
 		{typescript}
 	);
 	const [file] = bundle.files;
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		function foo () {}
 		export default foo;
@@ -39,7 +39,7 @@ test.serial("Converts 'exports = ...' syntax into an ExportAssignment. #2", with
 	);
 });
 
-test.serial("Converts 'exports = ...' syntax into an ExportAssignment. #3", withTypeScript, (t, {typescript}) => {
+test("Converts 'exports = ...' syntax into an ExportAssignment. #3", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		exports = function foo () {};
@@ -47,15 +47,15 @@ test.serial("Converts 'exports = ...' syntax into an ExportAssignment. #3", with
 		{typescript}
 	);
 	const [file] = bundle.files;
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		export default (function foo () {});
 		`)
 	);
 });
 
-test.serial("Converts 'exports = ...' syntax into an ExportAssignment. #4", withTypeScript, (t, {typescript}) => {
+test("Converts 'exports = ...' syntax into an ExportAssignment. #4", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		class Baz {}
@@ -70,8 +70,8 @@ test.serial("Converts 'exports = ...' syntax into an ExportAssignment. #4", with
 		{typescript}
 	);
 	const [file] = bundle.files;
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		class Baz {}
 		export const foo = () => {};
@@ -88,7 +88,7 @@ test.serial("Converts 'exports = ...' syntax into an ExportAssignment. #4", with
 	);
 });
 
-test.serial("Converts 'exports = ...' syntax into an ExportAssignment. #5", withTypeScript, (t, {typescript}) => {
+test("Converts 'exports = ...' syntax into an ExportAssignment. #5", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 
@@ -101,8 +101,8 @@ test.serial("Converts 'exports = ...' syntax into an ExportAssignment. #5", with
 		{typescript}
 	);
 	const [file] = bundle.files;
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		export function aMethod () {
 			return 2 + 2;
@@ -114,7 +114,7 @@ test.serial("Converts 'exports = ...' syntax into an ExportAssignment. #5", with
 	);
 });
 
-test.serial("Converts 'exports = ...' syntax into an ExportAssignment. #6", withTypeScript, (t, {typescript}) => {
+test("Converts 'exports = ...' syntax into an ExportAssignment. #6", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		const foo = "bar";
@@ -127,8 +127,8 @@ test.serial("Converts 'exports = ...' syntax into an ExportAssignment. #6", with
 		{typescript}
 	);
 	const [file] = bundle.files;
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		const foo = "bar";
 		export default {
@@ -140,7 +140,7 @@ test.serial("Converts 'exports = ...' syntax into an ExportAssignment. #6", with
 	);
 });
 
-test.serial("Converts 'exports = ...' syntax into an ExportAssignment. #7", withTypeScript, (t, {typescript}) => {
+test("Converts 'exports = ...' syntax into an ExportAssignment. #7", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		module.exports = {};
@@ -148,15 +148,15 @@ test.serial("Converts 'exports = ...' syntax into an ExportAssignment. #7", with
 		{typescript}
 	);
 	const [file] = bundle.files;
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		export default {}
 		`)
 	);
 });
 
-test.serial("Converts 'exports = ...' syntax into an ExportAssignment. #8", withTypeScript, (t, {typescript}) => {
+test("Converts 'exports = ...' syntax into an ExportAssignment. #8", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		(module.exports = {});
@@ -164,15 +164,15 @@ test.serial("Converts 'exports = ...' syntax into an ExportAssignment. #8", with
 		{typescript}
 	);
 	const [file] = bundle.files;
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		export default {}
 		`)
 	);
 });
 
-test.serial("Converts 'exports.<something> into ExportDeclarations. #1", withTypeScript, (t, {typescript}) => {
+test("Converts 'exports.<something> into ExportDeclarations. #1", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		exports.foo = 1;
@@ -181,15 +181,15 @@ test.serial("Converts 'exports.<something> into ExportDeclarations. #1", withTyp
 	);
 	const [file] = bundle.files;
 
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		export const foo = 1;
 		`)
 	);
 });
 
-test.serial("Converts 'exports.<something> into ExportDeclarations. #2", withTypeScript, (t, {typescript}) => {
+test("Converts 'exports.<something> into ExportDeclarations. #2", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		function foo () {}
@@ -198,8 +198,8 @@ test.serial("Converts 'exports.<something> into ExportDeclarations. #2", withTyp
 		{typescript}
 	);
 	const [file] = bundle.files;
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		function foo () {}
 		export {foo};
@@ -207,7 +207,7 @@ test.serial("Converts 'exports.<something> into ExportDeclarations. #2", withTyp
 	);
 });
 
-test.serial("Converts 'exports.<something> into ExportDeclarations. #3", withTypeScript, (t, {typescript}) => {
+test("Converts 'exports.<something> into ExportDeclarations. #3", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		exports.foo = function foo () {};
@@ -215,15 +215,15 @@ test.serial("Converts 'exports.<something> into ExportDeclarations. #3", withTyp
 		{typescript}
 	);
 	const [file] = bundle.files;
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		export function foo () {}
 		`)
 	);
 });
 
-test.serial("Converts 'exports.<something> into ExportDeclarations. #4", withTypeScript, (t, {typescript}) => {
+test("Converts 'exports.<something> into ExportDeclarations. #4", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		exports.foo = () => {}
@@ -231,15 +231,15 @@ test.serial("Converts 'exports.<something> into ExportDeclarations. #4", withTyp
 		{typescript}
 	);
 	const [file] = bundle.files;
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		export const foo = () => {}
 		`)
 	);
 });
 
-test.serial("Converts 'exports.<something> into ExportDeclarations. #5", withTypeScript, (t, {typescript}) => {
+test("Converts 'exports.<something> into ExportDeclarations. #5", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		exports.f = Object.getOwnPropertySymbols;
@@ -247,15 +247,15 @@ test.serial("Converts 'exports.<something> into ExportDeclarations. #5", withTyp
 		{typescript}
 	);
 	const [file] = bundle.files;
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		export const f = Object.getOwnPropertySymbols;
 		`)
 	);
 });
 
-test.serial("Converts 'exports.<something> into ExportDeclarations. #6", withTypeScript, (t, {typescript}) => {
+test("Converts 'exports.<something> into ExportDeclarations. #6", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		function foo () {}
@@ -264,8 +264,8 @@ test.serial("Converts 'exports.<something> into ExportDeclarations. #6", withTyp
 		{typescript}
 	);
 	const [file] = bundle.files;
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		function foo () {}
 		export {foo as bar};
@@ -273,7 +273,7 @@ test.serial("Converts 'exports.<something> into ExportDeclarations. #6", withTyp
 	);
 });
 
-test.serial("Converts 'exports.<something>' into ExportDeclarations. #7", withTypeScript, (t, {typescript}) => {
+test("Converts 'exports.<something>' into ExportDeclarations. #7", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -289,8 +289,8 @@ test.serial("Converts 'exports.<something>' into ExportDeclarations. #7", withTy
 	);
 	const [file] = bundle.files;
 
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		export const f = function getOwnPropertyNames() {
   		return 2;
@@ -299,7 +299,7 @@ test.serial("Converts 'exports.<something>' into ExportDeclarations. #7", withTy
 	);
 });
 
-test.serial("Converts 'exports.default into a default export. #1", withTypeScript, (t, {typescript}) => {
+test("Converts 'exports.default into a default export. #1", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		exports.default = function foo () {}
@@ -307,15 +307,15 @@ test.serial("Converts 'exports.default into a default export. #1", withTypeScrip
 		{typescript}
 	);
 	const [file] = bundle.files;
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		export default (function foo () {})
 		`)
 	);
 });
 
-test.serial("Converts 'exports.default into a default export. #2", withTypeScript, (t, {typescript}) => {
+test("Converts 'exports.default into a default export. #2", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		module.exports.default = function foo () {}
@@ -323,15 +323,15 @@ test.serial("Converts 'exports.default into a default export. #2", withTypeScrip
 		{typescript}
 	);
 	const [file] = bundle.files;
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		export default (function foo () {})
 		`)
 	);
 });
 
-test.serial("Won't generate duplicate ExportAssignments. #1", withTypeScript, (t, {typescript}) => {
+test("Won't generate duplicate ExportAssignments. #1", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		function foo () {}
@@ -342,8 +342,8 @@ test.serial("Won't generate duplicate ExportAssignments. #1", withTypeScript, (t
 		{typescript}
 	);
 	const [file] = bundle.files;
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		function foo () {}
 		export default foo;
@@ -351,7 +351,7 @@ test.serial("Won't generate duplicate ExportAssignments. #1", withTypeScript, (t
 	);
 });
 
-test.serial("Won't generate duplicate ExportDeclarations. #1", withTypeScript, (t, {typescript}) => {
+test("Won't generate duplicate ExportDeclarations. #1", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		function foo () {}
@@ -363,8 +363,8 @@ test.serial("Won't generate duplicate ExportDeclarations. #1", withTypeScript, (
 		{typescript}
 	);
 	const [file] = bundle.files;
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		function foo () {}
 		export {foo};
@@ -374,7 +374,7 @@ test.serial("Won't generate duplicate ExportDeclarations. #1", withTypeScript, (
 	);
 });
 
-test.serial("Generates named exports for members of an ObjectLiteral that is assigned to 'exports = ...' if possible. #1", withTypeScript, (t, {typescript}) => {
+test("Generates named exports for members of an ObjectLiteral that is assigned to 'exports = ...' if possible. #1", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		module.exports = {
@@ -384,8 +384,8 @@ test.serial("Generates named exports for members of an ObjectLiteral that is ass
 		{typescript}
 	);
 	const [file] = bundle.files;
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		export const foo = true;
 		export default {
@@ -395,7 +395,7 @@ test.serial("Generates named exports for members of an ObjectLiteral that is ass
 	);
 });
 
-test.serial("Generates named exports for members of an ObjectLiteral that is assigned to 'exports = ...' if possible. #2", withTypeScript, (t, {typescript}) => {
+test("Generates named exports for members of an ObjectLiteral that is assigned to 'exports = ...' if possible. #2", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		module.exports = {
@@ -405,8 +405,8 @@ test.serial("Generates named exports for members of an ObjectLiteral that is ass
 		{typescript}
 	);
 	const [file] = bundle.files;
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		export const foo = false;
 		export default {
@@ -416,7 +416,7 @@ test.serial("Generates named exports for members of an ObjectLiteral that is ass
 	);
 });
 
-test.serial("Generates named exports for members of an ObjectLiteral that is assigned to 'exports = ...' if possible. #3", withTypeScript, (t, {typescript}) => {
+test("Generates named exports for members of an ObjectLiteral that is assigned to 'exports = ...' if possible. #3", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		module.exports = {
@@ -426,8 +426,8 @@ test.serial("Generates named exports for members of an ObjectLiteral that is ass
 		{typescript}
 	);
 	const [file] = bundle.files;
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		export const foo = 2;
 		export default {
@@ -437,7 +437,7 @@ test.serial("Generates named exports for members of an ObjectLiteral that is ass
 	);
 });
 
-test.serial("Generates named exports for members of an ObjectLiteral that is assigned to 'exports = ...' if possible. #4", withTypeScript, (t, {typescript}) => {
+test("Generates named exports for members of an ObjectLiteral that is assigned to 'exports = ...' if possible. #4", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		module.exports = {
@@ -447,8 +447,8 @@ test.serial("Generates named exports for members of an ObjectLiteral that is ass
 		{typescript}
 	);
 	const [file] = bundle.files;
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		export const foo = 2n;
 		export default {
@@ -458,7 +458,7 @@ test.serial("Generates named exports for members of an ObjectLiteral that is ass
 	);
 });
 
-test.serial("Generates named exports for members of an ObjectLiteral that is assigned to 'exports = ...' if possible. #5", withTypeScript, (t, {typescript}) => {
+test("Generates named exports for members of an ObjectLiteral that is assigned to 'exports = ...' if possible. #5", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		module.exports = {
@@ -468,8 +468,8 @@ test.serial("Generates named exports for members of an ObjectLiteral that is ass
 		{typescript}
 	);
 	const [file] = bundle.files;
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		export const foo = /foo/;
 		export default {
@@ -479,7 +479,7 @@ test.serial("Generates named exports for members of an ObjectLiteral that is ass
 	);
 });
 
-test.serial("Generates named exports for members of an ObjectLiteral that is assigned to 'exports = ...' if possible. #6", withTypeScript, (t, {typescript}) => {
+test("Generates named exports for members of an ObjectLiteral that is assigned to 'exports = ...' if possible. #6", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		module.exports = {
@@ -492,8 +492,8 @@ test.serial("Generates named exports for members of an ObjectLiteral that is ass
 		{typescript}
 	);
 	const [file] = bundle.files;
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		export const foo = {
 			a: 1,
@@ -506,7 +506,7 @@ test.serial("Generates named exports for members of an ObjectLiteral that is ass
 	);
 });
 
-test.serial("Generates named exports for members of an ObjectLiteral that is assigned to 'exports = ...' if possible. #7", withTypeScript, (t, {typescript}) => {
+test("Generates named exports for members of an ObjectLiteral that is assigned to 'exports = ...' if possible. #7", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		module.exports = {
@@ -518,8 +518,8 @@ test.serial("Generates named exports for members of an ObjectLiteral that is ass
 		{typescript}
 	);
 	const [file] = bundle.files;
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		export function foo () {
 			return 2;
@@ -531,7 +531,7 @@ test.serial("Generates named exports for members of an ObjectLiteral that is ass
 	);
 });
 
-test.serial("Generates named exports for members of an ObjectLiteral that is assigned to 'exports = ...' if possible. #8", withTypeScript, (t, {typescript}) => {
+test("Generates named exports for members of an ObjectLiteral that is assigned to 'exports = ...' if possible. #8", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		`
 		const obj = {
@@ -546,8 +546,8 @@ test.serial("Generates named exports for members of an ObjectLiteral that is ass
 		{typescript}
 	);
 	const [file] = bundle.files;
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		const obj = {
 			foo: 1,
@@ -562,7 +562,7 @@ test.serial("Generates named exports for members of an ObjectLiteral that is ass
 	);
 });
 
-test.serial("Converts 'exports = require(...)' syntax into namespace re-exports if the required module has named exports. #1", withTypeScript, (t, {typescript}) => {
+test("Converts 'exports = require(...)' syntax into namespace re-exports if the required module has named exports. #1", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -583,49 +583,45 @@ test.serial("Converts 'exports = require(...)' syntax into namespace re-exports 
 		{typescript}
 	);
 	const [file] = bundle.files;
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		export * from "./foo.js";
 		`)
 	);
 });
 
-test.serial(
-	"Converts 'exports = require(...)()' syntax into namespace import along with a default export if the required module has named exports. #1",
-	withTypeScript,
-	(t, {typescript}) => {
-		const bundle = executeTransformer(
-			[
-				{
-					entry: true,
-					fileName: "index.ts",
-					text: `
+test("Converts 'exports = require(...)()' syntax into namespace import along with a default export if the required module has named exports. #1", "*", (_, {typescript}) => {
+	const bundle = executeTransformer(
+		[
+			{
+				entry: true,
+				fileName: "index.ts",
+				text: `
 				module.exports = require("./foo")();
 			`
-				},
-				{
-					entry: true,
-					fileName: "foo.ts",
-					text: `
+			},
+			{
+				entry: true,
+				fileName: "foo.ts",
+				text: `
 				exports.readFileSync = () => {};
 			`
-				}
-			],
-			{typescript}
-		);
-		const [file] = bundle.files;
-		t.deepEqual(
-			formatCode(file.text),
-			formatCode(`\
+			}
+		],
+		{typescript}
+	);
+	const [file] = bundle.files;
+	assert.deepEqual(
+		formatCode(file!.text),
+		formatCode(`\
 		import * as foo from "./foo.js";
 		export default foo();
 		`)
-		);
-	}
-);
+	);
+});
 
-test.serial("Converts 'exports = require(...)' syntax into a default export if the required module has one. #1", withTypeScript, (t, {typescript}) => {
+test("Converts 'exports = require(...)' syntax into a default export if the required module has one. #1", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -647,15 +643,15 @@ test.serial("Converts 'exports = require(...)' syntax into a default export if t
 	);
 	const [file] = bundle.files;
 
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		export {default} from "./foo.js";
 		`)
 	);
 });
 
-test.serial("Converts 'exports = require(...)' syntax into a default export if the required module is unknown. #1", withTypeScript, (t, {typescript}) => {
+test("Converts 'exports = require(...)' syntax into a default export if the required module is unknown. #1", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -669,15 +665,15 @@ test.serial("Converts 'exports = require(...)' syntax into a default export if t
 		{typescript}
 	);
 	const [file] = bundle.files;
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		export {default} from "./foo";
 		`)
 	);
 });
 
-test.serial("Converts 'exports = require(...)()' syntax into a default export if the required module is unknown. #2", withTypeScript, (t, {typescript}) => {
+test("Converts 'exports = require(...)()' syntax into a default export if the required module is unknown. #2", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -691,8 +687,8 @@ test.serial("Converts 'exports = require(...)()' syntax into a default export if
 		{typescript}
 	);
 	const [file] = bundle.files;
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		import foo from "./foo";
 		export default foo();
@@ -700,7 +696,7 @@ test.serial("Converts 'exports = require(...)()' syntax into a default export if
 	);
 });
 
-test.serial("Converts 'const foo = module.exports = ...' syntax into a VariableStatement followed by an ExportAssignment. #1", withTypeScript, (t, {typescript}) => {
+test("Converts 'const foo = module.exports = ...' syntax into a VariableStatement followed by an ExportAssignment. #1", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -714,8 +710,8 @@ test.serial("Converts 'const foo = module.exports = ...' syntax into a VariableS
 		{typescript}
 	);
 	const [file] = bundle.files;
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		const iterate = {};
 		export default iterate;
@@ -723,7 +719,7 @@ test.serial("Converts 'const foo = module.exports = ...' syntax into a VariableS
 	);
 });
 
-test.serial("Converts 'const foo = module.exports = ...' syntax into a VariableStatement followed by an ExportAssignment. #2", withTypeScript, (t, {typescript}) => {
+test("Converts 'const foo = module.exports = ...' syntax into a VariableStatement followed by an ExportAssignment. #2", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -737,8 +733,8 @@ test.serial("Converts 'const foo = module.exports = ...' syntax into a VariableS
 		{typescript}
 	);
 	const [file] = bundle.files;
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		const iterate = function () {};
 		export default iterate;
@@ -746,7 +742,7 @@ test.serial("Converts 'const foo = module.exports = ...' syntax into a VariableS
 	);
 });
 
-test.serial("Converts 'const foo = module.exports = ...' syntax into a VariableStatement followed by an ExportAssignment. #3", withTypeScript, (t, {typescript}) => {
+test("Converts 'const foo = module.exports = ...' syntax into a VariableStatement followed by an ExportAssignment. #3", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -760,8 +756,8 @@ test.serial("Converts 'const foo = module.exports = ...' syntax into a VariableS
 		{typescript}
 	);
 	const [file] = bundle.files;
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		const iterate = {foo: 1};
 		export default iterate;
@@ -769,7 +765,7 @@ test.serial("Converts 'const foo = module.exports = ...' syntax into a VariableS
 	);
 });
 
-test.serial("Converts 'const foo = exports.foo = ...' syntax into a VariableStatement followed by an ExportDeclaration. #4", withTypeScript, (t, {typescript}) => {
+test("Converts 'const foo = exports.foo = ...' syntax into a VariableStatement followed by an ExportDeclaration. #4", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -783,8 +779,8 @@ test.serial("Converts 'const foo = exports.foo = ...' syntax into a VariableStat
 		{typescript}
 	);
 	const [file] = bundle.files;
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		const iterate = 1;
 		export {iterate as foo};
@@ -792,7 +788,7 @@ test.serial("Converts 'const foo = exports.foo = ...' syntax into a VariableStat
 	);
 });
 
-test.serial("Converts 'const foo = exports.foo = ...' syntax into a VariableStatement followed by an ExportDeclaration. #5", withTypeScript, (t, {typescript}) => {
+test("Converts 'const foo = exports.foo = ...' syntax into a VariableStatement followed by an ExportDeclaration. #5", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -806,8 +802,8 @@ test.serial("Converts 'const foo = exports.foo = ...' syntax into a VariableStat
 		{typescript}
 	);
 	const [file] = bundle.files;
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		const foo = function foobarbaz () {};
 		export {foo};
@@ -815,7 +811,7 @@ test.serial("Converts 'const foo = exports.foo = ...' syntax into a VariableStat
 	);
 });
 
-test.serial("Converts 'const foo = exports.foo = ...' syntax into a VariableStatement followed by an ExportDeclaration. #6", withTypeScript, (t, {typescript}) => {
+test("Converts 'const foo = exports.foo = ...' syntax into a VariableStatement followed by an ExportDeclaration. #6", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -829,8 +825,8 @@ test.serial("Converts 'const foo = exports.foo = ...' syntax into a VariableStat
 		{typescript}
 	);
 	const [file] = bundle.files;
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		const foo = function foobarbaz () {}, bar = 3;
 		export {foo};
@@ -838,7 +834,7 @@ test.serial("Converts 'const foo = exports.foo = ...' syntax into a VariableStat
 	);
 });
 
-test.serial("When rewriting 'exports.something = function () {...}', no error will occur if a local binding already exists for 'something'", withTypeScript, (t, {typescript}) => {
+test("When rewriting 'exports.something = function () {...}', no error will occur if a local binding already exists for 'something'", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -855,8 +851,8 @@ test.serial("When rewriting 'exports.something = function () {...}', no error wi
 		{typescript}
 	);
 	const [file] = bundle.files;
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		function something () {}
 		const something$0 = function () {
@@ -867,7 +863,7 @@ test.serial("When rewriting 'exports.something = function () {...}', no error wi
 	);
 });
 
-test.serial("When bundling UMD containing exports assignments, the SourceFile will be flattened to the body of the UMD wrapper", withTypeScript, (t, {typescript}) => {
+test("When bundling UMD containing exports assignments, the SourceFile will be flattened to the body of the UMD wrapper", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -890,8 +886,8 @@ test.serial("When bundling UMD containing exports assignments, the SourceFile wi
 		{typescript}
 	);
 	const [file] = bundle.files;
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		'use strict';
 		function bar() { return 2; }
@@ -900,7 +896,7 @@ test.serial("When bundling UMD containing exports assignments, the SourceFile wi
 	);
 });
 
-test.serial("Handles reassignments to imported bindings. #1", withTypeScript, (t, {typescript}) => {
+test("Handles reassignments to imported bindings. #1", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -922,8 +918,8 @@ test.serial("Handles reassignments to imported bindings. #1", withTypeScript, (t
 		{typescript}
 	);
 	const [file] = bundle.files;
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		import { foo as foo$0 } from "./foo.js";
 		let foo = foo$0;
@@ -932,7 +928,7 @@ test.serial("Handles reassignments to imported bindings. #1", withTypeScript, (t
 	);
 });
 
-test.serial("Handles reassignments to imported bindings. #2", withTypeScript, (t, {typescript}) => {
+test("Handles reassignments to imported bindings. #2", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -954,8 +950,8 @@ test.serial("Handles reassignments to imported bindings. #2", withTypeScript, (t
 		{typescript}
 	);
 	const [file] = bundle.files;
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		import foo$0 from "./foo.js";
 		let foo = foo$0;
@@ -964,7 +960,7 @@ test.serial("Handles reassignments to imported bindings. #2", withTypeScript, (t
 	);
 });
 
-test.serial("Handles reassignments to imported bindings. #3", withTypeScript, (t, {typescript}) => {
+test("Handles reassignments to imported bindings. #3", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -986,8 +982,8 @@ test.serial("Handles reassignments to imported bindings. #3", withTypeScript, (t
 		{typescript}
 	);
 	const [file] = bundle.files;
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		import * as foo$0 from "./foo.js";
 		let foo = foo$0;
@@ -996,7 +992,7 @@ test.serial("Handles reassignments to imported bindings. #3", withTypeScript, (t
 	);
 });
 
-test.serial("Handles functions exported via short hand property assignments to the module.exports Object. #1", withTypeScript, (t, {typescript}) => {
+test("Handles functions exported via short hand property assignments to the module.exports Object. #1", "*", (_, {typescript}) => {
 	const bundle = executeTransformer(
 		[
 			{
@@ -1017,8 +1013,8 @@ test.serial("Handles functions exported via short hand property assignments to t
 	);
 	const [file] = bundle.files;
 
-	t.deepEqual(
-		formatCode(file.text),
+	assert.deepEqual(
+		formatCode(file!.text),
 		formatCode(`\
 		function myFunction() {
 			console.log('lorem ipsum');

@@ -1,4 +1,4 @@
-import {TS} from "../../type/ts.js";
+import type {TS} from "../../type/ts.js";
 
 export function willReassignIdentifier(identifier: string, node: TS.Node, typescript: typeof TS): boolean {
 	const result = typescript.forEachChild<boolean>(node, nextNode => {
@@ -19,5 +19,5 @@ export function willReassignIdentifier(identifier: string, node: TS.Node, typesc
 		return;
 	});
 
-	return result != null ? result : false;
+	return result ?? false;
 }

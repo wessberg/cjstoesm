@@ -1,8 +1,8 @@
-import {VisitorContext} from "../visitor-context.js";
+import type {VisitorContext} from "../visitor-context.js";
 import {resolvePath} from "./resolve-path.js";
 import {walkThroughFillerNodes} from "./walk-through-filler-nodes.js";
 import {isBuiltInModule} from "../built-in/built-in-module-map.js";
-import {TS} from "../../type/ts.js";
+import type {TS} from "../../type/ts.js";
 import {transformModuleSpecifier} from "./transform-module-specifier.js";
 
 export interface IsRequireCallNoMatchResult {
@@ -51,7 +51,7 @@ export function isRequireCall(inputExpression: TS.Expression, sourceFile: TS.Sou
 					...context,
 					id: moduleSpecifier,
 					parent: sourceFile.fileName
-			  });
+				});
 
 	const resolvedModuleSpecifierText =
 		resolvedModuleSpecifier == null || isBuiltInModule(resolvedModuleSpecifier) ? undefined : context.fileSystem.safeReadFileSync(resolvedModuleSpecifier)?.toString();

@@ -1,10 +1,11 @@
-import {TransformTaskOptions} from "../../../shared/task/transform-task-options.js";
+/* eslint-disable @typescript-eslint/require-await */
+import type {TransformTaskOptions} from "../../../shared/task/transform-task-options.js";
 import {inspect} from "util";
 import fastGlob from "fast-glob";
-import {TS} from "../../../type/ts.js";
+import type {TS} from "../../../type/ts.js";
 import {cjsToEsm} from "../../../transformer/cjs-to-esm.js";
 import {createCompilerHost} from "../../../shared/compiler-host/create-compiler-host.js";
-import {TransformResult} from "../../../shared/task/transform-result.js";
+import type {TransformResult} from "../../../shared/task/transform-result.js";
 import color from "ansi-colors";
 import {ensureArray, getFolderClosestToRoot, normalizeGlob} from "../../../shared/util/util.js";
 import path from "crosspath";
@@ -14,12 +15,12 @@ import {TEMPORARY_SUBFOLDER_NAME} from "../../../shared/constant.js";
  * Executes the 'generate' task
  */
 export async function transformTask(options: TransformTaskOptions): Promise<TransformResult> {
-	let {logger, input, cwd, outDir, fileSystem, write, typescript, debug, preserveModuleSpecifiers, importAssertions, hooks} = options;
+	let {logger, input, cwd, outDir, fileSystem, write, typescript, debug, preserveModuleSpecifiers, importAttributes, hooks} = options;
 
 	logger.debug(
 		"Options:",
 		inspect(
-			{input, outDir, cwd, write, debug, preserveModuleSpecifiers, importAssertions},
+			{input, outDir, cwd, write, debug, preserveModuleSpecifiers, importAttributes},
 			{
 				colors: true,
 				depth: Infinity,
@@ -63,7 +64,9 @@ export async function transformTask(options: TransformTaskOptions): Promise<Tran
 		sourceMap: false,
 		newLine: typescript.sys.newLine === "\n" ? typescript.NewLineKind.LineFeed : typescript.NewLineKind.CarriageReturnLineFeed,
 		rootDir: closestFolderToRoot,
-		moduleResolution: typescript.ModuleResolutionKind.NodeJs
+		module: typescript.ModuleKind.ESNext,
+		// eslint-disable-next-line @typescript-eslint/no-deprecated, @typescript-eslint/naming-convention
+		moduleResolution: (typescript.ModuleResolutionKind as {Bundler?: TS.ModuleResolutionKind}).Bundler ?? typescript.ModuleResolutionKind.NodeJs
 	};
 
 	// Create a TypeScript program based on the glob

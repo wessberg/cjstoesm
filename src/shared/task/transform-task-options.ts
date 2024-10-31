@@ -1,12 +1,12 @@
-import {TaskOptions} from "./task-options.js";
-import {FileSystem} from "../file-system/file-system.js";
-import {MaybeArray} from "helpertypes";
+import type {TaskOptions} from "./task-options.js";
+import type {FileSystem} from "../file-system/file-system.js";
+import type {MaybeArray} from "helpertypes";
 
 export interface TransformHooks {
 	/**
 	 * If a string is returned from this hoo, that text will be written to disk instead
 	 */
-	writeFile(file: string, text: string): string | void;
+	writeFile(file: string, text: string): string | undefined;
 }
 
 export interface TransformTaskOptions extends TaskOptions {
